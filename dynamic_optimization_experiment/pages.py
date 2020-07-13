@@ -7,6 +7,8 @@ class Introduction(Page):
 
 class Calculator(Page):
     print('guess')
+    form_model = 'player'
+    form_fields = ['purchased_units']
 
 class Guess(Page):
     print('guess')
