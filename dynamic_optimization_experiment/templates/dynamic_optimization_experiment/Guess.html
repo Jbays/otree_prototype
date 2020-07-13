@@ -2,12 +2,14 @@
 {% load otree %}
 
 {% block title %}
-    Your Guess
+    Your Dynamic Optimization Template
 {% endblock %}
 
 {% block content %}
 
-    {% if player.round_number > 1 %}
+    here is block content
+
+    <!-- {% if player.round_number > 1 %}
         <p>
             Here were the two-thirds-average values in previous rounds:
             {{ group.two_thirds_avg_history }}
@@ -15,7 +17,7 @@
     {% endif %}
 
     {% formfield player.guess label="Please pick a number from 0 to 100:" %}
-    {% next_button %}
+    {% next_button %} -->
 
     {% include Constants.instructions_template %}
 

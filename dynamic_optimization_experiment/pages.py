@@ -5,6 +5,8 @@ class Introduction(Page):
     def is_displayed(self):
         return self.round_number == 1
 
+class Calculator(Page):
+    print('guess')
 
 class Guess(Page):
     print('guess')
@@ -26,4 +28,4 @@ class Results(Page):
 
 
 # page_sequence = [Introduction, Guess, ResultsWaitPage, Results]
-page_sequence = [Introduction]
+page_sequence = [Introduction, Calculator]
