@@ -63,6 +63,10 @@ class Player(BasePlayer):
     # token_balance = 0
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)
     # purchased_units = 0
-    purchased_units = models.IntegerField(label="Purchased Units:",initial=0)
+    purchased_units = models.IntegerField(label="Purchased Units:",initial=5)
     # accumlated_points = 0
     # final_tokens_balance = 0
+
+    def example(self):
+        print('random_name self',self)
+    

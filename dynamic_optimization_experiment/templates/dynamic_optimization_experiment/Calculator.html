@@ -8,8 +8,14 @@
 {% block content %}
 
     here is block content
-    <!-- {% formfields %} -->
+    
+    <br/>
+    This is the round:
+
+    this is variable a: {{a}}
+
     {% formfield player.purchased_units %}
+    {% next_button %}
 
     {% include Constants.instructions_template %}
 
