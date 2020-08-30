@@ -11,24 +11,24 @@ SESSION_CONFIG_DEFAULTS = dict(
 
 
 SESSION_CONFIGS = [
+    # dict(
+    #     name='public_goods',
+    #     display_name="Public Goods",
+    #     num_demo_participants=3,
+    #     app_sequence=['public_goods', 'payment_info'],
+    # ),
     dict(
-        name='public_goods',
-        display_name="Public Goods",
-        num_demo_participants=3,
-        app_sequence=['public_goods', 'payment_info'],
-    ),
-    dict(
-        name='guess_two_thirds',
-        display_name="Guess 2/3 of the Average",
-        num_demo_participants=3,
-        app_sequence=['guess_two_thirds', 'payment_info'],
-    ),
-    dict(
-        name='survey',
-        display_name='survey',
+        name='dyn_opt_exp',
+        display_name="Dynamic Optimization Experiment",
         num_demo_participants=1,
-        app_sequence=['survey', 'payment_info'],
+        app_sequence=['dynamic_optimization_experiment', 'payment_info'],
     ),
+    # dict(
+    #     name='survey',
+    #     display_name='survey',
+    #     num_demo_participants=1,
+    #     app_sequence=['survey', 'payment_info'],
+    # ),
 ]
 
 # ISO-639 code

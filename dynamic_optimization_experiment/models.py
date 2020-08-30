@@ -22,6 +22,10 @@ class Constants(BaseConstants):
     price_per_unit = 100
     interest_rate = 10
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
+    decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
+    calculator_component = 'dynamic_optimization_experiment/CalculatorComponent.html'
+    output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
+    output_to_points_convertesion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
     players_per_group = None
 
 
@@ -63,7 +67,7 @@ class Player(BasePlayer):
     # token_balance = 0
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)
     # purchased_units = 0
-    purchased_units = models.IntegerField(label="Purchased Units:",initial=5)
+    purchased_units = models.IntegerField(label="Purchased Units:",initial=0)
     # accumlated_points = 0
     # final_tokens_balance = 0
 

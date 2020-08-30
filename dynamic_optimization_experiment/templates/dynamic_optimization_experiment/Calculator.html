@@ -7,14 +7,15 @@
 
 {% block content %}
 
-    here is block content
-    
+    {% include Constants.decision_box_component %}
+    {% include Constants.calculator_component %}
+    {% include Constants.output_to_points_converter_component %}
+    {% include Constants.output_to_points_convertesion_component %}
+
     <br/>
-    This is the round:
 
     this is variable a: {{a}}
 
-    {% formfield player.purchased_units %}
     {% next_button %}
 
     {% include Constants.instructions_template %}
