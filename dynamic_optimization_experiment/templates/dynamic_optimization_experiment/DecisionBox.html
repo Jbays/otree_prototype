@@ -8,15 +8,14 @@
     </h3>
 
     <p>
-        Please submit your choice for period
+        Please submit your choice for period: {{round_number}}
     </p>
-    <p>
-        TODO: Dynamically render the period
-    </p>
+    
     <p>
       Number of units you would like to purchase:  
     </p>
     {% formfield player.purchased_units %}
+    {% next_button %}
 
-</div>
+    </div>
 </div>

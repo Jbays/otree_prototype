@@ -11,7 +11,7 @@ class Calculator(Page):
 
     # print('self',self)
     
-    # this code makes "var a" accessible in the Calculator.html 
+    # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
         print('vars_for_template executing!')
         # print('self>>>',self)
@@ -29,7 +29,8 @@ class Calculator(Page):
 
         a = 10
         return dict(
-            a=a
+            a=a,
+            round_number=self.round_number
         )
 
 class Guess(Page):
