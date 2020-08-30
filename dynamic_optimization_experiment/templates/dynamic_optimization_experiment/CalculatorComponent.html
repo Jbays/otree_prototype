@@ -3,11 +3,8 @@
 <div class="card bg-light m-3">
   <div class="card-body">
     <h3>
-        Calculator Component
+        Calculator
     </h3>
-    <p>
-        Here is my calculator component
-    </p>
 
     <style>
       table,
@@ -20,21 +17,71 @@
           background-color: #333;
           color: #fff;
       }
-  </style>
+    </style>
 
-    <table>
-      <thead>
-          <tr>
-              <th colspan="2">The table header</th>
-          </tr>
-      </thead>
+    <table id="myTable">
       <tbody>
           <tr>
-              <td>The table body</td>
-              <td>with two columns</td>
+              <td>Period</td>
+              <td>Income (Tokens)</td>
+              <td>Price per Unit</td>
+              <td>Interest Rate (%)</td>
+              <td>Token Balance (beginning of the period)</td>
+              <td>Purchased Units</td>
+              <td>Points</td>
+              <td>AccumulatedPoints</td>
+              <td>Final Tokens Balance</td>
           </tr>
       </tbody>
     </table>
-    
+
+    <script>
+      let x = 'hello sailor';
+      let myTable = document.getElementById("myTable");
+      console.log('this is x',x);
+
+      //for each instance of player round, populate the table 
+      for ( let i = 0; i < js_vars.player_round_number-1; i++ ) {
+        let newRow = document.createElement('tr')
+        console.log('this is i',i);
+        
+
+        let periodTableCellData = document.createElement('td');
+        periodTableCellData.innerText = i+1;
+        newRow.appendChild(periodTableCellData)
+        let incomeTableCellData = document.createElement('td');
+        incomeTableCellData.innerText = 1000;
+        newRow.appendChild(incomeTableCellData);
+        let pricePerUnitTableCellData = document.createElement('td');
+        let InterestRateTableCellData = document.createElement('td');
+        let TokenBalanceTableCellData = document.createElement('td');
+        let PurchasedUnitsTableCellData = document.createElement('td');
+        let PointsTableCellData = document.createElement('td');
+        let AccumulatedPointsTableCellData = document.createElement('td');
+        let FinalTokensBalanceTableCellData = document.createElement('td');
+        
+        // for ( let j = 0; j < 8; j++ ) {
+        //   console.log('this is periodData')
+        // }
+
+        myTable.appendChild(newRow);
+      }
+
+      console.log('js_vars.player_round_number',js_vars.player_round_number)
+
+      let latestRow = document.createElement('tr');
+      let latestPeriodTableCellData = document.createElement('td')
+      latestPeriodTableCellData.innerText = js_vars.player_round_number;
+      latestRow.appendChild(latestPeriodTableCellData);
+
+      let purchasedUnitCalculatorInput = document.createElement('input')
+      purchasedUnitCalculatorInput.type = 'number';
+      latestRow.appendChild(purchasedUnitCalculatorInput)
+      
+      myTable.appendChild(latestRow)
+
+
+    </script>
+
   </div>
 </div>
