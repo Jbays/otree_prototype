@@ -2,20 +2,18 @@
 
 <div class="card bg-light m-3">
     <div class="card-body">
-
-    <h3>
-        Decision Box
-    </h3>
-
-    <p>
-        Please submit your choice for period: {{round_number}}
-    </p>
-    
-    <p>
-      Number of units you would like to purchase:  
-    </p>
-    {% formfield player.purchased_units %}
-    {% next_button %}
-
+        <h3 style="padding:1em">
+            Decision Box
+        </h3>
+        <div style="background-color: yellow; padding:1em">
+            <p>
+                Please submit your choice for period: {{round_number}}
+            </p>
+            <p>
+                Number of units you would like to purchase:  
+            </p>
+            {% formfield player.purchased_units %}
+            {% next_button %}
+        </div>
     </div>
 </div>

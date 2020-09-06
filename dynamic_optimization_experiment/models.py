@@ -67,7 +67,7 @@ class Player(BasePlayer):
     # token_balance = 0
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)
     # purchased_units = 0
-    purchased_units = models.IntegerField(label="Purchased Units:",initial=0)
+    purchased_units = models.FloatField(label="Purchased Units:",min=0)
     # accumlated_points = 0
     # final_tokens_balance = 0
 

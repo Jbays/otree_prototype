@@ -11,9 +11,6 @@ class Calculator(Page):
 
     
     def js_vars(self):
-        print('js_vars')
-        # y = json.dumps(self)
-
         purchased_units_across_all_rounds = []
 
         all_previous_votes = self.player.in_previous_rounds()
@@ -26,7 +23,6 @@ class Calculator(Page):
         return dict(
             player_round_number=self.round_number,
             purchased_units_across_all_rounds=purchased_units_across_all_rounds
-
         )
 
     # this code makes "var a" accessible in  Calculator.html 
