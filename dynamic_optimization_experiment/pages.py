@@ -9,30 +9,47 @@ class Calculator(Page):
     form_model = 'player'
     form_fields = ['purchased_units']
 
-    # print('self',self)
     
+    def js_vars(self):
+        print('js_vars')
+        # y = json.dumps(self)
+
+        purchased_units_across_all_rounds = []
+
+        all_previous_votes = self.player.in_previous_rounds()
+
+        for rounds in all_previous_votes:
+            print(rounds.purchased_units)
+            purchased_units_across_all_rounds.append(rounds.purchased_units)
+
+
+        return dict(
+            player_round_number=self.round_number,
+            purchased_units_across_all_rounds=purchased_units_across_all_rounds
+
+        )
+
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
         print('vars_for_template executing!')
-        # print('self>>>',self)
         # print('self.player>>>',self.player)
         # print('self.player.in_previous_rounds()>>>',self.player.in_previous_rounds())
         all_previous_votes = self.player.in_previous_rounds()
-        print('all_previous_votes>>>',all_previous_votes)
         
         for rounds in all_previous_votes:
-            print('type(rounds)',type(rounds))
             print('rounds',rounds)
             print('rounds.purchased_units',rounds.purchased_units)
             # print('json.dumps(rounds)',json.dumps(rounds))
             # print('rounds.keys()',rounds.keys())
 
         a = 10
+        # print('all_previous_votes>>>',all_previous_votes)
         return dict(
             a=a,
-            round_number=self.round_number
+            round_number=self.round_number,
         )
 
+    
 class Guess(Page):
     print('guess')
     # form_model = 'player'

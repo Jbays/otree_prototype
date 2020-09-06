@@ -19,7 +19,28 @@
       }
     </style>
 
-    <table id="myTable">
+    <div style="display: none;">
+    <!-- <div> -->
+        <div id="constants_income">
+          {{Constants.income}}
+        </div>
+        <div id="constants_price_per_unit">
+          {{Constants.price_per_unit}}
+        </div>
+        <div id="constants_interest_rate">
+          {{Constants.interest_rate}}
+        </div>
+        <div id="constants_num_rounds">
+          {{Constants.num_rounds}}
+        </div>
+        <div id="constants_num_rounds">
+          {{Constants.num_rounds}}
+        </div>
+
+
+    </div>
+
+    <table id="myTable" style="text-align: center;">
       <tbody>
           <tr>
               <td>Period</td>
@@ -36,49 +57,128 @@
     </table>
 
     <script>
-      let x = 'hello sailor';
+      function calculateTokenBalance(num){
+        let outputCellData = document.createElement('td');
+        console.log('calculate token balance!');
+        console.log('num',num);
+        if ( num === 1 ) {
+          outputCellData.innerHTML = constantsIncome
+        }
+        return outputCellData;
+      }
+
+      function findPurchasedUnitsByPeriod(num,arr){
+        let outputCellData = document.createElement('td');
+
+        console.log('findPurchasedUnits called!');
+        console.log('num',num);
+        console.log('arr',arr);
+
+        if ( arr[num-1] ){
+          outputCellData.innerHTML = arr[num-1];
+        }
+
+        return outputCellData;
+      }
+
+      function calculatePointsEarned(unitsPurchased){
+        console.log('calculatePointsEarned');
+
+        //points in period t = k *(output purchased in t)^0.5
+        // let pointsAwardedFormula = 
+      }
+      
+      console.log(js_vars);
       let myTable = document.getElementById("myTable");
-      console.log('this is x',x);
 
-      //for each instance of player round, populate the table 
+      //get a string (innerHTML) from a particular element, then remove all non-numerical values
+      let constantsIncome = document.getElementById("constants_income").innerHTML.replace(/\D/gi,''); 
+      let incomeCellData = document.createElement('td');
+      incomeCellData.innerHTML = constantsIncome;
+
+      let constantsPricePerUnit = document.getElementById("constants_price_per_unit").innerHTML.replace(/\D/gi,''); 
+      let pricePerUnitCellData = document.createElement('td');
+      pricePerUnitCellData.innerHTML = constantsPricePerUnit;
+
+      let constantsInterestRate = document.getElementById("constants_interest_rate").innerHTML.replace(/\D/gi,''); 
+      let interestRateCellData = document.createElement('td');
+      interestRateCellData.innerHTML = constantsInterestRate;
+
+      let constantsNumberOfRounds = document.getElementById("constants_num_rounds").innerHTML.replace(/\D/gi,'')
+
+      console.log('this is constantsNumberOfRounds',constantsNumberOfRounds);
+      console.log('this is constantsNumberOfRounds',constantsNumberOfRounds.length);
+
+
+      //let's change the approach
+
+      //first step is populate table with rounds that've already happened
+      //then populate with rounds that haven't.
+
       for ( let i = 0; i < js_vars.player_round_number-1; i++ ) {
-        let newRow = document.createElement('tr')
         console.log('this is i',i);
-        
+        let newRow = document.createElement('tr');
+        newRow.style.cssText = "background-color:white"
+        //period
+        let period = i+1;
+        let periodCellData = document.createElement('td');
+        periodCellData.innerText = period;
 
-        let periodTableCellData = document.createElement('td');
-        periodTableCellData.innerText = i+1;
-        newRow.appendChild(periodTableCellData)
-        let incomeTableCellData = document.createElement('td');
-        incomeTableCellData.innerText = 1000;
-        newRow.appendChild(incomeTableCellData);
-        let pricePerUnitTableCellData = document.createElement('td');
-        let InterestRateTableCellData = document.createElement('td');
-        let TokenBalanceTableCellData = document.createElement('td');
-        let PurchasedUnitsTableCellData = document.createElement('td');
-        let PointsTableCellData = document.createElement('td');
-        let AccumulatedPointsTableCellData = document.createElement('td');
-        let FinalTokensBalanceTableCellData = document.createElement('td');
-        
-        // for ( let j = 0; j < 8; j++ ) {
-        //   console.log('this is periodData')
-        // }
+        let incomeClone = incomeCellData.cloneNode(true);
+        let pricePerUnitClone = pricePerUnitCellData.cloneNode(true);
+        let interestRateClone = interestRateCellData.cloneNode(true);
+        let tokenBalanceCellData = calculateTokenBalance(period);
+        let purchasedUnitsCellData = findPurchasedUnitsByPeriod(period,js_vars.purchased_units_across_all_rounds);
+        let pointsEarnedCellData = calculatePointsEarned(purchasedUnitsCellData.innerHTML);
+        // let purchasedUnits = js_vars.purchased_units_across_all_rounds[i];
+
+        newRow.appendChild(periodCellData);
+        newRow.appendChild(incomeClone);
+        newRow.appendChild(pricePerUnitClone);
+        newRow.appendChild(interestRateClone)
+
+        if ( tokenBalanceCellData ) {
+          newRow.appendChild(tokenBalanceCellData);
+        }
+
+        if ( purchasedUnitsCellData ) {
+          newRow.appendChild(purchasedUnitsCellData);
+        }
 
         myTable.appendChild(newRow);
       }
 
-      console.log('js_vars.player_round_number',js_vars.player_round_number)
 
-      let latestRow = document.createElement('tr');
-      let latestPeriodTableCellData = document.createElement('td')
-      latestPeriodTableCellData.innerText = js_vars.player_round_number;
-      latestRow.appendChild(latestPeriodTableCellData);
+      //for each instance of player_round, populate table:
+      //  with that, price_per_unit constant, interest_rate, token balance, purchased_units, points, accumulated points, and final token balance
+      //
+      for ( let i = js_vars.player_round_number-1; i < constantsNumberOfRounds; i++ ) {
+        let newRow = document.createElement('tr');
+        newRow.style.cssText = "background-color:light-gray"
 
-      let purchasedUnitCalculatorInput = document.createElement('input')
-      purchasedUnitCalculatorInput.type = 'number';
-      latestRow.appendChild(purchasedUnitCalculatorInput)
+        //period
+        let period = i+1;
+        let periodCellData = document.createElement('td');
+        periodCellData.innerText = period;
+
+        let incomeClone = incomeCellData.cloneNode(true);
+        let pricePerUnitClone = pricePerUnitCellData.cloneNode(true);
+        let interestRateClone = interestRateCellData.cloneNode(true);
+        let tokenBalance = calculateTokenBalance(period)
+
+        newRow.appendChild(periodCellData);
+        newRow.appendChild(incomeClone);
+        newRow.appendChild(pricePerUnitClone);
+        newRow.appendChild(interestRateClone)
+
+        //append token balance
+        myTable.appendChild(newRow);
+      }
+
+    
       
-      myTable.appendChild(latestRow)
+
+      
 
 
     </script>

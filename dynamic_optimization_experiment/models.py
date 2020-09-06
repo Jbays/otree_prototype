@@ -27,7 +27,7 @@ class Constants(BaseConstants):
     output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
     output_to_points_convertesion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
     players_per_group = None
-
+    k_payoff = 1.1
 
 class Subsession(BaseSubsession):
     pass
