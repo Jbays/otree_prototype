@@ -2,9 +2,10 @@
 
 <div class="card bg-light m-3">
   <div class="card-body">
-    <h3>
-        Calculator
-    </h3>
+    <h2 style="text-align: center;">
+        Budgeting Calculator
+    </h2>
+    <br/>
 
     <style>
       table,
@@ -19,151 +20,121 @@
       }
     </style>
 
+    <!-- no way this is best practice -->
     <div style="display: none;">
-
       <div id="constants_income">
-          {{Constants.income}}
-        </div>
-        <div id="constants_price_per_unit">
-          {{Constants.price_per_unit}}
-        </div>
-        <div id="constants_interest_rate">
-          {{Constants.interest_rate}}
-        </div>
-        <div id="constants_num_rounds">
-          {{Constants.num_rounds}}
-        </div>
-        <div id="constants_k_payoff">
-          {{Constants.k_payoff}}
-        </div>
-
+        {{Constants.income}}
+      </div>
+      <div id="constants_price_per_unit">
+        {{Constants.price_per_unit}}
+      </div>
+      <div id="constants_interest_rate">
+        {{Constants.interest_rate}}
+      </div>
+      <div id="constants_num_rounds">
+        {{Constants.num_rounds}}
+      </div>
+      <div id="constants_k_payoff">
+        {{Constants.k_payoff}}
+      </div>
     </div>
 
     <table id="myTable" style="text-align: center;">
       <tbody id="table_body">
-          <tr style="background-color:chartreuse;">
-              <td>Period</td>
-              <td>Income (Tokens)</td>
-              <td>Price per Unit</td>
-              <td>Interest Rate (%)</td>
-              <td>Token Balance (beginning of the period)</td>
-              <td>Purchased Units</td>
-              <td>Points</td>
-              <td>AccumulatedPoints</td>
-              <td>Final Tokens Balance</td>
-          </tr>
+        <tr style="background-color:chartreuse;">
+          <td>Period</td>
+          <td>Income (Tokens)</td>
+          <td>Price per Unit</td>
+          <td>Interest Rate (%)</td>
+          <td>Token Balance (beginning of the period)</td>
+          <td>Purchased Units</td>
+          <td>Points</td>
+          <td>AccumulatedPoints</td>
+          <td>Final Tokens Balance</td>
+        </tr>
       </tbody>
     </table>
 
     <br/>
-    <button onClick=resetValues(event)>Reset values</button>
-    <button onClick=triggerRowUpdate(event)>Calculate</button>
+    <div style="text-align: center;">
+      <button onClick=resetValues(event)>Reset values</button>
+      <button style="background-color: red;"onClick=calcHypotheticalRow(event)>Calculate</button>
+    </div>
 
     <script>
+      // let overHere = 'yep';
+      // function likeISaid(){
+      //   return 7
+      // }
+    </script>
+
+    <script>
+      // console.log('overHere?',overHere)
+      // console.log('likeISaid',likeISaid())
       //need a function called "gather all constants for later use"
-
-      //resets values in the row (technically as a side effect)
-      function resetValues(event,rowToErase=js_vars.player_round_number){
-        let currentRow = document.getElementById(`row-period-${rowToErase}`);
-        let allHypotheticals = document.getElementsByClassName('hypothetical');
-
-        if ( allHypotheticals.length >= 1) {
-          for ( let i = 0; i < 3; i++ ) {
-            //i'm not sure why this works though...
-            currentRow.removeChild(...allHypotheticals);
-          }
-        }
-
-        console.log('values reset!');
-      }
 
       //updates all rows in the future
       //triggered from clicking the Calculate button
-      function updateTableFutures(period,numFromInput){
-        console.log('now we update the rest of the table');
-        console.log('period',period);
-
-        let currTokenBalance = calculateTokenBalance(period).innerHTML || 0;
-        let hypotheticalPointGainCellData = calculatePointsEarned(numFromInput,constantsKPayoff);
-        let hypotheticalAccumulatedPoints = calculateAccumulatedPointsByPeriod(period,hypotheticalPointGainCellData.innerHTML);
-        let hypotheticalFinalTokenBalance = calculateFinalTokenBalance(period,currTokenBalance,constantsPricePerUnit,numFromInput);
-        
-        hypotheticalPointGainCellData.className = 'hypothetical';
-        hypotheticalAccumulatedPoints.className = 'hypothetical';
-        hypotheticalFinalTokenBalance.className = 'hypothetical';
-
-        // if ( currentRow.childElementCount === 6 ) {
-        //   currentRow.appendChild(hypotheticalPointGainCellData);
-        //   currentRow.appendChild(hypotheticalAccumulatedPoints);
-        //   currentRow.appendChild(hypotheticalFinalTokenBalance);
-        // } else {
-        //   resetValues();
-        //   //reappend the newly calculated values
-        //   currentRow.appendChild(hypotheticalPointGainCellData);
-        //   currentRow.appendChild(hypotheticalAccumulatedPoints);
-        //   currentRow.appendChild(hypotheticalFinalTokenBalance);
-        // }
-        console.log('trying to update from tableFutures');
-      }
 
       //updates the calculator's ui so user can cal
-      function triggerRowUpdate(event,rowToUpdate=js_vars.player_round_number,mostRecentFinalTokenBalance=0){
-        let inputData = document.getElementById(`purchased-unit-input-${rowToUpdate}`).value;
-        console.log('inputData',inputData);
-        console.log('rowToUpdate',rowToUpdate);
-        console.log('js_vars.player_round_number',js_vars.player_round_number);
-        console.log('mostRecentFinalTokenBalance',mostRecentFinalTokenBalance);
+      // function triggerRowUpdate(event,rowToUpdate=js_vars.player_round_number,mostRecentFinalTokenBalance=0){
+      //   event.preventDefault();
+      //   let inputData = document.getElementById(`purchased-unit-input-${rowToUpdate}`).value;
+      //   console.log('inputData',inputData);
+      //   console.log('rowToUpdate',rowToUpdate);
+      //   console.log('js_vars.player_round_number',js_vars.player_round_number);
+      //   console.log('mostRecentFinalTokenBalance',mostRecentFinalTokenBalance);
 
-        let currentRow = document.getElementById(`row-period-${rowToUpdate}`);
+      //   let currentRow = document.getElementById(`row-period-${rowToUpdate}`);
 
-        //if appending to the future, then update the token balance
-        if ( rowToUpdate > js_vars.player_round_number ){
-          let interestToBeAdded = mostRecentFinalTokenBalance*constantsInterestRate*.01;
-          console.log('this is interest',interestToBeAdded);
+      //   //if appending to the future, then update the token balance
+      //   if ( rowToUpdate > js_vars.player_round_number ){
+      //     let interestToBeAdded = mostRecentFinalTokenBalance*constantsInterestRate*.01;
+      //     console.log('this is interest',interestToBeAdded);
 
-          let tokenBalanceCell = document.getElementById(`token-balance-${rowToUpdate}`);
-          //must add income too!
-          tokenBalanceCell.innerHTML = interestToBeAdded+Number(constantsIncome)+Number(mostRecentFinalTokenBalance)
-        };
+      //     let tokenBalanceCell = document.getElementById(`token-balance-${rowToUpdate}`);
+      //     //must add income too!
+      //     tokenBalanceCell.innerHTML = interestToBeAdded+Number(constantsIncome)+Number(mostRecentFinalTokenBalance)
+      //   };
         
-        //if not passed a mostRecentFinalTokenBalance, then 
-        // let currTokenBalance = calculateTokenBalance(rowToUpdate).innerHTML;
+      //   //if not passed a mostRecentFinalTokenBalance, then 
+      //   // let currTokenBalance = calculateTokenBalance(rowToUpdate).innerHTML;
         
-        let currTokenBalance = ( mostRecentFinalTokenBalance !== 0 ) ? mostRecentFinalTokenBalance+(mostRecentFinalTokenBalance*constantsInterestRate)
-            : calculateTokenBalance(rowToUpdate).innerHTML;
-        //     console.log('currTokenBalance',currTokenBalance);
-        let hypotheticalPointGainCellData = calculatePointsEarned(inputData,constantsKPayoff);
-        let hypotheticalAccumulatedPointsCellData = calculateAccumulatedPointsByPeriod(rowToUpdate,hypotheticalPointGainCellData.innerHTML);
-        let hypotheticalFinalTokenBalanceCellData = calculateFinalTokenBalance(rowToUpdate,currTokenBalance,constantsPricePerUnit,inputData);
+      //   let currTokenBalance = ( mostRecentFinalTokenBalance !== 0 ) ? mostRecentFinalTokenBalance+(mostRecentFinalTokenBalance*constantsInterestRate)
+      //       : calculateTokenBalance(rowToUpdate).innerHTML;
+      //   //     console.log('currTokenBalance',currTokenBalance);
+      //   let hypotheticalPointGainCellData = calculatePointsEarned(inputData,constantsKPayoff);
+      //   let hypotheticalAccumulatedPointsCellData = calculateAccumulatedPointsByPeriod(rowToUpdate,hypotheticalPointGainCellData.innerHTML);
+      //   let hypotheticalFinalTokenBalanceCellData = calculateFinalTokenBalance(rowToUpdate,currTokenBalance,constantsPricePerUnit,inputData);
         
-        hypotheticalPointGainCellData.className = 'hypothetical';
-        hypotheticalAccumulatedPointsCellData.className = 'hypothetical';
-        hypotheticalFinalTokenBalanceCellData.className = 'hypothetical';
+      //   hypotheticalPointGainCellData.className = 'hypothetical';
+      //   hypotheticalAccumulatedPointsCellData.className = 'hypothetical';
+      //   hypotheticalFinalTokenBalanceCellData.className = 'hypothetical';
 
-        if ( currentRow.childElementCount === 6 ) {
-          currentRow.appendChild(hypotheticalPointGainCellData);
-          currentRow.appendChild(hypotheticalAccumulatedPointsCellData);
-          currentRow.appendChild(hypotheticalFinalTokenBalanceCellData);
-        } else {
-          resetValues();
-          //reappend the newly calculated values
-          currentRow.appendChild(hypotheticalPointGainCellData);
-          currentRow.appendChild(hypotheticalAccumulatedPointsCellData);
-          currentRow.appendChild(hypotheticalFinalTokenBalanceCellData);
-        }
-        console.log('updated the calculator values!')
+      //   if ( currentRow.childElementCount === 6 ) {
+      //     currentRow.appendChild(hypotheticalPointGainCellData);
+      //     currentRow.appendChild(hypotheticalAccumulatedPointsCellData);
+      //     currentRow.appendChild(hypotheticalFinalTokenBalanceCellData);
+      //   } else {
+      //     resetValues();
+      //     //reappend the newly calculated values
+      //     currentRow.appendChild(hypotheticalPointGainCellData);
+      //     currentRow.appendChild(hypotheticalAccumulatedPointsCellData);
+      //     currentRow.appendChild(hypotheticalFinalTokenBalanceCellData);
+      //   }
+      //   console.log('updated the calculator values!')
 
-        // for ( let i = rowToUpdate+1; i <= constantsNumberOfRounds; i++ ) {
-        for ( let i = rowToUpdate+1; i <= rowToUpdate+2; i++ ) {
-          console.log('this is i',i);
-          triggerRowUpdate(null,i,hypotheticalFinalTokenBalanceCellData.innerHTML);
+      //   // for ( let i = rowToUpdate+1; i <= constantsNumberOfRounds; i++ ) {
+      //   for ( let i = rowToUpdate+1; i <= rowToUpdate+2; i++ ) {
+      //     console.log('this is i',i);
+      //     triggerRowUpdate(null,i,hypotheticalFinalTokenBalanceCellData.innerHTML);
 
-          //should turn this into separate function -- can no longer think clearly about the logic
-          //different depending on whether you're calculating on the present or a future period
+      //     //should turn this into separate function -- can no longer think clearly about the logic
+      //     //different depending on whether you're calculating on the present or a future period
 
-        }
+      //   }
 
-      }
+      // }
 
       //calculates token balance
       //input is period and any calculated interest which is an integer and is simply added 
@@ -358,6 +329,92 @@
         //append token balance
         myTable.appendChild(newRow);
       }
+    </script>
+
+    <!-- button functions -->
+    <script>
+      //resets values in the row (technically as a side effect)
+      function resetValues(event,rowToErase=js_vars.player_round_number){
+        event.preventDefault();
+        let currentRow = document.getElementById(`row-period-${rowToErase}`);
+        let allHypotheticals = document.getElementsByClassName('hypothetical');
+
+        if ( allHypotheticals.length >= 1) {
+          for ( let i = 0; i < 3; i++ ) {
+            //i'm not sure why this works though...
+            currentRow.removeChild(...allHypotheticals);
+          }
+        }
+
+        console.log('values reset!');
+      }
+
+      //calculate what values should be inputted
+      //then call separate function to append those values
+      function calcHypotheticalRow(event){
+        event.preventDefault();
+
+        let beginningTokenBalance = Number(document.getElementById(`token-balance-${js_vars.player_round_number}`).innerHTML);
+        let beginningTotalPoints = Number(document.getElementById(`total-points-${js_vars.player_round_number-1}`).innerHTML);
+        
+        let purchasedUnitInput = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).value);
+        let hypotheticalPointGain = calcPointGain(purchasedUnitInput,Number(constantsKPayoff))
+        let hypotheticalFinalTokenBalance = beginningTokenBalance - (purchasedUnitInput*constantsPricePerUnit)
+        
+        return appendToCurrentRow(hypotheticalPointGain,
+                                  beginningTotalPoints+hypotheticalPointGain,
+                                  hypotheticalFinalTokenBalance)
+          .then(updateAllFutureRowsByPeriod);
+      }
+
+      async function updateAllFutureRowsByPeriod(startingRow){
+        let stoppingRound = constantsNumberOfRounds;
+        
+        // for ( let i = startingRow;  i <= stoppingRound; i++ ) {
+        for ( let i = startingRow;  i <= 5; i++ ) {
+          console.log('this is i',i);
+          let latestFinalTokenBalance = document.getElementById(`final-token-balance-${startingRow-1}`)
+          console.log('this is latestFinalTokenBalance',latestFinalTokenBalance);
+        }
+        
+        console.log('hello  sailor!');
+        console.log('startingRow',startingRow);
+        console.log('stoppingRound',stoppingRound);
+
+      }
+
+      //appends input values to current row
+      // create table data elements. give appropriate labels, and round where necessary
+      // these points, total points, and final token balance 
+      async function appendToCurrentRow(pointsScored,totalPoints,finalTokenBalance){
+        let pointsTableDataElem = document.createElement('td');
+        pointsTableDataElem.id = `points-data-${js_vars.player_round_number}`;
+        pointsTableDataElem.innerHTML = pointsScored.toFixed(2);
+        pointsTableDataElem.className = 'hypothetical';
+        
+        let totalPointsTableDataElem = document.createElement('td');
+        totalPointsTableDataElem.id = `total-points-${js_vars.player_round_number}`;
+        totalPointsTableDataElem.innerHTML = totalPoints.toFixed(2);
+        totalPointsTableDataElem.className = 'hypothetical';
+        
+        let finalTokenBalanceTableDataElem = document.createElement('td');
+        finalTokenBalanceTableDataElem.id = `final-token-balance-${js_vars.player_round_number}`;
+        finalTokenBalanceTableDataElem.innerHTML = finalTokenBalance.toFixed(2);
+        finalTokenBalanceTableDataElem.className = 'hypothetical';
+        
+        let currRow = document.getElementById(`row-period-${js_vars.player_round_number}`);
+        currRow.appendChild(pointsTableDataElem);
+        currRow.appendChild(totalPointsTableDataElem);
+        currRow.appendChild(finalTokenBalanceTableDataElem);
+
+        return js_vars.player_round_number+1;
+      }
+
+      //here is the function used to calculate points gained from units of output
+      function calcPointGain(output,kPayoffConstant){
+        return (kPayoffConstant*(output**2))+5 
+      }
+
     </script>
 
   </div>
