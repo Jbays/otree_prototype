@@ -70,7 +70,7 @@
 
         let inputDataFromOutputToPoints = Number(document.getElementById('output_to_points_input').value).toFixed(4);
         let constantKPayoff =  Number(document.getElementById("constants_k_payoff").innerHTML)
-        let points = String(((constantKPayoff * inputDataFromOutputToPoints) ^ 0.5)+5)
+        let points = String( ((constantKPayoff * (inputDataFromOutputToPoints ^ 0.5)) +5) )
 
         return updateUISpans(inputDataFromOutputToPoints,points);
       }
