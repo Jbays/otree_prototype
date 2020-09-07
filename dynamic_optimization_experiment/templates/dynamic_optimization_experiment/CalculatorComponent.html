@@ -57,16 +57,9 @@
 
     <br/>
     <div style="text-align: center;">
-      <button onClick=resetValues(event)>Reset values</button>
+      <button onClick=resetEntireTable(event)>Reset values</button>
       <button style="background-color: red;"onClick=calcHypotheticalRow(event)>Calculate</button>
     </div>
-
-    <script>
-      // let overHere = 'yep';
-      // function likeISaid(){
-      //   return 7
-      // }
-    </script>
 
     <script>
       //calculates token balance
@@ -132,7 +125,6 @@
           outputCellData.innerText = pointsJustEarned;
         } else {
           let finalTokenBalanceFromLastRound = document.getElementById(`total-points-${num-1}`);
-          console.log('finalTokenBalanceFromLastRound',finalTokenBalanceFromLastRound)
           outputCellData.innerHTML = (Number(finalTokenBalanceFromLastRound.innerHTML)+Number(pointsJustEarned)).toFixed(2);
         }
 
@@ -271,21 +263,29 @@
       let calculateButtonWasUsed = false;
 
       //resets values in the row (technically as a side effect)
-      function resetValues(event,rowToErase=js_vars.player_round_number){
+      function resetEntireTable(event){
         event.preventDefault();
-        let currRow = document.getElementById(`row-period-${rowToErase}`);
+        let currRow = document.getElementById(`row-period-${js_vars.player_round_number}`);
         // let allHypotheticals = document.getElementsByClassName('hypothetical');
 
-        // if ( allHypotheticals.length >= 1) {
-        //   for ( let i = 0; i < 3; i++ ) {
-        //     //i'm not sure why this works though...
-        //     currRow.removeChild(...allHypotheticals);
-        //   }
-        // }
+        for ( let i = js_vars.player_round_number; i <= Number(constantsNumberOfRounds);  i++ ) {
+          let pointsTableDataElem = document.getElementById(`points-data-${i}`)
+          let totalPointsTableDataElem = document.getElementById(`total-points-${i}`)
+          let finalTokensBalanceTableDataElem = document.getElementById(`final-token-balance-${i}`)
+          
+          if ( i < Number(constantsNumberOfRounds) ) {
+            let nextBeginningTokensBalanceTableDataElem = document.getElementById(`token-balance-${i+1}`) 
+            nextBeginningTokensBalanceTableDataElem.innerHTML = '';
+          }
 
-        console.log('values reset!');
-        console.log('currRow',currRow);
-
+          console.log(pointsTableDataElem)
+          console.log(totalPointsTableDataElem)
+          console.log(finalTokensBalanceTableDataElem)
+          
+          pointsTableDataElem.innerHTML = '';
+          finalTokensBalanceTableDataElem.innerHTML = '';
+          totalPointsTableDataElem.innerHTML = '';
+        }
       }
 
       //calculate what values should be inputted
@@ -316,10 +316,6 @@
           }).catch((err)=>{
             return console.error(`this  is your err: ${err}`);
           });
-      }
-
-      function updatePointsTotalPointsFinalTokensBalance(points,totalPoints,finalTokensBalance){
-        console.log('calling a  long function!');
       }
 
       async function updateFutureRowByPeriod(periodNumber){
