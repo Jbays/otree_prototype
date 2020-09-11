@@ -172,8 +172,7 @@
         return setUpCurrentRow(period,budgetingCalculatorTable)
           .then((arr)=>{
 
-            // for ( let i = period+1; i < constantsNumberOfRounds+1; i++ ) {
-            for ( let i = arr[0]+1; i <= 3+1; i++ ) {
+            for ( let i = period+1; i < constantsNumberOfRounds+1; i++ ) {
               populateThenAppendFutureRows(i,arr[1]);
             }
 
@@ -186,21 +185,18 @@
 
       function populateThenAppendFutureRows(futurePeriod,table){
         //if this is the first round
-        // let lastFinalTokenBalanceElem = (futurePeriod === 2 ) ? constantsIncome : document.getElementById(`final-token-balance-${futurePeriod-1}`).innerHTML;
-        let lastFinalTokenBalance = constantsIncome;
-        console.log('futurePeriod',futurePeriod);
-        console.log('lastFinalTokenBalance',lastFinalTokenBalance);
+        let lastFinalTokenBalance = (futurePeriod === 2 ) ? constantsIncome : Number(document.getElementById(`final-token-balance-${futurePeriod-1}`).innerHTML);
         let futureRow = document.createElement('tr');
         futureRow.id = `row-period-${futurePeriod}`
 
         let futurePeriodTableDataElem =  document.createElement('td');
         futurePeriodTableDataElem.innerHTML = futurePeriod;
-
         //create the clones to append constants
         let incomeClone = incomeTableDataElem.cloneNode(true);
+        let incomeClone2 = incomeTableDataElem.cloneNode(true);
         let pricePerUnitClone = pricePerUnitTableDataElem.cloneNode(true);
         let interestRateClone = interestRateTableDataElem.cloneNode(true);
-
+        
         //find the last final token balance.  
         let mostRecentFinalTokenBalance = Number(document.getElementById(`final-token-balance-${futurePeriod-1}`).innerHTML);
         let interestToBeAdded = mostRecentFinalTokenBalance*constantsInterestRate*.01;
@@ -208,21 +204,27 @@
         let futureStartingTokenBalance = constantsIncome+mostRecentFinalTokenBalance+interestToBeAdded
         let futureStartingTokenBalanceTableDataElem = document.createElement('td');
         futureStartingTokenBalanceTableDataElem.id = `starting-token-balance-${futurePeriod}`;
-        futureStartingTokenBalanceTableDataElem.innerHTML = futureStartingTokenBalance;
-
+        futureStartingTokenBalanceTableDataElem.innerHTML = Number(futureStartingTokenBalance.toFixed(2));
+        
         //create input element
         let futurepurchasedUnitsInputForTable = document.createElement('input');
         futurepurchasedUnitsInputForTable.type = "number";
         futurepurchasedUnitsInputForTable.min = 0;
         futurepurchasedUnitsInputForTable.id = `purchased-unit-input-${futurePeriod}`;
         futurepurchasedUnitsInputForTable.style.cssText = "background-color:#ffbbff;text-align:center";
-
+        
         //create points, total points, and final tokens balance elements
         let futurePointsTableDataElem = document.createElement('td');
         futurePointsTableDataElem.id = `points-data-${futurePeriod}`;
         futurePointsTableDataElem.innerHTML = 0;
+        
+        let futureTotalPointsTableDataElem = document.createElement('td');
+        futureTotalPointsTableDataElem.id = `total-points-${futurePeriod}`;
+        futureTotalPointsTableDataElem.innerHTML = 0;
 
-        let futureTotalPointsTableDataElem = document.getElementById(`total-points-${futurePeriod}`);
+        let thisRoundsFinalTokenBalanceTableDataElem = document.createElement('td');
+        thisRoundsFinalTokenBalanceTableDataElem.id = `final-token-balance-${futurePeriod}`
+        thisRoundsFinalTokenBalanceTableDataElem.innerHTML = futureStartingTokenBalance.toFixed(2);
 
         futureRow.appendChild(futurePeriodTableDataElem);
         futureRow.appendChild(incomeClone);
@@ -230,7 +232,9 @@
         futureRow.appendChild(interestRateClone);
         futureRow.appendChild(futureStartingTokenBalanceTableDataElem);
         futureRow.appendChild(futurepurchasedUnitsInputForTable);
-        // futureRow.appendChild(futurePointsTableDataElem);
+        futureRow.appendChild(futurePointsTableDataElem);
+        futureRow.appendChild(futureTotalPointsTableDataElem);
+        futureRow.appendChild(thisRoundsFinalTokenBalanceTableDataElem);
         
         table.appendChild(futureRow);
       }
@@ -240,10 +244,6 @@
 
     <!-- button functions -->
     <script>
-      //while false, functions will try to append elements to the table
-      //while true, functions will try to overwrite table data's innerHTML
-      let calculateButtonWasUsed = false;
-
       //resets values in the row (technically as a side effect)
       function resetEntireTable(event){
         event.preventDefault();
@@ -292,8 +292,6 @@
             // for ( let i = startUpdatingAtThisRow; i <= Number(constantsNumberOfRounds); i++ ) {
               updateFutureRowByPeriod(i);
             }
-
-            calculateButtonWasUsed = true;
 
             return 'everything worked';
 
