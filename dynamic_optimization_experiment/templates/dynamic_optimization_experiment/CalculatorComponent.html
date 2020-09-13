@@ -249,24 +249,34 @@
         let currRow = document.getElementById(`row-period-${js_vars.player_round_number}`);
         // let allHypotheticals = document.getElementsByClassName('hypothetical');
 
-        for ( let i = js_vars.player_round_number; i <= Number(constantsNumberOfRounds);  i++ ) {
-          let pointsTableDataElem = document.getElementById(`points-data-${i}`)
-          let totalPointsTableDataElem = document.getElementById(`total-points-${i}`)
-          let finalTokensBalanceTableDataElem = document.getElementById(`final-token-balance-${i}`)
+        console.log('resetEntireTable invoked!');
+        // for ( let i = js_vars.player_round_number; i <= Number(constantsNumberOfRounds);  i++ ) {
+        //   let pointsTableDataElem = document.getElementById(`points-data-${i}`)
+        //   let totalPointsTableDataElem = document.getElementById(`total-points-${i}`)
+        //   let finalTokensBalanceTableDataElem = document.getElementById(`final-token-balance-${i}`)
           
-          if ( i < Number(constantsNumberOfRounds) ) {
-            let nextBeginningTokensBalanceTableDataElem = document.getElementById(`token-balance-${i+1}`) 
-            nextBeginningTokensBalanceTableDataElem.innerHTML = '';
-          }
+        //   if ( i < Number(constantsNumberOfRounds) ) {
+        //     let nextBeginningTokensBalanceTableDataElem = document.getElementById(`token-balance-${i+1}`) 
+        //     nextBeginningTokensBalanceTableDataElem.innerHTML = '';
+        //   }
 
-          console.log(pointsTableDataElem)
-          console.log(totalPointsTableDataElem)
-          console.log(finalTokensBalanceTableDataElem)
+        //   console.log(pointsTableDataElem)
+        //   console.log(totalPointsTableDataElem)
+        //   console.log(finalTokensBalanceTableDataElem)
           
-          pointsTableDataElem.innerHTML = '';
-          finalTokensBalanceTableDataElem.innerHTML = '';
-          totalPointsTableDataElem.innerHTML = '';
-        }
+        //   pointsTableDataElem.innerHTML = '';
+        //   finalTokensBalanceTableDataElem.innerHTML = '';
+        //   totalPointsTableDataElem.innerHTML = '';
+        // }
+      }
+
+      //once a player's final token balance is below zero,
+      //under certain conditions users should not be allowed to proceed
+      //example --> the "no-ponzi scheme rule" which essentially means a player may not end the game with a negative balance.
+      //(I believe there are other rules too)
+      function checkDebtLimit(periodNumber,income,finalTokenBalance){
+        console.log('players final token balance is below zero!');
+        console.log('check players debt limit!');
       }
 
       //calculate what values should be inputted
@@ -283,6 +293,12 @@
         let hypotheticalPointGain = calcPointGain(purchasedUnitInput,Number(constantsKPayoff))
         let hypotheticalFinalTokenBalance = beginningTokenBalance - (purchasedUnitInput*constantsPricePerUnit)
         
+        //not just here in calclHypotheticalRow -- also in the main update function
+        //maybe here too
+        // if ( hypotheticalFinalTokenBalance < 0 ) {
+        //   checkDebtLimit(js_vars.player_round_number,constantsIncome,hypotheticalFinalTokenBalance)
+        // }
+
         return updateCurrentRow(hypotheticalPointGain,
                                   beginningTotalPoints+hypotheticalPointGain,
                                   hypotheticalFinalTokenBalance)
@@ -315,16 +331,23 @@
         let hypotheticalCostOfUnitsPurchased = constantsPricePerUnit*futurePurchasedUnits;
         let futureFinalTokenBalance = futureStartingTokenBalance-hypotheticalCostOfUnitsPurchased;
 
-        return updateFutureRowByPeriod(periodNumber,futurePointsScored,futurePointsTotal,futureFinalTokenBalance);
+        //not just here in calculateValuesFoorRowUpdate -- also in the main update function
+        if ( futureFinalTokenBalance < 0 ) {
+          checkDebtLimit(js_vars.player_round_number,constantsIncome,futureFinalTokenBalance)
+        }
+
+        return updateFutureRowByPeriod(periodNumber,futureStartingTokenBalance,futurePointsScored,futurePointsTotal,futureFinalTokenBalance);
       }
 
-      //updates the points, total points, and final token balance of a given row (based on periodNumber)
-      function updateFutureRowByPeriod(periodNumber,pointsScored,totalPoints,finalTokenBalance){
+      //updates the starting token balanace, points, total points, and final token balance of a given row (based on periodNumber)
+      function updateFutureRowByPeriod(periodNumber,startingTokenBalance,pointsScored,totalPoints,finalTokenBalance){
         let rowToUpdate = document.getElementById(`row-period-${periodNumber}`);
-        let pointsTableDataElem = document.getElementById(`points-data-${periodNumber}`)
+        let startingTokenBalanceTableDataElem = document.getElementById(`starting-token-balance-${periodNumber}`);
+        let pointsTableDataElem = document.getElementById(`points-data-${periodNumber}`);
         let totalPointsTableDataElem = document.getElementById(`total-points-${periodNumber}`)
         let finalTokenBalanceTableDataElem = document.getElementById(`final-token-balance-${periodNumber}`)
 
+        startingTokenBalanceTableDataElem.innerHTML = startingTokenBalance.toFixed(2);
         pointsTableDataElem.innerHTML = pointsScored.toFixed(2);
         totalPointsTableDataElem.innerHTML = totalPoints.toFixed(2);
         finalTokenBalanceTableDataElem.innerHTML = finalTokenBalance.toFixed(2);
