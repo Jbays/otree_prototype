@@ -57,7 +57,7 @@
 
     <br/>
     <div style="text-align: center;">
-      <button onClick=resetEntireTable(event)>Reset values</button>
+      <button onClick=resetEachRowFromCurrPeriodOnward(event)>Reset values</button>
       <button style="background-color: red;"onClick=calcHypotheticalRow(event)>Calculate</button>
     </div>
 
@@ -126,6 +126,7 @@
           let interestRateClone = interestRateTableDataElem.cloneNode(true);
 
           let tokenBalanceTableDataElem = document.createElement('td');
+          tokenBalanceTableDataElem.id = `starting-token-balance-${period}`
           //if first period, no interest.  otherwise calculate interest
           let interestToBeAdded = (period  === 1 ) ? 0 : lastTokenBalance*constantsInterestRate*01 
           tokenBalanceTableDataElem.innerHTML = lastTokenBalance + interestToBeAdded;
@@ -244,30 +245,27 @@
     <!-- button functions -->
     <script>
       //resets values in the row (technically as a side effect)
-      function resetEntireTable(event){
+      function resetEachRowFromCurrPeriodOnward(event){
         event.preventDefault();
+
         let currRow = document.getElementById(`row-period-${js_vars.player_round_number}`);
-        // let allHypotheticals = document.getElementsByClassName('hypothetical');
 
-        console.log('resetEntireTable invoked!');
-        // for ( let i = js_vars.player_round_number; i <= Number(constantsNumberOfRounds);  i++ ) {
-        //   let pointsTableDataElem = document.getElementById(`points-data-${i}`)
-        //   let totalPointsTableDataElem = document.getElementById(`total-points-${i}`)
-        //   let finalTokensBalanceTableDataElem = document.getElementById(`final-token-balance-${i}`)
-          
-        //   if ( i < Number(constantsNumberOfRounds) ) {
-        //     let nextBeginningTokensBalanceTableDataElem = document.getElementById(`token-balance-${i+1}`) 
-        //     nextBeginningTokensBalanceTableDataElem.innerHTML = '';
-        //   }
-
-        //   console.log(pointsTableDataElem)
-        //   console.log(totalPointsTableDataElem)
-        //   console.log(finalTokensBalanceTableDataElem)
-          
-        //   pointsTableDataElem.innerHTML = '';
-        //   finalTokensBalanceTableDataElem.innerHTML = '';
-        //   totalPointsTableDataElem.innerHTML = '';
-        // }
+        for ( let i = js_vars.player_round_number; i <= constantsNumberOfRounds;  i++ ) {
+          //if first period, last round's final token balance is equal to income. else fetch last round's token balance.          
+          let lastRoundsFinalTokenBalance = (i === 1 ) ? constantsIncome : Number(document.getElementById(`final-token-balance-${i-1}`).innerHTML)
+          //if first period, interest is equal to zero. else calculate interest based on last round's final token balance.
+          let interestToBeAdded = ( i === 1 ) ? 0 : lastRoundsFinalTokenBalance*constantsInterestRate*.01;
+          //since we're resetting values, the purchased units argument for calcPointGain is equal to 0.
+          let pointsScoredThisRound = calcPointGain(0,constantsKPayoff);
+          //if first period, current token balance iss equal to income. else
+          let currTokenBalance = ( i === 1 ) ? constantsIncome : lastRoundsFinalTokenBalance+interestToBeAdded+constantsIncome;
+          //if the first period, then total points is zero
+          let lastRoundsPointTotal = (i === 1) ? 0 : Number(document.getElementById(`total-points-${i-1}`).innerHTML)
+        
+          updateFutureRowByPeriod(i,currTokenBalance,pointsScoredThisRound,lastRoundsPointTotal+pointsScoredThisRound,currTokenBalance);
+          //here you could reset the values in the inputs -- if desired
+        }
+        console.log('reset calculator values!')
       }
 
       //once a player's final token balance is below zero,
