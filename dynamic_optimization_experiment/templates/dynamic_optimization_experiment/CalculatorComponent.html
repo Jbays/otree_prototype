@@ -215,7 +215,7 @@
           let pricePerUnitClone = pricePerUnitTableDataElem.cloneNode(true);
           let interestRateClone = interestRateTableDataElem.cloneNode(true);
 
-          let mostRecentFinalTokenBalance = Number(document.getElementById(`final-token-balance-${period-1}`).innerHTML)
+          let mostRecentFinalTokenBalance = (period === 1) ? 0 : Number(document.getElementById(`final-token-balance-${period-1}`).innerHTML)
           //if first period, no interest.
           let interestToBeAdded = (period  === 1) ? 0 : mostRecentFinalTokenBalance*constantsInterestRate*.01;
           //if first period, current starting token balance equals income.
