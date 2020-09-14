@@ -79,8 +79,8 @@
       let constantsPricePerUnit = Number(document.getElementById("constants_price_per_unit").innerHTML.trim());
       let constantsInterestRate = Number(document.getElementById("constants_interest_rate").innerHTML.trim());
       
-      let currentTokenBalance = 1000;
-      // let currentTokenBalance = Number(document.getElementById(`total-final-balance-${js_vars.player_round_number}`).innerHTML.trim());
+      // let currentStartingTokenBalance = 1000;
+      // let currentStartingTokenBalance = Number(document.getElementById(`total-final-balance-${js_vars.player_round_number}`).innerHTML.trim());
 
       //create appendable elements which'll later be cloned
       let incomeTableDataElem = document.createElement('td');
@@ -130,10 +130,8 @@
             let interestRateClone = interestRateTableDataElem.cloneNode(true);
             //create tds for token balance, purchased units, points, total points, and final token balance
             
-            //first calculate starting token balance, purchased units, points, total point, and final token balance
-
             //if first period, previus final tokens balance is zero
-            let previousFinalTokensBalance = ( i === 1 ) ? 0 : Number(document.getElementById(`final-token-balance-${i-1}`));
+            let previousFinalTokensBalance = ( i === 1 ) ? 0 : Number(document.getElementById(`final-token-balance-${i-1}`).innerHTML);
             let interestToBeAdded = ( i === 1 ) ? 0 : previousFinalTokensBalance*constantsInterestRate*.01;
             //if first period, passed starting token balance equals income. else equals previousFinalTokensBalance + interest + income
             let passedStartingTokenBalance = ( i === 1 ) ? constantsIncome : constantsIncome+previousFinalTokensBalance+interestToBeAdded;
@@ -166,15 +164,23 @@
             currentPointTotalTableDataElem.id = `total-points-${i}`;
             currentPointTotalTableDataElem.innerHTML = currentPointTotal.toFixed(2);
 
+            //calculate final token balance
+            let costOfPurchase = passedPurchasedUnits * constantsPricePerUnit
+            let finalTokenBalance = passedStartingTokenBalance - costOfPurchase; 
+
+            let finalTokenBalanceTableDataElem = document.createElement('td');
+            finalTokenBalanceTableDataElem.id = `final-token-balance-${i}`;
+            finalTokenBalanceTableDataElem.innerHTML = finalTokenBalance;
+
             // console.log('previousFinalTokensBalance',previousFinalTokensBalance)
             // console.log('interestToBeAdded',interestToBeAdded)
-            console.log('passedStartingTokenBalance',passedStartingTokenBalance)
+            // console.log('passedStartingTokenBalance',passedStartingTokenBalance)
             // console.log('passedPurchasedUnits>>>>',passedPurchasedUnits)
-            console.log('passedPointsGained>>>>',passedPointsGained)
-            console.log('mostRecentPointTotalStr>>>>',mostRecentPointTotalStr)
-            console.log('mostRecentPointTotalNum>>>>',mostRecentPointTotalNum)
-            console.log('typeof mostRecentPointTotalNum>>>>',typeof mostRecentPointTotalNum)
-            console.log('currentPointTotal>>>>',currentPointTotal)
+            // console.log('passedPointsGained>>>>',passedPointsGained)
+            // console.log('mostRecentPointTotalStr>>>>',mostRecentPointTotalStr)
+            // console.log('mostRecentPointTotalNum>>>>',mostRecentPointTotalNum)
+            // console.log('currentPointTotal>>>>',currentPointTotal)
+            // console.log('finalTokenBalance>>>>',finalTokenBalance)
 
             //then append all created elements
             passedRow.appendChild(passedPeriodTableDataElem);
@@ -185,6 +191,7 @@
             passedRow.appendChild(passedPurchasedUnitsTableDataElem);
             passedRow.appendChild(passedPointsGainedTableDataElem);
             passedRow.appendChild(currentPointTotalTableDataElem);
+            passedRow.appendChild(finalTokenBalanceTableDataElem);
 
             table.appendChild(passedRow);
           }
@@ -208,11 +215,16 @@
           let pricePerUnitClone = pricePerUnitTableDataElem.cloneNode(true);
           let interestRateClone = interestRateTableDataElem.cloneNode(true);
 
+          let mostRecentFinalTokenBalance = Number(document.getElementById(`final-token-balance-${period-1}`).innerHTML)
+          //if first period, no interest.
+          let interestToBeAdded = (period  === 1) ? 0 : mostRecentFinalTokenBalance*constantsInterestRate*.01;
+          //if first period, current starting token balance equals income.
+          let currentStartingTokenBalance = (period === 1) ? constantsIncome : mostRecentFinalTokenBalance+constantsIncome+interestToBeAdded;
+          
           let tokenBalanceTableDataElem = document.createElement('td');
           tokenBalanceTableDataElem.id = `starting-token-balance-${period}`
           //if first period, no interest.  otherwise calculate interest
-          let interestToBeAdded = (period  === 1 ) ? 0 : currentTokenBalance*constantsInterestRate*document.getElementById(`${js_vars.player_round_number}`)
-          tokenBalanceTableDataElem.innerHTML = currentTokenBalance + document.getElementById(`${js_vars.player_round_number}`)
+          tokenBalanceTableDataElem.innerHTML = currentStartingTokenBalance.toFixed(2);
 
           //adding input for purchased units
           let purchasedUnitsInputForTable = document.createElement('input');
@@ -234,13 +246,16 @@
           currPointsTableDataElem.id = `points-data-${period}`
           currPointsTableDataElem.innerHTML = 0
           
+          //if first period, most recent point total is zero.
+          let mostRecentPointTotal = (period === 1) ? 0 : Number(document.getElementById(`total-points-${period-1}`).innerHTML);
+
           let totalPointsTableDataElem = document.createElement('td');
           totalPointsTableDataElem.id = `total-points-${period}`
-          totalPointsTableDataElem.innerHTML = 0
+          totalPointsTableDataElem.innerHTML = mostRecentPointTotal;
 
           let finalTokenBalanceTableDataElem = document.createElement('td');
           finalTokenBalanceTableDataElem.id = `final-token-balance-${period}`;
-          finalTokenBalanceTableDataElem.innerHTML = constantsIncome;
+          finalTokenBalanceTableDataElem.innerHTML = currentStartingTokenBalance.toFixed(2);
 
           currRow.append(currPointsTableDataElem);
           currRow.append(totalPointsTableDataElem);
