@@ -5,12 +5,20 @@ class Introduction(Page):
     def is_displayed(self):
         return self.round_number == 1
 
+class DecisionBox(Page):
+    form_model = 'player'
+    form_fields = ['purchased_units']
+
 class Calculator(Page):
     form_model = 'player'
     form_fields = ['purchased_units']
 
     
     def js_vars(self):
+        print('vars_for_template executing!')
+        print('self.session.config',self.session.config)
+        print("self.session.config['inflation']",self.session.config['inflation'])
+        print('self.session.vars',self.session.vars)
         purchased_units_across_all_rounds = []
 
         all_previous_votes = self.player.in_previous_rounds()
@@ -21,13 +29,19 @@ class Calculator(Page):
 
 
         return dict(
+            inflation=self.session.config['inflation'],
+            income=self.session.config['income'],
+            cost_per_unit=self.session.config['cost_per_unit'],
+            interest_rate=self.session.config['interest_rate'],
+            # interest_rate=self.session.config['interest_rate'],
             player_round_number=self.round_number,
             purchased_units_across_all_rounds=purchased_units_across_all_rounds
         )
 
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
-        print('vars_for_template executing!')
+        
+
         # print('self.player>>>',self.player)
         # print('self.player.in_previous_rounds()>>>',self.player.in_previous_rounds())
         all_previous_votes = self.player.in_previous_rounds()
@@ -38,10 +52,11 @@ class Calculator(Page):
             # print('json.dumps(rounds)',json.dumps(rounds))
             # print('rounds.keys()',rounds.keys())
 
-        a = 10
+        # a = 10
         # print('all_previous_votes>>>',all_previous_votes)
         return dict(
-            a=a,
+            
+            # a=a,
             round_number=self.round_number,
         )
 

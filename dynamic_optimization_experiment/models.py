@@ -68,8 +68,21 @@ class Player(BasePlayer):
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)
     # purchased_units = 0
     purchased_units = models.FloatField(label="Purchased Units:",min=0)
-    # accumlated_points = 0
-    # final_tokens_balance = 0
+    final_tokens_balance = models.FloatField(label="Final Tokens Balance",initial=0)
+    
+    def final_tokens_balance_error_message(self,final_token_balance):
+        print('final_tokens_balance_error_message')
+        print('final token balance is',final_token_balance)
+        if ( final_token_balance < self.debt_limit ):
+            print('your debt level should be checked!')
+
+    # debt_limit = models.CurrencyField()
+    debt_limit = models.CurrencyField()
+
+    def debt_limit_max(self):
+        print('calculate debt_limit_max')
+        print('self',self)
+        return 0
 
     def example(self):
         print('random_name self',self)
