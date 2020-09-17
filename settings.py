@@ -6,7 +6,21 @@ from os import environ
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
+#   
+    inflation_1=1.0,
+    inflation_2=1.25,
+    inflation_3=1.0,
+    interest_rate_1=0,
+    interest_rate_2=0,
+    interest_rate_3=-20.00,
+    income=900.00,
+    number_of_periods_per_decision=2,
+    cost_per_unit=10.00,
+    output_to_points_constant=1.1,
+# built-in
+    real_world_currency_per_point=1.00, 
+    participation_fee=0.00, 
+    doc="",
 )
 
 

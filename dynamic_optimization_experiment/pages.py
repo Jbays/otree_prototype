@@ -17,7 +17,7 @@ class Calculator(Page):
     def js_vars(self):
         print('vars_for_template executing!')
         print('self.session.config',self.session.config)
-        print("self.session.config['inflation']",self.session.config['inflation'])
+        # print("self.session.config['inflation']",self.session.config['inflation'])
         print('self.session.vars',self.session.vars)
         purchased_units_across_all_rounds = []
 
@@ -27,13 +27,14 @@ class Calculator(Page):
             print(rounds.purchased_units)
             purchased_units_across_all_rounds.append(rounds.purchased_units)
 
-
         return dict(
-            inflation=self.session.config['inflation'],
-            income=self.session.config['income'],
-            cost_per_unit=self.session.config['cost_per_unit'],
-            interest_rate=self.session.config['interest_rate'],
+            inflation_set=[self.session.config['inflation_1'],self.session.config['inflation_2'],self.session.config['inflation_3']],
+            interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
+            # income=self.session.config['income'],
+            # cost_per_unit=self.session.config['cost_per_unit'],
             # interest_rate=self.session.config['interest_rate'],
+            # number_of_periods=self.session.config['number_of_periods'],
+            # output_to_points_constant=self.session.config['output_to_points_constant'],
             player_round_number=self.round_number,
             purchased_units_across_all_rounds=purchased_units_across_all_rounds
         )

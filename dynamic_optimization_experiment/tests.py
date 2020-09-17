@@ -8,8 +8,8 @@ class PlayerBot(Bot):
     # cases = ['p1_wins', 'p1_and_p2_win']
     print('PlayerBot class')
 
-    def play_round(self):
-        print('defining play_round')
+    # def play_round(self):
+    #     print('defining play_round')
         # if self.round_number == 1:
         #     yield pages.Introduction
 
