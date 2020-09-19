@@ -14,9 +14,9 @@ SESSION_CONFIG_DEFAULTS = dict(
     interest_rate_2=0,
     interest_rate_3=-20.00,
     income=900.00,
-    number_of_periods_per_decision=2,
     cost_per_unit=10.00,
     output_to_points_constant=1.1,
+    number_of_periods_per_decision=2,
 # built-in
     real_world_currency_per_point=1.00, 
     participation_fee=0.00, 

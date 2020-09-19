@@ -16,7 +16,7 @@ Here is my first oTree experimental economics program.
 
 class Constants(BaseConstants):
     print('creating the constants class')
-    num_rounds = 10
+    num_rounds = 18
     name_in_url = 'dyn_opt_exp'
     income = 1000
     price_per_unit = 100
