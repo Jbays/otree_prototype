@@ -26,6 +26,7 @@
           <td>Period</td>
           <td>Income (Tokens)</td>
           <td>Price per Unit</td>
+          <td>Inflation</td>
           <td>Interest Rate (%)</td>
           <td>Token Balance (beginning of the period)</td>
           <td>Purchased Units</td>
@@ -45,6 +46,7 @@
     </div>
 
     <script>
+      console.log(js_vars)
       //if this problem needs to scale, should figure out how to make this programmatically
       //maps the particular decision to its corresponding inflation, interest rate, and pay sequence
       function convertDecisionToMatrix(num){
@@ -62,18 +64,28 @@
         return obj[num]        
       }
 
+      //the index of the experiment_sequence should change every two periods.
+      function mapPeriodToIndex(num){
+        //if num is odd
+        if ( num % 2 === 1 ) {
+          return Math.floor(num/2);
+        }
+        return Math.floor(num/2)-1;
+      }
+
       //just taking the keys from js_vars.pay_sequence
       const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
       const periodNumber = js_vars.player_round_number;
+      const indexOfDecision = mapPeriodToIndex(periodNumber)
       //two periods per decision
-      const particularDecision = Number(js_vars.experiment_sequence[periodNumber%2]);
+      const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
       const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
       const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
       const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
       const paySequenceThisDecision = decToChoiceMatrix[2]
-      console.log('decisionMatrix',decisionMatrix);
-      console.log('periodNumber',periodNumber);
-      console.log('particularDecision',particularDecision);
+      // console.log('decisionMatrix',decisionMatrix);
+      // console.log('periodNumber',periodNumber);
+      // console.log('particularDecision',particularDecision);
       console.log('decToChoiceMatrix',decToChoiceMatrix);
       console.log('inflationThisDecision',inflationThisDecision);
       console.log('interestRateThisDecision',interestRateThisDecision);
@@ -81,6 +93,35 @@
       
       onPageLoad(inflationThisDecision,interestRateThisDecision,paySequenceThisDecision,js_vars.player_round_number);
       // onPageLoad(constantsNumberOfRounds,constantsPricePerUnit);
+
+      function calculateTokenBalance(pay_sequence,income,period){
+        //if pay sequence is equal split between rounds
+        if ( pay_sequence === 2 ) {
+          return income/2
+        }
+        
+        //if period is odd
+        if ( period % 2 === 1 ) {
+          //pay upfront
+          if ( pay_sequence === 0 ) {
+            return income
+          } //this is first period for pay second period
+          else if ( pay_sequence === 1 ) {
+            return 0
+          }
+          
+
+        } else {
+        //periods are even
+          //already paid upfront
+          if ( pay_sequence === 0 ) {
+            return 0
+          } else if ( pay_sequence === 1 ) {
+            return income
+          }
+        }
+        
+      }
 
       function onPageLoad(inflation,interest_rate,pay_sequence,period){
         console.log('onPageLoad!')
@@ -92,7 +133,23 @@
         //figure out which sequence to present
         //present that sequence
 
-        function setUpTable(){
+        let tokenBalance = calculateTokenBalance(pay_sequence,900,period)
+
+        console.log('tokenBalance',tokenBalance);
+
+        setUpTable(pay_sequence,period,900,100,interest_rate,)
+
+        function setUpTable(pay_sequence,
+                            period,
+                            income,
+                            price_per_unit,
+                            inflation,
+                            interest_rate,
+                            token_balance,
+                            purchased_units,
+                            points,
+                            total_points,
+                            final_tokens_balance){
 
         }
 
