@@ -32,33 +32,24 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     print('creating the Group class')
 
-def randomNumbersStringified():
-    import random
 
-    arr = []
-    output = ''
-
-    for num in range(1,10):
-        arr.append(str(num))
-        # output += num
-
-    random.shuffle(arr)
-
-    for num in range(0,9):
-        output += arr[num]
-
-    return output
-
-randomStr = randomNumbersStringified()
 
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:",min=0)
     
-    print('this randomStr is our final answer:',randomStr)
+    # print('this randomStr is our final answer:',randomStr)
 
-    experiment_sequence = models.StringField(initial=randomStr)
+    # experiment_sequence = models.StringField(initial=randomStr)
 
+
+    def my_custom_method(self):
+        print('my_custom_method called!')
+        self.participant.vars['foo'] = 1
+        self.session.vars['foo'] = 1
+
+
+    
     # inflation = models.FloatField()
 
     # def inflation_choices(self):

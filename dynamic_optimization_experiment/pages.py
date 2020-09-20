@@ -13,7 +13,7 @@ class Calculator(Page):
         print('vars_for_template executing!')
         print('self.session.config',self.session.config)
         # print("self.session.config['inflation']",self.session.config['inflation'])
-        print('self.session.vars',self.session.vars)
+        print('self.participant.vars',self.participant.vars)
         purchased_units_across_all_rounds = []
 
         all_previous_votes = self.player.in_previous_rounds()
