@@ -1,0 +1,20 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+    Quiz
+{% endblock %}
+
+{% block content %}
+
+    All this stuff you must know before continuing on....
+
+    
+    {% formfield player.quiz_question_1 label='What was that important thing we asked you to remember? Answer is c'%}
+
+    
+    {% formfield player.quiz_question_2 label='More points equals more real money.  Bling-bling.'%}
+
+    {% next_button %}
+
+{% endblock %}

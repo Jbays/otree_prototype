@@ -25,6 +25,7 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
+    <!-- here's the code which calculates the first 100 points for the natural log of x -->
     <script>
       function getBaseLog(x,y){
         return Math.log(y) / Math.log(x);
@@ -41,10 +42,8 @@
       }
     </script>
 
+    <!-- here's the code which appends the chart -->
     <script>
-      
-
-
       Highcharts.chart('container', {
         title: {
             text: 'Output to Points Conversion'
@@ -98,10 +97,10 @@
 
       </script>
 
+    <!-- here's the code which removes the highcharts.com credit -->
     <script>
       let highChartsLabelThingie = document.getElementsByClassName('highcharts-credits');
       highChartsLabelThingie[0].innerHTML = "";
-      // console.log('highChartsLabelThingie[0]',highChartsLabelThingie[0]);
     </script>
 
   </div>

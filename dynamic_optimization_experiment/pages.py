@@ -12,7 +12,6 @@ class DecisionBox(Page):
 class Calculator(Page):
     form_model = 'player'
     form_fields = ['purchased_units']
-
     
     def js_vars(self):
         print('vars_for_template executing!')
@@ -67,6 +66,13 @@ class Guess(Page):
     # form_model = 'player'
     # form_fields = ['guess']
 
+class Quiz(Page):
+    print('quiz')
+    form_model = 'player'
+    form_fields=['quiz_question_1','quiz_question_2']
+
+    
+
 
 class Results(Page):
     print('results')
@@ -83,4 +89,4 @@ class Results(Page):
 
 # page_sequence = [Introduction, Guess, Results]
 # page_sequence = [Introduction, Calculator, Results]
-page_sequence = [Introduction, Calculator]
+page_sequence = [Introduction, Quiz, Calculator]
