@@ -16,18 +16,14 @@ Here is my first oTree experimental economics program.
 
 class Constants(BaseConstants):
     print('creating the constants class')
-    num_rounds = 18
-    name_in_url = 'dyn_opt_exp'
-    income = 1000
-    price_per_unit = 100
-    interest_rate = 10
-    instructions_template = 'dynamic_optimization_experiment/instructions.html'
-    decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
-    calculator_component = 'dynamic_optimization_experiment/CalculatorComponent.html'
-    output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
-    output_to_points_conversion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
+    num_rounds = 1
     players_per_group = None
-    k_payoff = 1.1
+    name_in_url = 'intro_and_quiz'
+    # instructions_template = 'dynamic_optimization_experiment/instructions.html'
+    # decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
+    # calculator_component = 'dynamic_optimization_experiment/CalculatorComponent.html'
+    # output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
+    # output_to_points_conversion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
 
 class Subsession(BaseSubsession):
     pass
@@ -67,23 +63,8 @@ class Player(BasePlayer):
     # token_balance = 0
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)
     # purchased_units = 0
-    purchased_units = models.FloatField(label="Purchased Units:",min=0)
-    final_tokens_balance = models.FloatField(label="Final Tokens Balance",initial=0)
     
-    def final_tokens_balance_error_message(self,final_token_balance):
-        print('final_tokens_balance_error_message')
-        print('final token balance is',final_token_balance)
-        if ( final_token_balance < self.debt_limit ):
-            print('your debt level should be checked!')
-
-    # debt_limit = models.CurrencyField()
-    debt_limit = models.CurrencyField()
-
-    def debt_limit_max(self):
-        print('calculate debt_limit_max')
-        print('self',self)
-        return 0
-
-    def example(self):
-        print('random_name self',self)
+    quiz_question_1 = models.StringField(
+        choices=['a','b','c']
+    )
     
