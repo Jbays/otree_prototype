@@ -68,8 +68,8 @@ class Guess(Page):
 
 class Quiz(Page):
     print('quiz')
-    form_model = 'player'
-    form_fields=['quiz_question_1','quiz_question_2']
+    # form_model = 'player'
+    # form_fields=['quiz_question_1','quiz_question_2']
 
     
 
