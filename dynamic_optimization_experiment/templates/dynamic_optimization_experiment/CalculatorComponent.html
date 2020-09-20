@@ -45,25 +45,52 @@
     </div>
 
     <script>
-      console.log('js_vars',js_vars)
-      
-      // let constantsNumberOfRounds = js_vars.number_of_periods;
-      // let constantsKPayoff = js_vars.output_to_points_constant;
-      // let constantsIncome = js_vars.income
-      // let constantsPricePerUnit = js_vars.cost_per_unit;
-      // let constantsInterestRate = js_vars.interest_rate;
-      
-      // console.log('constantsNumberOfRounds',constantsNumberOfRounds)
-      // console.log('constantsKPayoff',constantsKPayoff)
-      // console.log('constantsIncome',constantsIncome)
-      // console.log('constantsPricePerUnit',constantsPricePerUnit)
-      // console.log('constantsInterestRate',constantsInterestRate)
+      //if this problem needs to scale, should figure out how to make this programmatically
+      //maps the particular decision to its corresponding inflation, interest rate, and pay sequence
+      function convertDecisionToMatrix(num){
+        const obj = {
+          0:[0,0,0],
+          1:[1,1,0],
+          2:[2,2,0],
+          3:[0,0,1],
+          4:[1,1,1],
+          5:[2,2,1],
+          6:[0,0,2],
+          7:[1,1,2],
+          8:[2,2,2]
+        }
+        return obj[num]        
+      }
 
-      onPageLoad(js_vars);
+      //just taking the keys from js_vars.pay_sequence
+      const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
+      const periodNumber = js_vars.player_round_number;
+      //two periods per decision
+      const particularDecision = Number(js_vars.experiment_sequence[periodNumber%2]);
+      const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
+      const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
+      const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
+      const paySequenceThisDecision = decToChoiceMatrix[2]
+      console.log('decisionMatrix',decisionMatrix);
+      console.log('periodNumber',periodNumber);
+      console.log('particularDecision',particularDecision);
+      console.log('decToChoiceMatrix',decToChoiceMatrix);
+      console.log('inflationThisDecision',inflationThisDecision);
+      console.log('interestRateThisDecision',interestRateThisDecision);
+      console.log('paySequenceThisDecision',paySequenceThisDecision);
+      
+      onPageLoad(inflationThisDecision,interestRateThisDecision,paySequenceThisDecision,js_vars.player_round_number);
       // onPageLoad(constantsNumberOfRounds,constantsPricePerUnit);
 
-      function onPageLoad(totalRounds,kPayoff,income,pricePerUnit,interestRate){
+      function onPageLoad(inflation,interest_rate,pay_sequence,period){
         console.log('onPageLoad!')
+        console.log('this is inflation',inflation);
+        console.log('interest_rate',interest_rate);
+        console.log('pay_sequence',pay_sequence);
+        console.log('period',period);
+
+        //figure out which sequence to present
+        //present that sequence
 
         function setUpTable(){
 

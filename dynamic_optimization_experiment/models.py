@@ -16,7 +16,7 @@ Here is my first oTree experimental economics program.
 
 class Constants(BaseConstants):
     print('creating the constants class')
-    num_rounds = 18
+    num_rounds = 4
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -27,21 +27,21 @@ class Constants(BaseConstants):
     k_payoff = 1.1
 
 class Subsession(BaseSubsession):
-    pass
+    # if the first round, set player's experiment_sequence
+    def creating_session(self):
+        if ( self.round_number == 1 ):
+            player = self.get_players()[0]
+            player.experiment_sequence = player.participant.vars['experiment_sequence']
 
 class Group(BaseGroup):
     print('creating the Group class')
-
 
 
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:",min=0)
     
-    # print('this randomStr is our final answer:',randomStr)
-
-    # experiment_sequence = models.StringField(initial=randomStr)
-
+    experiment_sequence = models.StringField()
 
     def my_custom_method(self):
         print('my_custom_method called!')
