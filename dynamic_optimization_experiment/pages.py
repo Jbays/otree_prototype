@@ -10,8 +10,8 @@ class Calculator(Page):
     form_fields = ['purchased_units']
     
     def js_vars(self):
-        print('vars_for_template executing!')
-        print('self.session.config',self.session.config)
+        print('js_vars executing!')
+        # print('self.session.config',self.session.config)
         # print("self.session.config['inflation']",self.session.config['inflation'])
         print('self.participant.vars',self.participant.vars)
         purchased_units_across_all_rounds = []
@@ -25,6 +25,8 @@ class Calculator(Page):
         return dict(
             inflation_set=[self.session.config['inflation_1'],self.session.config['inflation_2'],self.session.config['inflation_3']],
             interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
+            experiment_sequence=self.participant.vars['experiment_sequence'],
+            pay_sequence={0:'first',1:'last',2:'split_even'},
             # income=self.session.config['income'],
             # cost_per_unit=self.session.config['cost_per_unit'],
             # interest_rate=self.session.config['interest_rate'],
@@ -36,8 +38,7 @@ class Calculator(Page):
 
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
-        
-
+        print('vars_for_template invoked!')
         # print('self.player>>>',self.player)
         # print('self.player.in_previous_rounds()>>>',self.player.in_previous_rounds())
         all_previous_votes = self.player.in_previous_rounds()
