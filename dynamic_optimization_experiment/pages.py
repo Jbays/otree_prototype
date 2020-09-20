@@ -1,10 +1,6 @@
 from ._builtin import Page, WaitPage
 import json
 
-class Introduction(Page):
-    def is_displayed(self):
-        return self.round_number == 1
-
 class DecisionBox(Page):
     form_model = 'player'
     form_fields = ['purchased_units']
@@ -61,24 +57,11 @@ class Calculator(Page):
         )
 
     
-class Guess(Page):
-    print('guess')
-    # form_model = 'player'
-    # form_fields = ['guess']
+# class Results(Page):
+#     print('results')
 
-class Quiz(Page):
-    print('quiz')
-    # form_model = 'player'
-    # form_fields=['quiz_question_1','quiz_question_2']
-
-    
-
-
-class Results(Page):
-    print('results')
-
-    def is_displayed(self):
-        print('is_displayeds -- self.round_number',self.round_number)
+#     def is_displayed(self):
+#         print('is_displayeds -- self.round_number',self.round_number)
         # return self.round_number == 11
 
     # def vars_for_template(self):
@@ -89,4 +72,4 @@ class Results(Page):
 
 # page_sequence = [Introduction, Guess, Results]
 # page_sequence = [Introduction, Calculator, Results]
-page_sequence = [Introduction, Quiz, Calculator]
+page_sequence = [Calculator]
