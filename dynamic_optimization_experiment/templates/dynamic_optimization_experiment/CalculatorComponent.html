@@ -73,27 +73,16 @@
         return Math.floor(num/2)-1;
       }
 
-      //just taking the keys from js_vars.pay_sequence
-      const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
-      const periodNumber = js_vars.player_round_number;
-      const indexOfDecision = mapPeriodToIndex(periodNumber)
-      //two periods per decision
-      const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
-      const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
-      const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
-      const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
-      const paySequenceThisDecision = decToChoiceMatrix[2]
-      // console.log('decisionMatrix',decisionMatrix);
-      // console.log('periodNumber',periodNumber);
-      // console.log('particularDecision',particularDecision);
-      console.log('decToChoiceMatrix',decToChoiceMatrix);
-      console.log('inflationThisDecision',inflationThisDecision);
-      console.log('interestRateThisDecision',interestRateThisDecision);
-      console.log('paySequenceThisDecision',paySequenceThisDecision);
-      
-      onPageLoad(inflationThisDecision,interestRateThisDecision,paySequenceThisDecision,js_vars.player_round_number);
-      // onPageLoad(constantsNumberOfRounds,constantsPricePerUnit);
+      //returns the natural log of input num
+      function calcNaturalLog(num){
+        return Math.log(num)/Math.log(e)
+      }
 
+      //key: pay_sequence=0 then pay upfront, 
+      //     pay_sequence=1 then pay last round,
+      //     pay_sequence=2, then pay half each round
+      //inputs: pay sequence, income, and period
+      //returns: the token balance (num) for a given period
       function calculateTokenBalance(pay_sequence,income,period){
         //if pay sequence is equal split between rounds
         if ( pay_sequence === 2 ) {
@@ -120,10 +109,35 @@
             return income
           }
         }
-        
       }
 
-      function onPageLoad(inflation,interest_rate,pay_sequence,period){
+      //taking consts from js_vars
+      const incomeConst = js_vars.income;
+      const costPerUnitConst = js_vars.cost_per_unit;
+
+      //just taking the keys from js_vars.pay_sequence
+      const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
+      const periodNumber = js_vars.player_round_number;
+      const indexOfDecision = mapPeriodToIndex(periodNumber)
+      //two periods per decision
+      const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
+      const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
+      
+      const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
+      const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
+      const paySequenceThisDecision = decToChoiceMatrix[2]
+      // console.log('decisionMatrix',decisionMatrix);
+      // console.log('periodNumber',periodNumber);
+      console.log('particularDecision',particularDecision);
+      console.log('decToChoiceMatrix',decToChoiceMatrix);
+      console.log('inflationThisDecision',inflationThisDecision);
+      console.log('interestRateThisDecision',interestRateThisDecision);
+      console.log('paySequenceThisDecision',paySequenceThisDecision);
+      
+      onPageLoad(incomeConst,costPerUnitConst,inflationThisDecision,interestRateThisDecision,paySequenceThisDecision,js_vars.player_round_number);
+      // onPageLoad(constantsNumberOfRounds,constantsPricePerUnit);
+
+      function onPageLoad(income,cost_per_unit,inflation,interest_rate,pay_sequence,period){
         console.log('onPageLoad!')
         console.log('this is inflation',inflation);
         console.log('interest_rate',interest_rate);
@@ -133,29 +147,131 @@
         //figure out which sequence to present
         //present that sequence
 
-        let tokenBalance = calculateTokenBalance(pay_sequence,900,period)
+        let startingTokenBalance = calculateTokenBalance(pay_sequence,income,period)
+        console.log('startingTokenBalance',startingTokenBalance);
 
-        console.log('tokenBalance',tokenBalance);
+        //note: this is logic for the display of purchased units
+        //if the round is odd, then you append two inputs
+        //if the round is even, then you first append their last purchase then append the input second (only for the present round)
+        let mostRecentUnitPurchase = (period % 2 === 1) ? null : js_vars.purchased_units_across_all_rounds[period-1];
 
-        setUpTable(pay_sequence,period,900,100,interest_rate,)
+        //NOTE: the above logic also applies to points, total points(?), final token balance
+        let mostRecentPoints = (period % 2 === 1) ? null : calcNaturalLog(mostRecentUnitPurchase);
+        //seems like final points balance is less meaningful in a 2-round-only game.
+        let mostRecentPointsTotal = mostRecentPoints;
+        
+        //how could you know the most recent final token balance??
+        // let mostRecentFinalTokenBalance = (period % 2 === 1) ? null : 
 
-        function setUpTable(pay_sequence,
-                            period,
-                            income,
-                            price_per_unit,
-                            inflation,
-                            interest_rate,
-                            token_balance,
-                            purchased_units,
-                            points,
-                            total_points,
-                            final_tokens_balance){
+        appendToTable(pay_sequence,period,income,cost_per_unit,inflation,interest_rate,startingTokenBalance)
 
+        //the syntax here looks terrible...
+        function appendToTable(pay_sequence,period,income,
+                            price_per_unit,inflation,interest_rate,
+                            token_balance,most_recent_unit_purchase,points,
+                            total_points,final_tokens_balance){
+          console.log('hello from set up table function!');
+        
+        
+          //if round is odd, append two inputs for purchased_units
+          //if round is even, append most_recent_unit_purchase first (for their last round) and input for current round.
+        
+        
         }
+
 
       }
 
     </script>
+
+
+
+
+    <!-- mocking out the calculator -->
+    <!-- <script>
+
+      let table = document.getElementById('myTable');
+      
+      let row1 = document.createElement('tr');
+      let row2 = document.createElement('tr');
+
+      let period1 = document.createElement('td')
+      period1.innerHTML = '1';
+      let period2 = document.createElement('td')
+      period2.innerHTML = '2';
+
+      let income1 = document.createElement('td');
+      income1.innerHTML = 900;
+
+      let income2 = document.createElement('td');
+      income2.innerHTML = 0
+
+      let price_per_unit1 = document.createElement('td');
+      price_per_unit1.innerHTML = 100;
+      let price_per_unit2 = price_per_unit1.cloneNode(true);
+
+      let inflation1 = document.createElement('td');
+      inflation1.innerHTML = 0
+      let inflation2 = document.createElement('td');
+      inflation2.innerHTML = 0
+
+      let interestRate1 = document.createElement('td');
+      interestRate1.innerHTML = '0';
+      let interestRate2 = interestRate1.cloneNode(true);
+      
+      let tokenBalance1 = document.createElement('td');
+      tokenBalance1.innerHTML = 900;
+
+      let tokenBalance2 = document.createElement('td');
+      tokenBalance2.innerHTML = 900;
+
+      let points1 = document.createElement('td');
+      points1.innerHTML = 0;
+      let points2 = document.createElement('td');
+      points2.innerHTML = 0;
+
+      let purchasedUnitsInput1 = document.createElement('input');
+          purchasedUnitsInput1.type = "number";
+          purchasedUnitsInput1.min = 0;
+          purchasedUnitsInput1.style.cssText = "background-color:#ffbbff;text-align:center";
+
+      let purchasedUnitsInput2 = document.createElement('input');
+          purchasedUnitsInput2.type = "number";
+          purchasedUnitsInput2.min = 0;
+          purchasedUnitsInput2.style.cssText = "background-color:#ffbbff;text-align:center";
+
+      let totalPoints1 = points1.cloneNode(true);
+      let totalPoints2 = points2.cloneNode(true);
+
+      let finalTokenBalance1 = tokenBalance1.cloneNode(true);
+      let finalTokenBalance2 = tokenBalance2.cloneNode(true);
+
+      row1.appendChild(period1)
+      row1.appendChild(income1)
+      row1.appendChild(price_per_unit1)
+      row1.appendChild(inflation1)
+      row1.appendChild(interestRate1)
+      row1.appendChild(tokenBalance1)
+      row1.appendChild(purchasedUnitsInput1)
+      row1.appendChild(points1)
+      row1.appendChild(totalPoints1)
+      row1.appendChild(finalTokenBalance1)
+      
+      row2.appendChild(period2)
+      row2.appendChild(income2)
+      row2.appendChild(price_per_unit2)
+      row2.appendChild(inflation2)
+      row2.appendChild(interestRate2)
+      row2.appendChild(tokenBalance2)
+      row2.appendChild(purchasedUnitsInput2)
+      row2.appendChild(points2)
+      row2.appendChild(totalPoints2)
+      row2.appendChild(finalTokenBalance2)
+      
+      table.appendChild(row1)
+      table.appendChild(row2)
+
+    </script> -->
 
     <!-- <script>
       //fetch constants
