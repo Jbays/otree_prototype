@@ -32,7 +32,7 @@
           <td>Purchased Units</td>
           <td>Points</td>
           <td>Total Points</td>
-          <td>Final Tokens Balance</td>
+          <td>Final Token Balance</td>
         </tr>
       </tbody>
     </table>
@@ -92,7 +92,8 @@
 
     <script>
       function resetTableVals(event){
-        event.preventDefault()
+        event.preventDefault();
+
         //grab purchased units element, points, total points, and final token balance
         let startTokenBalance_ThisPeriod = Number(document.getElementById(`start-token-balance-${js_vars.player_round_number}`).innerHTML);
         let purchasedUnitsElem_ThisPeriod = document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`);
@@ -104,15 +105,24 @@
         pointsElem_ThisPeriod.innerHTML = 0;
         totalPointsElem_ThisPeriod.innerHTML = 0;
         finalTokenBalanceElem_ThisPeriod.innerHTML = startTokenBalance_ThisPeriod;
-        
-        //if period is odd, do more work!
-        if ( js_vars.player_round_number % 2 === 1 ) {
+
+        //if period is even, only reset values from the second row
+        if ( js_vars.player_round_number % 2 === 0 ) {
+          console.log('period is even!');
+        } else {
+          console.log('period is odd!');
+
+          // purchasedUnitsElem_ThisPeriod.value = '';
+          // pointsElem_ThisPeriod.innerHTML = 0;
+          // totalPointsElem_ThisPeriod.innerHTML = 0;
+          // finalTokenBalanceElem_ThisPeriod.innerHTML = startTokenBalance_ThisPeriod;
+          
           //calc player income for next period
           let income_NextPeriod = calculatePlayerIncomeByPeriod(paySequenceThisDecision,incomeConst,js_vars.player_round_number+1);
           
           //starting token balance for next period is equal to:
           //next period's income + (this period's final token balance * interest_rate )
-          let startTokenBalance_NextPeriod = income_NextPeriod + (Number(finalTokenBalanceElem_ThisPeriod.innerHTML)*(1+interestRateThisDecision));
+          let startTokenBalance_NextPeriod = income_NextPeriod + (Number(finalTokenBalanceElem_ThisPeriod.innerHTML)*(1+(Number(interest_rate)*.01)));
 
           let startTokenBalanceElem_NextPeriod = document.getElementById(`start-token-balance-${js_vars.player_round_number+1}`);
           // console.log('income_NextPeriod',income_NextPeriod);
@@ -127,32 +137,54 @@
           pointsElem_NextPeriod.innerHTML = 0;
           totalPointsElem_NextPeriod.innerHTML = 0;
           finalTokenBalanceElem_NextPeriod.innerHTML = startTokenBalance_NextPeriod;
-          
         }
+
         console.log('calculator values reset!')
       }
 
+
       function calculateTableVals(event){
         event.preventDefault()
-        let startTokenBalance = Number(document.getElementById(`start-token-balance-${js_vars.player_round_number}`).innerText);
-        let futureUnitPurchase_ThisPeriod = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).value);
-        let pointsScored_ThisPeriod = calcNaturalLog(futureUnitPurchase_ThisPeriod);
+        if ( js_vars.player_round_number % 2 === 0 ){
+          let startTokenBalance = Number(document.getElementById(`start-token-balance-${js_vars.player_round_number}`).innerText);
+          let futureUnitPurchase_ThisPeriod = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).value);
+          let pointsScored_ThisPeriod = calcNaturalLog(futureUnitPurchase_ThisPeriod);
+  
+          let points_ThisPeriod = document.getElementById(`points-${js_vars.player_round_number}`);
+          points_ThisPeriod.innerHTML = pointsScored_ThisPeriod;
+          
+          let totalPoints_PrevPeriod = document.getElementById(`total-points-${js_vars.player_round_number-1}`);
+          // let finalTokenBalance_PrevPeriod = document.getElementById(`final-token-balance-${js_vars.player_round_number-1}`);
 
-        let points_ThisPeriod = document.getElementById(`points-${js_vars.player_round_number}`);
-        points_ThisPeriod.innerHTML = pointsScored_ThisPeriod
-        let totalPoints_ThisPeriod = document.getElementById(`total-points-${js_vars.player_round_number}`);
-        totalPoints_ThisPeriod.innerHTML = pointsScored_ThisPeriod;
-        let finalTokenBalance_ThisPeriod = document.getElementById(`final-token-balance-${js_vars.player_round_number}`);
-        finalTokenBalance_ThisPeriod.innerHTML = startTokenBalance-(futureUnitPurchase_ThisPeriod*costPerUnitConst);
+          // console.log('totalPoints_PrevPeriod',totalPoints_PrevPeriod)
+          // console.log('finalTokenBalance_PrevPeriod',finalTokenBalance_PrevPeriod)
 
-        //if period is odd, then do more work!
-        if ( js_vars.player_round_number % 2 === 1 ){
+          let totalPoints_ThisPeriod = document.getElementById(`total-points-${js_vars.player_round_number}`);
+          totalPoints_ThisPeriod.innerHTML = (Number(totalPoints_PrevPeriod.innerText)+pointsScored_ThisPeriod).toFixed(2);
+          let finalTokenBalance_ThisPeriod = document.getElementById(`final-token-balance-${js_vars.player_round_number}`);
+          finalTokenBalance_ThisPeriod.innerHTML = (startTokenBalance-(futureUnitPurchase_ThisPeriod*costPerUnitConst)).toFixed(2);
+          
+        } else {
+          let startTokenBalance = Number(document.getElementById(`start-token-balance-${js_vars.player_round_number}`).innerText);
+          let futureUnitPurchase_ThisPeriod = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).value);
+          let pointsScored_ThisPeriod = calcNaturalLog(futureUnitPurchase_ThisPeriod);
+
+          let points_ThisPeriod = document.getElementById(`points-${js_vars.player_round_number}`);
+          points_ThisPeriod.innerHTML = pointsScored_ThisPeriod
+          let totalPoints_ThisPeriod = document.getElementById(`total-points-${js_vars.player_round_number}`);
+          totalPoints_ThisPeriod.innerHTML = pointsScored_ThisPeriod;
+          let finalTokenBalance_ThisPeriod = document.getElementById(`final-token-balance-${js_vars.player_round_number}`);
+          finalTokenBalance_ThisPeriod.innerHTML = startTokenBalance-(futureUnitPurchase_ThisPeriod*costPerUnitConst);
+          
+          //if period is odd, then do more work!
           let income_NextPeriod = calculatePlayerIncomeByPeriod(paySequenceThisDecision,incomeConst,js_vars.player_round_number+1);
 
           //starting token balance for next period is equal to:
           //next period's income + (this period's final token balance * interest_rate )
           let startTokenBalance_NextPeriod = document.getElementById(`start-token-balance-${js_vars.player_round_number+1}`);
-          startTokenBalance_NextPeriod.innerHTML = income_NextPeriod+(Number(finalTokenBalance_ThisPeriod.innerHTML)*(1+interestRateThisDecision))
+          
+          console.log('finalTokenBalance_ThisPeriod.innerHTML',finalTokenBalance_ThisPeriod.innerHTML)
+          startTokenBalance_NextPeriod.innerHTML = income_NextPeriod+(Number(finalTokenBalance_ThisPeriod.innerHTML)*(1+(Number(interest_rate)*.01)));
 
           //then get purchased units from second input,
           let futureUnitPurchase_NextPeriod = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number+1}`).value);
@@ -227,15 +259,122 @@
         if ( period % 2 === 1 ) {
           oddPeriodTableSetUp(myTable,pay_sequence,period,income,cost_per_unit,inflation,interest_rate)
         } else {
-          console.log('period is even')
           evenPeriodAppendToTable(myTable,pay_sequence,period,income,cost_per_unit,inflation,interest_rate);
         }
 
         function evenPeriodAppendToTable(table,pay_sequence,period,income,price_per_unit,inflation,interest_rate){
-          console.log('evenPeriodAppendToTable called!');
+          let unitsPurchased_PrevPeriod = js_vars.purchased_units_across_all_rounds[period-2];
+          // console.log('unitsPurchased_PrevPeriod',unitsPurchased_PrevPeriod)
+          // console.log(table)
+          // console.log(pay_sequence)
+          // console.log(period)
+          // console.log(income)
+          // console.log(price_per_unit)
+          // console.log(inflation)
+          // console.log(interest_rate)
+
+          let prevRow = document.createElement('tr');
+          //append values from previous round
+
+          let periodElem_PrevPeriod = document.createElement('td');
+              periodElem_PrevPeriod.innerText = 1;
+          
+          let incomeElem_PrevPeriod = document.createElement('td');
+              incomeElem_PrevPeriod.innerText = calculatePlayerIncomeByPeriod(pay_sequence,income,period-1);
+          
+          let pricePerUnitElem_PrevPeriod = document.createElement('td');
+              pricePerUnitElem_PrevPeriod.innerText = costPerUnitConst;
+          let inflationElem_PrevPeriod = document.createElement('td');
+              inflationElem_PrevPeriod.innerText = inflation;
+          let interestRateElem_PrevPeriod = document.createElement('td');
+              interestRateElem_PrevPeriod.innerText = interest_rate;
+
+          //for even rounds, the previous period's starting token balance equals the income from that round
+          let startTokenBalanceElem_PrevPeriod = document.createElement('td');
+              startTokenBalanceElem_PrevPeriod.id = `start-token-balance-${period-1}`;
+              startTokenBalanceElem_PrevPeriod.innerText = incomeElem_PrevPeriod.innerText;
+
+          let unitsPurchasedElem_PrevPeriod = document.createElement('td');
+              unitsPurchasedElem_PrevPeriod.id = `purchased-unit-input-${period-1}`;
+              unitsPurchasedElem_PrevPeriod.innerText = unitsPurchased_PrevPeriod;
+          
+          let pointsElem_PrevPeriod = document.createElement('td');
+              pointsElem_PrevPeriod.id = `points-${period-1}`;
+              pointsElem_PrevPeriod.innerText = calcNaturalLog(unitsPurchased_PrevPeriod).toFixed(2);
+          let totalPointsElem_PrevPeriod = document.createElement('td');
+              totalPointsElem_PrevPeriod.id = `total-points-${period-1}`;
+              totalPointsElem_PrevPeriod.innerText = pointsElem_PrevPeriod.innerText;
+          let finalTokenBalanceElem_PrevPeriod = document.createElement('td');
+              finalTokenBalanceElem_PrevPeriod.id = `final-token-balance-${period-1}`;
+              finalTokenBalanceElem_PrevPeriod.innerText = Number(incomeElem_PrevPeriod.innerText) - (unitsPurchased_PrevPeriod*costPerUnitConst);
+
+          prevRow.appendChild(periodElem_PrevPeriod);
+          prevRow.appendChild(incomeElem_PrevPeriod);
+          prevRow.appendChild(pricePerUnitElem_PrevPeriod);
+          prevRow.appendChild(inflationElem_PrevPeriod);
+          prevRow.appendChild(interestRateElem_PrevPeriod);
+          prevRow.appendChild(startTokenBalanceElem_PrevPeriod);
+          prevRow.appendChild(unitsPurchasedElem_PrevPeriod);
+          prevRow.appendChild(pointsElem_PrevPeriod);
+          prevRow.appendChild(totalPointsElem_PrevPeriod);
+          prevRow.appendChild(finalTokenBalanceElem_PrevPeriod);
+
+          table.appendChild(prevRow);
+
+          let currRow = document.createElement('tr');
+          //append period, income, price per unit, interest rate, token balance, purchased Units, points, total points, final token balance
+        
+          let periodElem_CurrPeriod = document.createElement('td');
+              periodElem_CurrPeriod.innerText = 2;
+          
+          let incomeElem_CurrPeriod = document.createElement('td');
+              incomeElem_CurrPeriod.innerText = calculatePlayerIncomeByPeriod(pay_sequence,income,period);
+          
+          let pricePerUnitElem_CurrPeriod = document.createElement('td');
+              pricePerUnitElem_CurrPeriod.innerText = costPerUnitConst;
+          let inflationElem_CurrPeriod = document.createElement('td');
+              inflationElem_CurrPeriod.innerText = inflation;
+          let interestRateElem_CurrPeriod = document.createElement('td');
+              interestRateElem_CurrPeriod.innerText = interest_rate;
+
+          //for current period, starting token balance is equal to final token balance * interest_rate + income
+          let startTokenBalanceElem_CurrPeriod = document.createElement('td');
+              startTokenBalanceElem_CurrPeriod.id = `start-token-balance-${period}`;
+              startTokenBalanceElem_CurrPeriod.innerText = (Number(finalTokenBalanceElem_PrevPeriod.innerText)*(1+(Number(interest_rate)*.01))) + Number(incomeElem_CurrPeriod.innerText);
+
+          //fix for units_purchased, points, toal points, and final token balance.
+          let unitsPurchasedElem_CurrPeriod = document.createElement('input');
+              unitsPurchasedElem_CurrPeriod.type = "number";
+              unitsPurchasedElem_CurrPeriod.min = 0;
+              unitsPurchasedElem_CurrPeriod.id = `purchased-unit-input-${period}`;
+              unitsPurchasedElem_CurrPeriod.style.cssText = "background-color:#ffbbff;text-align:center";
+
+          let pointsElem_CurrPeriod = document.createElement('td');
+              pointsElem_CurrPeriod.id = `points-${period}`;
+              pointsElem_CurrPeriod.innerHTML = 0;
+          
+          let totalPointsElem_CurrPeriod = document.createElement('td');
+              totalPointsElem_CurrPeriod.id = `total-points-${period}`;
+              totalPointsElem_CurrPeriod.innerText = 0;
+
+          let finalTokenBalanceElem_CurrPeriod = document.createElement('td');
+          finalTokenBalanceElem_CurrPeriod.id = `final-token-balance-${period}`
+          finalTokenBalanceElem_CurrPeriod.innerText = startTokenBalanceElem_CurrPeriod.innerText
+
+          currRow.appendChild(periodElem_CurrPeriod);
+          currRow.appendChild(incomeElem_CurrPeriod);
+          currRow.appendChild(pricePerUnitElem_CurrPeriod);
+          currRow.appendChild(inflationElem_CurrPeriod);
+          currRow.appendChild(interestRateElem_CurrPeriod);
+          currRow.appendChild(startTokenBalanceElem_CurrPeriod);
+          currRow.appendChild(unitsPurchasedElem_CurrPeriod);
+          currRow.appendChild(pointsElem_CurrPeriod);
+          currRow.appendChild(totalPointsElem_CurrPeriod);
+          currRow.appendChild(finalTokenBalanceElem_CurrPeriod);
+
+          table.appendChild(currRow);
         }
 
-        //the syntax here looks terrible...
         //create various table elements, append input values to these table elements
         function oddPeriodTableSetUp(table,pay_sequence,period,income,price_per_unit,inflation,interest_rate){
           //create table elements for period, income, price per unit, inflation, interest rate, token balance,
@@ -243,10 +382,10 @@
           let currRow = document.createElement('tr');
 
           let period_TableElem1 = document.createElement('td');
-              period_TableElem1.innerHTML = period;
+              period_TableElem1.innerHTML = 1;
 
           let income_TableElem1 = document.createElement('td');
-              income_TableElem1.innerHTML = income;
+              income_TableElem1.innerHTML = Number(calculatePlayerIncomeByPeriod(pay_sequence,income,period));
 
           let pricePerUnit_TableElem1 = document.createElement('td');
               pricePerUnit_TableElem1.innerHTML = price_per_unit;
@@ -259,7 +398,7 @@
 
           let tokenBalance_TableElem1 = document.createElement('td');
               tokenBalance_TableElem1.id = `start-token-balance-${period}`;
-              tokenBalance_TableElem1.innerHTML = Number(calculatePlayerIncomeByPeriod(pay_sequence,income,period));
+              tokenBalance_TableElem1.innerHTML = income_TableElem1.innerHTML;
 
           let purchasedUnits_TableElem1 = document.createElement('input');
               purchasedUnits_TableElem1.type = "number";
@@ -295,7 +434,7 @@
           let futureRow = document.createElement('tr');
 
           let period_TableElem2 = document.createElement('td');
-          period_TableElem2.innerHTML = period+1;
+          period_TableElem2.innerHTML = 2;
 
           let income_TableElem2 = document.createElement('td');
           income_TableElem2.innerHTML = calculatePlayerIncomeByPeriod(pay_sequence,income,period+1);
@@ -307,7 +446,7 @@
           let tokenBalance_TableElem2 = document.createElement('td');
               tokenBalance_TableElem2.id = `start-token-balance-${period+1}`
               //start with last period's token balance + interest on that balance
-              tokenBalance_TableElem2.innerHTML = Number(tokenBalance_TableElem1.innerText)*(1+interestRateThisDecision);
+              tokenBalance_TableElem2.innerHTML = Number(tokenBalance_TableElem1.innerText)*(1+(Number(interest_rate)*.01));
           
           let purchasedUnits_TableElem2 = document.createElement('input');
               purchasedUnits_TableElem2.type = "number";
