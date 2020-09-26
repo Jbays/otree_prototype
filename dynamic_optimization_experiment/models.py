@@ -8,11 +8,9 @@ from otree.api import (
     Currency,
 )
 
-
 doc = """
 Here is my first oTree experimental economics program.
 """
-
 
 class Constants(BaseConstants):
     print('creating the constants class')
@@ -24,14 +22,19 @@ class Constants(BaseConstants):
     # output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
     output_to_points_conversion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
     players_per_group = None
-    k_payoff = 1.1
+    # k_payoff = 1.1
 
 class Subsession(BaseSubsession):
     # if the first round, set player's experiment_sequence
     def creating_session(self):
-        if ( self.round_number == 1 ):
-            player = self.get_players()[0]
-            player.experiment_sequence = player.participant.vars['experiment_sequence']
+        player = self.get_players()[0]
+        # if ( self.round_number == 1 ):
+        #     player.experiment_sequence = player.participant.vars['experiment_sequence']
+        
+        if ( self.round_number >= 1 ) :
+            player.treatment_variable = player.participant.vars['experiment_sequence'][self.round_number-1]
+            # seems like all that front-end logic to calculate income, inflation, etc., etc. needs to be duplicated here on the backend.
+            # If so, then i can dumbly pass all that data to the front-end who'll just mindlessly obey the backend's commands
 
 class Group(BaseGroup):
     print('creating the Group class')
@@ -40,16 +43,23 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:",min=0)
-    
-    experiment_sequence = models.StringField()
+    income = models.IntegerField()
+    start_token_balance = models.IntegerField()
+    final_token_balance = models.IntegerField()
+    # experiment_sequence = models.StringField()
+    treatment_variable = models.StringField()
+
+    def before_next_page(self):
+        print('before next page in Player class! called')
+
+    def creating_session(self):
+        print('creating session in Player class!')
 
     def my_custom_method(self):
         print('my_custom_method called!')
-        self.participant.vars['foo'] = 1
-        self.session.vars['foo'] = 1
+        # self.participant.vars['foo'] = 1
+        # self.session.vars['foo'] = 1
 
-
-    
     # inflation = models.FloatField()
 
     # def inflation_choices(self):
@@ -59,7 +69,6 @@ class Player(BasePlayer):
     #     print('self',self)
     #     print('self.session.vars',self.session.vars)
     #     # if 
-
     
     # token_balance = 0
     # token_balance = models.IntegerField(label="Token Balance:",initial=0)

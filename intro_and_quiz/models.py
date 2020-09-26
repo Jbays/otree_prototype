@@ -18,13 +18,27 @@ class Constants(BaseConstants):
     players_per_group = None
     name_in_url = 'intro_and_quiz'
 
-
-
 class Subsession(BaseSubsession):
     print('subsession from intro_and_quiz')
 
     # sets the experiment_sequence for the participant
     def creating_session(self):
+        # attach the map 
+
+        print('before',self.session.vars)
+        self.session.vars['foo'] = {
+          0:[0,0,0],
+          1:[1,1,0],
+          2:[2,2,0],
+          3:[0,0,1],
+          4:[1,1,1],
+          5:[2,2,1],
+          6:[0,0,2],
+          7:[1,1,2],
+          8:[2,2,2]
+        }
+        print('after',self.session.vars)
+
         def randomNumbersStringified():
             import random
 

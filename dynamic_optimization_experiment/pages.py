@@ -32,7 +32,7 @@ class Calculator(Page):
             # interest_rate=self.session.config['interest_rate'],
             # number_of_periods=self.session.config['number_of_periods'],
             # output_to_points_constant=self.session.config['output_to_points_constant'],
-            player_round_number=self.round_number,
+            current_period=self.round_number,
             purchased_units_across_all_rounds=purchased_units_across_all_rounds
         )
 
@@ -49,11 +49,10 @@ class Calculator(Page):
             # print('json.dumps(rounds)',json.dumps(rounds))
             # print('rounds.keys()',rounds.keys())
 
-        # a = 10
+        a = 10
         # print('all_previous_votes>>>',all_previous_votes)
         return dict(
-            
-            # a=a,
+            a=a,
             round_number=self.round_number,
         )
 
