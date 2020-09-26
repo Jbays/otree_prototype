@@ -41,12 +41,20 @@
     <div style="text-align: center;">
       <!-- <button onClick=resetEachRowFromCurrPeriodOnward(event)>Reset values</button>
       <button style="background-color: red;"onClick=calcHypotheticalRow(event)>Calculate</button> -->
-      <button onClick="">Reset values</button>
-      <button style="background-color: red;"onClick="">Calculate</button>
+      <button onClick=resetTableVals(event)>Reset values</button>
+      <button style="background-color: red;" onClick=calculateTableVals(event)>Calculate</button>
     </div>
 
     <script>
       console.log(js_vars)
+      //taking consts from js_vars
+      const incomeConst = js_vars.income;
+      const costPerUnitConst = js_vars.cost_per_unit;
+
+      //just taking the keys from js_vars.pay_sequence
+      const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
+      const periodNumber = js_vars.player_round_number;
+
       //if this problem needs to scale, should figure out how to make this programmatically
       //maps the particular decision to its corresponding inflation, interest rate, and pay sequence
       function convertDecisionToMatrix(num){
@@ -64,7 +72,7 @@
         return obj[num]        
       }
 
-      //the index of the experiment_sequence should change every two periods.
+      //the index of the experiment_sequence string should change every two periods.
       function mapPeriodToIndex(num){
         //if num is odd
         if ( num % 2 === 1 ) {
@@ -73,9 +81,56 @@
         return Math.floor(num/2)-1;
       }
 
+      const indexOfDecision = mapPeriodToIndex(periodNumber)
+      //two periods per decision
+      const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
+      const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
+      
+      const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
+      const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
+      const paySequenceThisDecision = decToChoiceMatrix[2]
+      // console.log('decisionMatrix',decisionMatrix);
+      // console.log('periodNumber',periodNumber);
+      console.log('here is the experimental sequence --> particularDecision',particularDecision);
+    </script>
+
+    <script>
+      // console.log('js_vars.income',js_vars.income)
+
+      function resetTableVals(event){
+        event.preventDefault()
+        console.log('resetTableVals called!');
+      }
+
+      function calculateTableVals(event){
+        event.preventDefault()
+        console.log('calculateTableVals called!');
+        let startTokenBalance = Number(document.getElementById(`start-token-balance-${js_vars.player_round_number}`).innerText);
+        let futureUnitPurchase = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).value);
+        let pointsScored = calcNaturalLog(futureUnitPurchase);
+        console.log('startTokenBalance',startTokenBalance);
+        console.log('futureUnitPurchase',futureUnitPurchase);
+        console.log('pointsScored',pointsScored);
+
+        let points_ThisPeriod = document.getElementById(`points-${js_vars.player_round_number}`);
+        points_ThisPeriod.innerHTML = pointsScored
+        let totalPoints_ThisPeriod = document.getElementById(`total-points-${js_vars.player_round_number}`);
+        totalPoints_ThisPeriod.innerHTML = pointsScored;
+        let finalTokenBalance_ThisPeriod = document.getElementById(`final-token-balance-${js_vars.player_round_number}`);
+        finalTokenBalance_ThisPeriod.innerHTML = startTokenBalance-(futureUnitPurchase*costPerUnitConst);
+
+        //if player round number is odd, then do more work!
+        if ( js_vars.player_round_number % 2 === 1 ){
+          console.log('do more work!');
+          // let futureUnitPurchase_Elem2 = Number(document.getElementById(`purchased-unit-input-${js_vars.player_round_number}`).innerHTML);
+        }
+        console.log('calculator updated!');
+      }
+
       //returns the natural log of input num
+      //rounded to two decimal places
       function calcNaturalLog(num){
-        return Math.log(num)/Math.log(e)
+        return Number((Math.log(num)/Math.log(Math.E)).toFixed(2))
       }
 
       //key: pay_sequence=0 then pay upfront, 
@@ -88,7 +143,6 @@
         if ( pay_sequence === 2 ) {
           return income/2
         }
-        
         //if period is odd
         if ( period % 2 === 1 ) {
           //pay upfront
@@ -98,8 +152,6 @@
           else if ( pay_sequence === 1 ) {
             return 0
           }
-          
-
         } else {
         //periods are even
           //already paid upfront
@@ -111,44 +163,35 @@
         }
       }
 
-      //taking consts from js_vars
-      const incomeConst = js_vars.income;
-      const costPerUnitConst = js_vars.cost_per_unit;
-
-      //just taking the keys from js_vars.pay_sequence
-      const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
-      const periodNumber = js_vars.player_round_number;
-      const indexOfDecision = mapPeriodToIndex(periodNumber)
-      //two periods per decision
-      const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
-      const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
-      
-      const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
-      const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
-      const paySequenceThisDecision = decToChoiceMatrix[2]
-      // console.log('decisionMatrix',decisionMatrix);
-      // console.log('periodNumber',periodNumber);
-      console.log('particularDecision',particularDecision);
-      console.log('decToChoiceMatrix',decToChoiceMatrix);
-      console.log('inflationThisDecision',inflationThisDecision);
-      console.log('interestRateThisDecision',interestRateThisDecision);
-      console.log('paySequenceThisDecision',paySequenceThisDecision);
+     
+      // console.log('decToChoiceMatrix',decToChoiceMatrix);
+      // console.log('inflationThisDecision',inflationThisDecision);
+      // console.log('interestRateThisDecision',interestRateThisDecision);
+      // console.log('paySequenceThisDecision',paySequenceThisDecision);
       
       onPageLoad(incomeConst,costPerUnitConst,inflationThisDecision,interestRateThisDecision,paySequenceThisDecision,js_vars.player_round_number);
       // onPageLoad(constantsNumberOfRounds,constantsPricePerUnit);
 
       function onPageLoad(income,cost_per_unit,inflation,interest_rate,pay_sequence,period){
+        let myTable = document.getElementById('myTable');
         console.log('onPageLoad!')
-        console.log('this is inflation',inflation);
-        console.log('interest_rate',interest_rate);
-        console.log('pay_sequence',pay_sequence);
-        console.log('period',period);
+
+        if ( period % 2 === 1 ) {
+          console.log('period is odd')
+        } else {
+          console.log('period is even')
+        }
+
+        // console.log('this is inflation',inflation);
+        // console.log('interest_rate',interest_rate);
+        // console.log('pay_sequence',pay_sequence);
+        // console.log('period',period);
 
         //figure out which sequence to present
         //present that sequence
 
         let startingTokenBalance = calculateTokenBalance(pay_sequence,income,period)
-        console.log('startingTokenBalance',startingTokenBalance);
+        // console.log('startingTokenBalance',startingTokenBalance);
 
         //note: this is logic for the display of purchased units
         //if the round is odd, then you append two inputs
@@ -161,22 +204,67 @@
         let mostRecentPointsTotal = mostRecentPoints;
         
         //how could you know the most recent final token balance??
-        // let mostRecentFinalTokenBalance = (period % 2 === 1) ? null : 
+        // let mostRecentFinalTokenBalance = (period % 2 === 1) ? null : startingTokenBalance-(mostRecentUnitPurchase*cost_per_unit);
 
-        appendToTable(pay_sequence,period,income,cost_per_unit,inflation,interest_rate,startingTokenBalance)
+        appendToTable(myTable,pay_sequence,period,income,cost_per_unit,inflation,interest_rate,startingTokenBalance)
 
         //the syntax here looks terrible...
-        function appendToTable(pay_sequence,period,income,
+        //create various table elements, append input values to these table elements
+        function appendToTable(table,pay_sequence,period,income,
                             price_per_unit,inflation,interest_rate,
-                            token_balance,most_recent_unit_purchase,points,
-                            total_points,final_tokens_balance){
+                            token_balance,most_recent_unit_purchase,points=0,
+                            total_points=0,final_tokens_balance=0){
           console.log('hello from set up table function!');
+          console.log('this is interest_rate',interest_rate);
         
-        
-          //if round is odd, append two inputs for purchased_units
-          //if round is even, append most_recent_unit_purchase first (for their last round) and input for current round.
-        
-        
+          //create table elements for period, income, price per unit, inflation, interest rate, token balance,
+          //purchased units, points, total points, final token balance
+
+          let row = document.createElement('tr');
+
+          let period_TableElem = document.createElement('td');
+          let income_TableElem = document.createElement('td');
+          let pricePerUnit_TableElem = document.createElement('td');
+          let inflation_TableElem = document.createElement('td');
+          let interestRate_TableElem = document.createElement('td');
+          let tokenBalance_TableElem = document.createElement('td');
+              tokenBalance_TableElem.id = `start-token-balance-${period}`
+          let purchasedUnits_TableElem = document.createElement('input');
+              purchasedUnits_TableElem.type = "number";
+              purchasedUnits_TableElem.min = 0;
+              purchasedUnits_TableElem.id = `purchased-unit-input-${period}`;
+              purchasedUnits_TableElem.style.cssText = "background-color:#ffbbff;text-align:center";
+          let points_TableElem = document.createElement('td');
+              points_TableElem.id = `points-${period}`;
+          let totalPoints_TableElem = document.createElement('td');
+              totalPoints_TableElem.id = `total-points-${period}`;
+          let finalTokenBalance_TableElem = document.createElement('td');
+              finalTokenBalance_TableElem.id = `final-token-balance-${period}`;
+          
+          period_TableElem.innerHTML = period;
+          income_TableElem.innerHTML = income;
+          pricePerUnit_TableElem.innerHTML = price_per_unit;
+          inflation_TableElem.innerHTML = inflation;
+          interestRate_TableElem.innerHTML = Number(interest_rate);
+          tokenBalance_TableElem.innerHTML = token_balance;
+          points_TableElem.innerHTML = points;
+          totalPoints_TableElem.innerHTML = total_points;
+          finalTokenBalance_TableElem.innerHTML = final_tokens_balance;
+
+          row.appendChild(period_TableElem);
+          row.appendChild(income_TableElem);
+          row.appendChild(pricePerUnit_TableElem);
+          row.appendChild(inflation_TableElem);
+          row.appendChild(interestRate_TableElem);
+          row.appendChild(tokenBalance_TableElem);
+          row.appendChild(purchasedUnits_TableElem);
+          row.appendChild(points_TableElem);
+          row.appendChild(totalPoints_TableElem);
+          row.appendChild(finalTokenBalance_TableElem);
+          
+          
+          
+          table.appendChild(row);
         }
 
 
