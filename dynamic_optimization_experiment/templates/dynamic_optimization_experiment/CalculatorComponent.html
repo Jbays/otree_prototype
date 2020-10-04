@@ -122,7 +122,7 @@
           
           //starting token balance for next period is equal to:
           //next period's income + (this period's final token balance * interest_rate )
-          let startTokenBalance_NextPeriod = income_NextPeriod + (Number(finalTokenBalanceElem_ThisPeriod.innerHTML)*(1+(Number(interest_rate)*.01)));
+          let startTokenBalance_NextPeriod = income_NextPeriod + (Number(finalTokenBalanceElem_ThisPeriod.innerHTML)*(1+(Number(interestRateThisDecision)*.01)));
 
           let startTokenBalanceElem_NextPeriod = document.getElementById(`start-token-balance-${js_vars.current_period+1}`);
           // console.log('income_NextPeriod',income_NextPeriod);
@@ -183,8 +183,7 @@
           //next period's income + (this period's final token balance * interest_rate )
           let startTokenBalance_NextPeriod = document.getElementById(`start-token-balance-${js_vars.current_period+1}`);
           
-          console.log('finalTokenBalance_ThisPeriod.innerHTML',finalTokenBalance_ThisPeriod.innerHTML)
-          startTokenBalance_NextPeriod.innerHTML = income_NextPeriod+(Number(finalTokenBalance_ThisPeriod.innerHTML)*(1+(Number(interest_rate)*.01)));
+          startTokenBalance_NextPeriod.innerHTML = income_NextPeriod+(Number(finalTokenBalance_ThisPeriod.innerHTML)*(1+(Number(interestRateThisDecision)*.01)));
 
           //then get purchased units from second input,
           let futureUnitPurchase_NextPeriod = Number(document.getElementById(`purchased-unit-input-${js_vars.current_period+1}`).value);
@@ -254,7 +253,6 @@
 
       function onPageLoad(income,cost_per_unit,inflation,interest_rate,pay_sequence,period){
         let myTable = document.getElementById('myTable');
-        console.log('onPageLoad!')
 
         if ( period % 2 === 1 ) {
           oddPeriodTableSetUp(myTable,pay_sequence,period,income,cost_per_unit,inflation,interest_rate)
