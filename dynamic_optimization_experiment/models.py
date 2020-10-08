@@ -9,7 +9,7 @@ from otree.api import (
 )
 
 doc = """
-Here is my first oTree experimental economics program.
+The main body of today's experiment
 """
 
 class Constants(BaseConstants):
@@ -27,12 +27,14 @@ class Constants(BaseConstants):
 class Subsession(BaseSubsession):
     # if the first round, set player's experiment_sequence
     def creating_session(self):
+        import math
+
         player = self.get_players()[0]
-        # if ( self.round_number == 1 ):
-        #     player.experiment_sequence = player.participant.vars['experiment_sequence']
         
-        if ( self.round_number >= 1 ) :
-            player.treatment_variable = player.participant.vars['experiment_sequence'][self.round_number-1]
+        if ( self.round_number >= 1 ):
+            every_other_round = math.floor((self.round_number-1)/2)
+            # math.floor((self.round_number-1)/2) makes sure a new treatment_variable recorded every two rounds
+            player.treatment_variable = player.participant.vars['experiment_sequence'][every_other_round]
             # seems like all that front-end logic to calculate income, inflation, etc., etc. needs to be duplicated here on the backend.
             # If so, then i can dumbly pass all that data to the front-end who'll just mindlessly obey the backend's commands
 

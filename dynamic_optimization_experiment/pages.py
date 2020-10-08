@@ -26,6 +26,7 @@ class Calculator(Page):
             inflation_set=[self.session.config['inflation_1'],self.session.config['inflation_2'],self.session.config['inflation_3']],
             interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
             experiment_sequence=self.participant.vars['experiment_sequence'],
+            buying_limit=self.session.config['buying_limit'],
             # pay_sequence={0:'first',1:'last',2:'split_even'},
             income=self.session.config['income'],
             cost_per_unit=self.session.config['cost_per_unit'],

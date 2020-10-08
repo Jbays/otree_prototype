@@ -9,7 +9,7 @@ from otree.api import (
 )
 
 doc = """
-Here is my first oTree experimental economics program.
+Participants must pass these quiz questions before continuing to the main part of the experiment.
 """
 
 class Constants(BaseConstants):
@@ -58,7 +58,14 @@ class Subsession(BaseSubsession):
 
         if ( self.round_number == 1 ):
             player = self.get_players()[0]
-            player.participant.vars['experiment_sequence'] = randomNumbersStringified()
+            # these are constants throughout so let's set them now
+            player.income = self.session.config['income']
+            player.cost_per_unit = self.session.config['cost_per_unit']
+            player.buying_limit = self.session.config['buying_limit']
+            # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
+            # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
+            player.participant.vars['experiment_sequence'] = '026831547'
+            player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
 class Group(BaseGroup):
@@ -66,6 +73,11 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     print('creating the Player class intro_and_quiz')
+    buying_limit = models.FloatField()
+    income = models.FloatField()
+    cost_per_unit = models.FloatField()
+    experiment_sequence = models.StringField()
+
     quiz_question_1 = models.StringField(
         choices=['a','b','c']
     )
