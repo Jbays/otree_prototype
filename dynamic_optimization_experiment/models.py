@@ -13,8 +13,8 @@ The main body of today's experiment
 """
 
 class Constants(BaseConstants):
-    print('creating the constants class')
-    num_rounds = 4
+    # print('creating the constants class')
+    num_rounds = 6
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -38,27 +38,43 @@ class Subsession(BaseSubsession):
             # seems like all that front-end logic to calculate income, inflation, etc., etc. needs to be duplicated here on the backend.
             # If so, then i can dumbly pass all that data to the front-end who'll just mindlessly obey the backend's commands
 
+        # if ( self.round_number > 1 ):
+        #     print('after round 1!')
+        #     print('inside logic self.round_number',self.round_number)
+
+
 class Group(BaseGroup):
     print('creating the Group class')
 
 
 class Player(BasePlayer):
     print('creating the Player class')
-    purchased_units = models.FloatField(label="Purchased Units:",min=0)
-    income = models.IntegerField()
-    start_token_balance = models.IntegerField()
+    purchased_units = models.FloatField(label="Purchased Units:")
+    start_token_balance = models.FloatField()
+    # final_token_balance = models.IntegerField(min=())
     final_token_balance = models.IntegerField()
-    # experiment_sequence = models.StringField()
+
+    # def final_token_balance_max(self):
+
+    # def final_token_balance_error_message(self,value):
+    #     print('final token balance error message')
+    #     buying_limit_from_config = self.session.config['buying_limit']
+    #     print('buying_limit_from_config',buying_limit_from_config)
+    #     print('value',value)
+    #     # if value 
+
+
+
     treatment_variable = models.StringField()
 
-    def before_next_page(self):
-        print('before next page in Player class! called')
+    # def before_next_page(self):
+    #     print('before next page in Player class! called')
 
-    def creating_session(self):
-        print('creating session in Player class!')
+    # def creating_session(self):
+    #     print('creating session in Player class!')
 
-    def my_custom_method(self):
-        print('my_custom_method called!')
+    # def my_custom_method(self):
+    #     print('my_custom_method called!')
         # self.participant.vars['foo'] = 1
         # self.session.vars['foo'] = 1
 
