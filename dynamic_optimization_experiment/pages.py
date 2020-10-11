@@ -10,12 +10,8 @@ class Calculator(Page):
     form_fields = ['purchased_units']
     
     def js_vars(self):
-        print('js_vars executing!')
+        # print('js_vars executing!')
         # player = self.get_players()[0]
-
-        
-
-        
 
         # what happens if final_token_balance throws an error?!
 
@@ -24,7 +20,7 @@ class Calculator(Page):
         all_previous_votes = self.player.in_previous_rounds()
 
         for rounds in all_previous_votes:
-            print(rounds.purchased_units)
+            # print(rounds.purchased_units)
             purchased_units_across_all_rounds.append(rounds.purchased_units)
 
         return dict(
@@ -40,7 +36,7 @@ class Calculator(Page):
 
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
-        print('vars_for_template invoked!')
+        # print('vars_for_template invoked!')
 
         if ( self.round_number % 2 == 1 ):
             period_indicator = 1
@@ -52,11 +48,19 @@ class Calculator(Page):
             period_indicator = period_indicator 
         )
 
-
     def before_next_page(self):
+        # print('before next page executed!')
+        
+        # this function selects the correct experimental parameter based on two arguments: that parameter's name and the index of the required element
+        def demap_elem_from_set(index,set_name):
+            suffix = '_' + str(index+1)
+            particular_value_name = set_name + suffix
+
+            return self.session.config[particular_value_name]
+            
         # this object is a map between the treatment variable, 
         # and which inflation, interest_rate, and pay_sequence to use for that particular experiment
-        treatment_variable_to_specific_experiment_variables_map = {
+        map_treatment_variable_to_specific_experiment_arguments = {
           0:[0,0,0],
           1:[1,1,0],
           2:[2,2,0],
@@ -67,58 +71,104 @@ class Calculator(Page):
           7:[1,1,2],
           8:[2,2,2]
         }
-        print('before next page executed!')
-        print('self.round_number',self.round_number)
-        # print('self.player',self.player)
-        print('self.player.treatment_variable',self.player.treatment_variable)
-        # print('type(self.player.treatment_variable)',type(self.player.treatment_variable))
-        # print('treatment_variable_to_specific_experiment_variables_map',treatment_variable_to_specific_experiment_variables_map)
-        # print('treatment_variable_to_specific_experiment_variables_map[0]',treatment_variable_to_specific_experiment_variables_map[0])
-        # print('treatment_variable_to_specific_experiment_variables_map[int(self.player.treatment_variable)]',treatment_variable_to_specific_experiment_variables_map[int(self.player.treatment_variable)])
 
+        treatment_variable = int(self.player.treatment_variable)
+        # now select from the corresponding set
+        index_of_inflation_elem_for_this_treatment = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][0]
+        index_of_interest_rate_elem_for_this_treatment = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][1]
+
+        inflation = demap_elem_from_set(index_of_inflation_elem_for_this_treatment,'inflation')
+        # the output from demap is a percentage.  So convert to decimal.
+        interest_rate = (100 + demap_elem_from_set(index_of_interest_rate_elem_for_this_treatment,'interest_rate'))/100
+        pay_sequence = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][2]
+
+        current_round = self.round_number
         cost_per_unit = self.session.config['cost_per_unit']
+        full_pay = self.session.config['income']
+        units_just_purchased = self.player.in_round(current_round).purchased_units
+
+        print('_____________________________')
+        print('treatment_variable',treatment_variable)
+        print('current_round',current_round)
+        print('inflation',inflation)
+        print('interest_rate',interest_rate)
+        print('pay_sequence',pay_sequence)
         print('cost_per_unit',cost_per_unit)
-        print('self.round_number',self.round_number)
-        print('self.session.config',self.session.config)
-        print('self.participant.vars',self.participant.vars)
-
-        # should be how many units player chose to purchase this round
-        print('self.player.in_round(self.round_number)',self.player.in_round(self.round_number))
-        print('self.player.in_round(self.round_number).purchased_units',self.player.in_round(self.round_number).purchased_units)
+        print('full_pay',full_pay)
+        print('units_just_purchased',units_just_purchased)
+        print('_____________________________')
         
-        # if I can access the round_number, treatment variable, and pay_sequence, then for all odd rounds I know the starting_token_balance
-        if ( self.round_number % 2 == 1 ):
-            print('odd round!')
-            if (treatment_variable_to_specific_experiment_variables_map[int(self.player.treatment_variable)][2] == 0):
-                self.player.start_token_balance=self.session.config['income']
-                # final token balance = start_token balance - (last round's unit purchase * cost per unit)
-                self.player.final_token_balance = self.session.config['income'] - (self.player.in_round(self.round_number).purchased_units * cost_per_unit)
-            elif (treatment_variable_to_specific_experiment_variables_map[int(self.player.treatment_variable)][2] == 1):
-                self.player.start_token_balance=0
+        # for all treatments, the first round is always odd
+        is_first_round_of_treatment = True if (current_round % 2 == 1) else False
+
+        # if "treatment variable's first round"
+        if ( is_first_round_of_treatment ):
+            # note that total_costs is positive
+            total_costs = round((units_just_purchased * cost_per_unit),2)
+            
+            # if "full pay round 1, no pay round two"
+            if (pay_sequence == 0):
+                self.player.start_token_balance = full_pay
+                self.player.final_token_balance = round((full_pay - total_costs),2)
+            
+            # if "no pay round 1, full pay round 2"
+            elif (pay_sequence == 1):
+                self.player.start_token_balance = 0
+                self.player.final_token_balance = -total_costs
+            
+            # else "half pay round 1, half pay round 2"
             else: 
-                self.player.start_token_balance=(self.session.config['income'])/2
-        # else:
-        # if I can access the units purchased, cost_per_unit, and starting_token_balance, then I can calculate the final_token_balance
-            # self.player.final_token_balance=-1
-
+                self.player.start_token_balance = full_pay/2
+                self.player.final_token_balance = round(((full_pay/2) - total_costs),2)
         
+            print('first round')
+            print('total_costs',total_costs)
+            print('_____________________________')
+            print('_____________________________')
+            print('self.player.start_token_balance',self.player.start_token_balance)
+            print('self.player.final_token_balance',self.player.final_token_balance)
+            print('_____________________________')
+            print('_____________________________')
+
+        # else "treatment variable's second round"
+        else:
+            previous_round = current_round-1
+            player_from_previous_round = self.player.in_round(previous_round)
+            previous_final_token_balance = player_from_previous_round.final_token_balance
+            
+            cost_per_unit_inflation_adjusted =  cost_per_unit * inflation
+            full_pay_with_interest = full_pay * interest_rate
+            previous_final_token_balance_with_interest = round((previous_final_token_balance * interest_rate),2)
+            total_cost_of_goods = cost_per_unit_inflation_adjusted * units_just_purchased
+
+            # if "full pay round 1, no pay round two"
+            if (pay_sequence == 0):
+            #   self.player.start_token_balance = 2
+                self.player.start_token_balance = round((previous_final_token_balance_with_interest),2)
+
+            # if "no pay round 1, full pay round 2"
+            if (pay_sequence == 1):
+                self.player.start_token_balance = round((previous_final_token_balance_with_interest + full_pay_with_interest),2)
+
+            # if "half pay round 1, half pay round 2"
+            if (pay_sequence == 2):
+                self.player.start_token_balance = round((previous_final_token_balance_with_interest + (full_pay_with_interest/2)),2)
+                
+            self.player.final_token_balance = round((self.player.start_token_balance - total_cost_of_goods),2)
+
+            print('second round')
+            print('cost_per_unit_inflation_adjusted',cost_per_unit_inflation_adjusted)
+            print('full_pay_with_interest',full_pay_with_interest)
+            print('previous_final_token_balance_with_interest',previous_final_token_balance_with_interest)
+            print('total_cost_of_goods',total_cost_of_goods)
+            print('_____________________________')
+            print('_____________________________')
+            print('self.player.start_token_balance',self.player.start_token_balance)
+            print('self.player.final_token_balance',self.player.final_token_balance)
+            print('_____________________________')
+            print('_____________________________')
 
 
 
     
-# class Results(Page):
-#     print('results')
-
-#     def is_displayed(self):
-#         print('is_displayeds -- self.round_number',self.round_number)
-        # return self.round_number == 11
-
-    # def vars_for_template(self):
-    #     sorted_guesses = sorted(p.guess for p in self.group.get_players())
-
-    #     return dict(sorted_guesses=sorted_guesses)
-
-
-# page_sequence = [Introduction, Guess, Results]
-# page_sequence = [Introduction, Calculator, Results]
 page_sequence = [Calculator]

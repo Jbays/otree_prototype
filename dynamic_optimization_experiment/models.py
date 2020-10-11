@@ -50,9 +50,16 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
+    
+    # the buying limit logic will have to be set against purchased_units
+
+    # def purchased_units_max(self):
+    #     print
+    # figure out the logic here
+    
     start_token_balance = models.FloatField()
     # final_token_balance = models.IntegerField(min=())
-    final_token_balance = models.IntegerField()
+    final_token_balance = models.FloatField()
 
     # def final_token_balance_max(self):
 

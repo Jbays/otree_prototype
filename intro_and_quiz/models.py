@@ -45,9 +45,16 @@ class Subsession(BaseSubsession):
             player.income = self.session.config['income']
             player.cost_per_unit = self.session.config['cost_per_unit']
             player.buying_limit = self.session.config['buying_limit']
-            # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
+            
             # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
-            player.participant.vars['experiment_sequence'] = '026831547'
+            # first is "pay full round 1, no pay round 2"
+            # player.participant.vars['experiment_sequence'] = '012683547'
+            # first is "no pay full round 1, no pay round 2"
+            player.participant.vars['experiment_sequence'] = '345687012'
+            # first is "half pay round 1, half pay round 2"
+            # player.participant.vars['experiment_sequence'] = '678012345'
+
+            # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
             player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
@@ -66,7 +73,7 @@ class Player(BasePlayer):
     )
 
     def quiz_question_1_error_message(self,value):
-        print('value is:',value)
+        # print('value is:',value)
         if ( value != 'c' ):
             return 'You do not understand the instructions of this game.'
 
@@ -76,7 +83,7 @@ class Player(BasePlayer):
     )
 
     def quiz_question_2_error_message(self,value):
-        print('value is:',value)
+        # print('value is:',value)
         if ( value != 'true' ):
             return 'You. Are. Irredeemable.'
     
