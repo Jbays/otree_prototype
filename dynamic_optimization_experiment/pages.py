@@ -13,8 +13,6 @@ class Calculator(Page):
         # print('js_vars executing!')
         # player = self.get_players()[0]
 
-        # what happens if final_token_balance throws an error?!
-
         purchased_units_across_all_rounds = []
 
         all_previous_votes = self.player.in_previous_rounds()
@@ -48,6 +46,7 @@ class Calculator(Page):
             period_indicator = period_indicator 
         )
 
+    # writes to the player model 
     def before_next_page(self):
         # print('before next page executed!')
         
@@ -87,17 +86,8 @@ class Calculator(Page):
         full_pay = self.session.config['income']
         units_just_purchased = self.player.in_round(current_round).purchased_units
 
-        print('_____________________________')
-        print('treatment_variable',treatment_variable)
-        print('current_round',current_round)
-        print('inflation',inflation)
-        print('interest_rate',interest_rate)
-        print('pay_sequence',pay_sequence)
-        print('cost_per_unit',cost_per_unit)
-        print('full_pay',full_pay)
-        print('units_just_purchased',units_just_purchased)
-        print('_____________________________')
-        
+        cost_per_unit_inflation_adjusted =  cost_per_unit * inflation
+
         # for all treatments, the first round is always odd
         is_first_round_of_treatment = True if (current_round % 2 == 1) else False
 
@@ -105,70 +95,77 @@ class Calculator(Page):
         if ( is_first_round_of_treatment ):
             # note that total_costs is positive
             total_costs = round((units_just_purchased * cost_per_unit),2)
+            total_tokens_available_next_round_with_interest = 0
+            income_for_next_round = 0
+
+            # record the cost_per_unit used for these calculations.
+            self.player.cost_per_unit_this_round = cost_per_unit
             
             # if "full pay round 1, no pay round two"
             if (pay_sequence == 0):
                 self.player.start_token_balance = full_pay
                 self.player.final_token_balance = round((full_pay - total_costs),2)
+                # income_for_next_round = 0 because of pay_sequence
             
             # if "no pay round 1, full pay round 2"
             elif (pay_sequence == 1):
                 self.player.start_token_balance = 0
                 self.player.final_token_balance = -total_costs
+                income_for_next_round = full_pay
             
             # else "half pay round 1, half pay round 2"
             else: 
                 self.player.start_token_balance = full_pay/2
                 self.player.final_token_balance = round(((full_pay/2) - total_costs),2)
+                income_for_next_round = (full_pay/2)
         
-            print('first round')
-            print('total_costs',total_costs)
-            print('_____________________________')
-            print('_____________________________')
-            print('self.player.start_token_balance',self.player.start_token_balance)
-            print('self.player.final_token_balance',self.player.final_token_balance)
-            print('_____________________________')
-            print('_____________________________')
-
         # else "treatment variable's second round"
+            total_tokens_available_next_round_with_interest = (self.player.final_token_balance + income_for_next_round) * interest_rate
+            player_in_next_period = self.player.in_round(current_round+1)
+
+            # presume this is not yet defined
+            print('---------------------------------------------------')
+            print('before update --> player_in_next_period.buying_limit',player_in_next_period.buying_limit)
+            
+            # print('buying_limit_for_next_round',buying_limit_for_next_round)
+            print('self.player.final_token_balance',self.player.final_token_balance)
+            print('income_for_next_round',income_for_next_round)
+            print('interest_rate',interest_rate)
+            print('inflation',inflation)
+            player_in_next_period.buying_limit = total_tokens_available_next_round_with_interest/ cost_per_unit_inflation_adjusted
+            # player_in_next_period.buying_limit = ((final_token_balance + income_for_next_round) * interst_rate ) / cost_per_unit_inflation_adjusted
+
+            print('after update --> player_in_next_period.buying_limit',player_in_next_period.buying_limit)
+            print('---------------------------------------------------')
+
+        # NOTE: seems like setting the buying_limit for the second period must happen here!
+        # NOTE: ^^Wrong.  for the second period, can't set the buying_limit after the player has submitted the number of units they wish to purchase.
         else:
             previous_round = current_round-1
             player_from_previous_round = self.player.in_round(previous_round)
             previous_final_token_balance = player_from_previous_round.final_token_balance
             
-            cost_per_unit_inflation_adjusted =  cost_per_unit * inflation
             full_pay_with_interest = full_pay * interest_rate
             previous_final_token_balance_with_interest = round((previous_final_token_balance * interest_rate),2)
-            total_cost_of_goods = cost_per_unit_inflation_adjusted * units_just_purchased
+            total_cost_of_goods = round((cost_per_unit_inflation_adjusted * units_just_purchased),2)
+
+            self.player.cost_per_unit_this_round = cost_per_unit_inflation_adjusted
 
             # if "full pay round 1, no pay round two"
             if (pay_sequence == 0):
-            #   self.player.start_token_balance = 2
                 self.player.start_token_balance = round((previous_final_token_balance_with_interest),2)
+                self.player.buying_limit = self.player.start_token_balance / cost_per_unit_inflation_adjusted
 
             # if "no pay round 1, full pay round 2"
             if (pay_sequence == 1):
                 self.player.start_token_balance = round((previous_final_token_balance_with_interest + full_pay_with_interest),2)
+                self.player.buying_limit = (self.player.start_token_balance + full_pay_with_interest) / cost_per_unit_inflation_adjusted
 
             # if "half pay round 1, half pay round 2"
             if (pay_sequence == 2):
                 self.player.start_token_balance = round((previous_final_token_balance_with_interest + (full_pay_with_interest/2)),2)
+                self.player.buying_limit = (self.player.start_token_balance + (full_pay_with_interest/2)) / cost_per_unit_inflation_adjusted
                 
             self.player.final_token_balance = round((self.player.start_token_balance - total_cost_of_goods),2)
 
-            print('second round')
-            print('cost_per_unit_inflation_adjusted',cost_per_unit_inflation_adjusted)
-            print('full_pay_with_interest',full_pay_with_interest)
-            print('previous_final_token_balance_with_interest',previous_final_token_balance_with_interest)
-            print('total_cost_of_goods',total_cost_of_goods)
-            print('_____________________________')
-            print('_____________________________')
-            print('self.player.start_token_balance',self.player.start_token_balance)
-            print('self.player.final_token_balance',self.player.final_token_balance)
-            print('_____________________________')
-            print('_____________________________')
-
-
-
-    
 page_sequence = [Calculator]

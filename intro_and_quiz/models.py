@@ -44,13 +44,13 @@ class Subsession(BaseSubsession):
             # these are constants throughout so let's set them now
             player.income = self.session.config['income']
             player.cost_per_unit = self.session.config['cost_per_unit']
-            player.buying_limit = self.session.config['buying_limit']
             
             # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
             # first is "pay full round 1, no pay round 2"
-            # player.participant.vars['experiment_sequence'] = '012683547'
+            player.participant.vars['experiment_sequence'] = '012345678'
+            
             # first is "no pay full round 1, no pay round 2"
-            player.participant.vars['experiment_sequence'] = '345687012'
+            # player.participant.vars['experiment_sequence'] = '345678012'
             # first is "half pay round 1, half pay round 2"
             # player.participant.vars['experiment_sequence'] = '678012345'
 
@@ -63,7 +63,6 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     # print('creating the Player class intro_and_quiz')
-    buying_limit = models.FloatField()
     income = models.FloatField()
     cost_per_unit = models.FloatField()
     experiment_sequence = models.StringField()

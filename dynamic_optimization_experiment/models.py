@@ -14,7 +14,7 @@ The main body of today's experiment
 
 class Constants(BaseConstants):
     # print('creating the constants class')
-    num_rounds = 6
+    num_rounds = 18
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -29,19 +29,112 @@ class Subsession(BaseSubsession):
     def creating_session(self):
         import math
 
+        print('subsessions in the models.py for dynamic_optimization_experiment')
+
         player = self.get_players()[0]
+        current_round = self.round_number
+
+        is_first_round_of_treatment = True if (current_round % 2 == 1) else False
         
-        if ( self.round_number >= 1 ):
-            every_other_round = math.floor((self.round_number-1)/2)
+        if ( current_round >= 1 ):
+            map_treatment_variable_to_pay_sequence = {
+                0:0,
+                1:0,
+                2:0,
+                3:1,
+                4:1,
+                5:1,
+                6:2,
+                7:2,
+                8:2,
+            }
+
+            map_treatment_variable_to_inflation = {
+                0:self.session.config['inflation_1'],
+                1:self.session.config['inflation_2'],
+                2:self.session.config['inflation_3'],
+                3:self.session.config['inflation_1'],
+                4:self.session.config['inflation_2'],
+                5:self.session.config['inflation_3'],
+                6:self.session.config['inflation_1'],
+                7:self.session.config['inflation_2'],
+                8:self.session.config['inflation_3'],
+            }
+
+            # could probably do a "index % 2" and reduce the number of keys for the inflation and interest_rate maps
+            map_treatment_variable_to_interest_rate = {
+                0:self.session.config['interest_rate_1'],
+                1:self.session.config['interest_rate_2'],
+                2:self.session.config['interest_rate_3'],
+                3:self.session.config['interest_rate_1'],
+                4:self.session.config['interest_rate_2'],
+                5:self.session.config['interest_rate_3'],
+                6:self.session.config['interest_rate_1'],
+                7:self.session.config['interest_rate_2'],
+                8:self.session.config['interest_rate_3'],
+            }
+
+            every_other_round = math.floor((current_round-1)/2)
             # math.floor((self.round_number-1)/2) makes sure a new treatment_variable recorded every two rounds
             player.treatment_variable = player.participant.vars['experiment_sequence'][every_other_round]
-            # seems like all that front-end logic to calculate income, inflation, etc., etc. needs to be duplicated here on the backend.
-            # If so, then i can dumbly pass all that data to the front-end who'll just mindlessly obey the backend's commands
 
-        # if ( self.round_number > 1 ):
-        #     print('after round 1!')
-        #     print('inside logic self.round_number',self.round_number)
+            pay_sequence_this_treatment = map_treatment_variable_to_pay_sequence[int(player.treatment_variable)]
+            inflation_this_treatment = map_treatment_variable_to_inflation[int(player.treatment_variable)]
+            # since interest rate is %, convert to decimal
+            interest_rate_this_treatment = (100 + map_treatment_variable_to_interest_rate[int(player.treatment_variable)])/100
+            
+            cost_per_unit = self.session.config['cost_per_unit']
 
+            print('current_round',current_round)
+            print('pay_sequence_this_treatment',pay_sequence_this_treatment)
+            print('inflation_this_treatment',inflation_this_treatment)
+            print('interest_rate_this_treatment',interest_rate_this_treatment)
+
+            full_pay = self.session.config['income']
+            # NOTE: START_TOKEN_BALANCE could be calculated here w/o any issues.
+            if ( is_first_round_of_treatment ):
+                print('first round of that treatment')
+
+                # this is the most debt a player can accrue in their first round.
+                player.buying_limit = (full_pay / interest_rate_this_treatment) / cost_per_unit
+            # else:
+            #     player.buying_limit = 7.111
+
+            print('---------------------------------------------------')
+            print('player.buying_limit was set to:',player.buying_limit)
+            print('---------------------------------------------------')
+            #     print('second round of that treatment')
+            #     # previous_round = current_round-1
+            #     # player_from_previous_round = self.player.in_round(previous_round)
+            #     # previous_final_token_balance = player_from_previous_round.final_token_balance
+
+            #     print('previous_round',previous_round)
+            #     print('player_from_previous_round',player_from_previous_round)
+            #     print('player_from_previous_round',player_from_previous_round)
+
+            #     # for the second period, what a player can afford to buy has further constraints
+            #     # what was the player's (last token balance * interest) + income_in_second_round + interest
+            #     # then cost_per_unit must be adjusted for inflation
+
+            #     if ( pay_sequence_this_treatment == 0 ):
+            #         pay_in_second_round = 0
+
+            #         # to determine 
+            #         # buying_limit is added to the start token balance
+            #         # player.buying_limit = pay_in_second_round / interest_rate_this_treatment
+
+            #     # no pay round 1, full pay round 2
+            #     if ( pay_sequence_this_treatment == 1 ):
+            #         pay_in_second_round = full_pay
+
+            #         # player.buying_limit = pay_in_second_round / interest_rate_this_treatment
+
+            #     # half pay round 1, half pay round 2
+            #     if ( pay_sequence_this_treatment == 2 ):
+            #         pay_in_second_round = full_pay / 2
+                
+            #         # dummy data
+            #         # player.buying_limit = pay_in_second_round / interest_rate_this_treatment
 
 class Group(BaseGroup):
     print('creating the Group class')
@@ -52,68 +145,29 @@ class Player(BasePlayer):
     purchased_units = models.FloatField(label="Purchased Units:")
     
     # the buying limit logic will have to be set against purchased_units
+    buying_limit = models.FloatField()
 
-    # def purchased_units_max(self):
-    #     print
-    # figure out the logic here
-    
+    def purchased_units_error_message(self,value):
+        print('you can only purchase this many units')
+        print('value',value)
+
+        # print('self.player',self.player)
+        # print('self.player.buying_limit',self.player.buying_limit)
+        print('self.buying_limit',self.buying_limit)
+
+        if ( value > self.buying_limit ):
+            print('you cannot afford that many units!')
+            return 'you cant afford that vato'
+            
+            # return 'your purchase would cost'
+
+            # what do I need to determine their buying_limit?
+            # buying_limit = income_in_second_period / ( interest_rate_as_decimal)
+            # therefore, I need the pay_sequence and interest_rate. and cost per unit.  and for second, I need interest rate and inflation
+            # difference in logic between the first and second rounds??
+
+
+    cost_per_unit_this_round = models.FloatField()
     start_token_balance = models.FloatField()
-    # final_token_balance = models.IntegerField(min=())
     final_token_balance = models.FloatField()
-
-    # def final_token_balance_max(self):
-
-    # def final_token_balance_error_message(self,value):
-    #     print('final token balance error message')
-    #     buying_limit_from_config = self.session.config['buying_limit']
-    #     print('buying_limit_from_config',buying_limit_from_config)
-    #     print('value',value)
-    #     # if value 
-
-
-
     treatment_variable = models.StringField()
-
-    # def before_next_page(self):
-    #     print('before next page in Player class! called')
-
-    # def creating_session(self):
-    #     print('creating session in Player class!')
-
-    # def my_custom_method(self):
-    #     print('my_custom_method called!')
-        # self.participant.vars['foo'] = 1
-        # self.session.vars['foo'] = 1
-
-    # inflation = models.FloatField()
-
-    # def inflation_choices(self):
-    #     # import random
-    #     # choices = []
-    #     print('hello from inflation_choices')
-    #     print('self',self)
-    #     print('self.session.vars',self.session.vars)
-    #     # if 
-    
-    # token_balance = 0
-    # token_balance = models.IntegerField(label="Token Balance:",initial=0)
-    # purchased_units = 0
-    # final_tokens_balance = models.FloatField(label="Final Tokens Balance",initial=0)
-    
-    # def final_tokens_balance_error_message(self,final_token_balance):
-    #     print('final_tokens_balance_error_message')
-    #     print('final token balance is',final_token_balance)
-    #     if ( final_token_balance < self.debt_limit ):
-    #         print('your debt level should be checked!')
-
-    # # debt_limit = models.CurrencyField()
-    # debt_limit = models.CurrencyField()
-
-    # def debt_limit_max(self):
-    #     print('calculate debt_limit_max')
-    #     print('self',self)
-    #     return 0
-
-    # def example(self):
-    #     print('random_name self',self)
-    
