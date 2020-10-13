@@ -19,44 +19,45 @@ class Constants(BaseConstants):
 
 class Subsession(BaseSubsession):
     # sets the experiment_sequence for the participant
-    def creating_session(self):
-        # attach the map 
+    print('intro and quiz subsession')
+    # def creating_session(self):
+    #     # attach the map 
 
-        def randomNumbersStringified():
-            import random
+    #     def randomNumbersStringified():
+    #         import random
 
-            arr = []
-            output = ''
+    #         arr = []
+    #         output = ''
 
-            for num in range(0,9):
-                arr.append(str(num))
-                # output += num
+    #         for num in range(0,9):
+    #             arr.append(str(num))
+    #             # output += num
 
-            random.shuffle(arr)
+    #         random.shuffle(arr)
 
-            for num in range(0,9):
-                output += arr[num]
+    #         for num in range(0,9):
+    #             output += arr[num]
 
-            return output
+    #         return output
 
-        if ( self.round_number == 1 ):
-            player = self.get_players()[0]
-            # these are constants throughout so let's set them now
-            player.income = self.session.config['income']
-            player.cost_per_unit = self.session.config['cost_per_unit']
+    #     if ( self.round_number == 1 ):
+    #         player = self.get_players()[0]
+    #         # these are constants throughout so let's set them now
+    #         player.income = self.session.config['income']
+    #         player.cost_per_unit = self.session.config['cost_per_unit']
             
-            # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
-            # first is "pay full round 1, no pay round 2"
-            player.participant.vars['experiment_sequence'] = '012345678'
+    #         # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
+    #         # first is "pay full round 1, no pay round 2"
+    #         player.participant.vars['experiment_sequence'] = '012345678'
             
-            # first is "no pay full round 1, no pay round 2"
-            # player.participant.vars['experiment_sequence'] = '345678012'
-            # first is "half pay round 1, half pay round 2"
-            # player.participant.vars['experiment_sequence'] = '678012345'
+    #         # first is "no pay full round 1, no pay round 2"
+    #         # player.participant.vars['experiment_sequence'] = '345678012'
+    #         # first is "half pay round 1, half pay round 2"
+    #         # player.participant.vars['experiment_sequence'] = '678012345'
 
-            # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
-            player.experiment_sequence = player.participant.vars['experiment_sequence']
-    pass
+    #         # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
+    #         player.experiment_sequence = player.participant.vars['experiment_sequence']
+    # pass
 
 class Group(BaseGroup):
     print('creating the Group class intro_and_quiz')
