@@ -85,24 +85,25 @@ class Subsession(BaseSubsession):
             
             cost_per_unit = self.session.config['cost_per_unit']
 
-            print('current_round',current_round)
-            print('pay_sequence_this_treatment',pay_sequence_this_treatment)
-            print('inflation_this_treatment',inflation_this_treatment)
-            print('interest_rate_this_treatment',interest_rate_this_treatment)
+            # print('current_round',current_round)
+            # print('pay_sequence_this_treatment',pay_sequence_this_treatment)
+            # print('inflation_this_treatment',inflation_this_treatment)
+            # print('interest_rate_this_treatment',interest_rate_this_treatment)
 
             full_pay = self.session.config['income']
             # NOTE: START_TOKEN_BALANCE could be calculated here w/o any issues.
+            
             if ( is_first_round_of_treatment ):
-                print('first round of that treatment')
-
-                # this is the most debt a player can accrue in their first round.
+            #     print('first round of that treatment')
+            #     # this is the most debt a player can accrue in their first round.
                 player.buying_limit = (full_pay / interest_rate_this_treatment) / cost_per_unit
-            # else:
-            #     player.buying_limit = 7.111
 
-            print('---------------------------------------------------')
-            print('player.buying_limit was set to:',player.buying_limit)
-            print('---------------------------------------------------')
+            # # else:
+            # #     player.buying_limit = 7.111
+
+            # print('---------------------------------------------------')
+            # print('player.buying_limit was set to:',player.buying_limit)
+            # print('---------------------------------------------------')
             #     print('second round of that treatment')
             #     # previous_round = current_round-1
             #     # player_from_previous_round = self.player.in_round(previous_round)
@@ -147,15 +148,15 @@ class Player(BasePlayer):
     # the buying limit logic will have to be set against purchased_units
     buying_limit = models.FloatField()
 
-    def purchased_units_error_message(self,value):
-        print('you can only purchase this many units')
-        print('value',value)
+    def purchased_units_error_message(self,units_to_be_purchased):
+        print('purchased_units_error_message')
+        print('units_to_be_purchased',units_to_be_purchased)
 
         # print('self.player',self.player)
         # print('self.player.buying_limit',self.player.buying_limit)
         print('self.buying_limit',self.buying_limit)
 
-        if ( value > self.buying_limit ):
+        if ( units_to_be_purchased > self.buying_limit ):
             print('you cannot afford that many units!')
             return 'you cant afford that vato'
             
