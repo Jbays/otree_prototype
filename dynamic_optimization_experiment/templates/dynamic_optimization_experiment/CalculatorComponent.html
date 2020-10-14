@@ -21,9 +21,9 @@
     </style>
 
     <table id="myTable" style="text-align: center;">
-      <tbody id="table_body">
-        <tr style="background-color:chartreuse;">
-          <td>Period</td>
+      <tbody style="text-align: center;" id="table_body">
+        <!-- <tr style="background-color:chartreuse;"> -->
+          <!-- <td>Period</td>
           <td>Income (Tokens)</td>
           <td>Price per Unit</td>
           <td>Inflation</td>
@@ -32,8 +32,8 @@
           <td>Purchased Units</td>
           <td>Points</td>
           <td>Total Points</td>
-          <td>Final Token Balance</td>
-        </tr>
+          <td>Final Token Balance</td> -->
+        <!-- </tr> -->
       </tbody>
     </table>
 
@@ -45,7 +45,79 @@
 
     <script>
       console.log(js_vars)
-      //taking consts from js_vars
+
+      let defaultPurchasedUnit = document.createElement('input');
+      defaultPurchasedUnit.type = "number";
+      defaultPurchasedUnit.min = 0;
+      defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+      
+      function assembleCalculator(configVariableObject){
+        let theTable = document.getElementById('myTable');
+
+        // put the name and start_val in a tuple.  And that tuple into a container array.  Then use that array to create the table headers.
+        let onlyNamesStartValAndPositionArr = [];
+        for ( let i = 0; i < configVariableObject[0].length; i++ ) {
+          let arr = [];
+
+          // handle strings, numbers, bools in this fashion
+          if ( configVariableObject[0][i].hasOwnProperty('name_of_field') ) {
+            arr.push(configVariableObject[0][i].name_of_field)
+          }
+
+          if ( configVariableObject[0][i].hasOwnProperty('start_val') ) {
+            let columnName = arr[0]
+
+            // if lookup, then double-check value is in js_vars
+            if ( configVariableObject[0][i].start_val === 'look-up' && js_vars.hasOwnProperty(columnName) ) {
+              arr.push(js_vars[columnName])
+            } else {
+              arr.push(configVariableObject[0][i].start_val)
+            }
+          }
+
+          onlyNamesStartValAndPositionArr.push(arr)
+        }
+        
+        attachColumnHeadersAndInitialValues(theTable,onlyNamesStartValAndPositionArr);
+      }
+
+      function attachColumnHeadersAndInitialValues(table,array){
+        let columnHeaders = document.createElement('tr');
+        let startingValues = document.createElement('tr');
+
+        for ( let i = 0; i < array.length; i++ ) {
+          let name = array[i][0];
+          let startVal = array[i][1];
+
+          let nameTableData = document.createElement('td');
+          let startValTableData = document.createElement('td');
+          startValTableData.id = `${name}-${i}`;
+          
+          nameTableData.innerHTML = name;
+          startValTableData.innerHTML = startVal;
+
+          columnHeaders.appendChild(nameTableData)
+
+          if ( name !== 'purchased_unit' ){
+            startingValues.appendChild(startValTableData)
+          } else {
+            // must handle purchased_unit different since its an input not a primitive data type
+            let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
+            purchasedUnitsInputClone.id = `purchased-unit-input-1`
+            startingValues.appendChild(purchasedUnitsInputClone);
+          }
+
+        }
+
+        columnHeaders.style.cssText = "background-color:chartreuse";
+
+        table.appendChild(columnHeaders);
+        table.appendChild(startingValues);
+      }
+
+      assembleCalculator(js_vars.the_calculator_config)
+
+    //taking consts from js_vars
     //   const incomeConst = js_vars.income;
     //   const costPerUnitConst = js_vars.cost_per_unit;
     //   const buyingLimit = js_vars.buying_limit;

@@ -13,16 +13,16 @@ class Calculator(Page):
         # print('js_vars executing!')
         # player = self.get_players()[0]
 
-        # purchased_units_across_all_rounds = []
-
-        # all_previous_votes = self.player.in_previous_rounds()
-
-        # for rounds in all_previous_votes:
-        #     # print(rounds.purchased_units)
-        #     purchased_units_across_all_rounds.append(rounds.purchased_units)
-
         return dict(
-            a=10,
+            current_period = self.round_number,
+            the_calculator_config=[self.session.config['calculator_config_json']],
+            inflation=self.session.config['inflation_1'],
+            interest_rate=self.session.config['interest_rate_1'],
+            income=self.session.config['income'],
+            cost_per_unit=self.session.config['cost_per_unit'],
+            decision_horizon_in_rounds=self.session.config['decision_horizon_in_rounds'],
+            number_of_rounds=self.session.config['number_of_rounds'],
+            start_token_balance = self.session.config['start_token_balance'],
             # inflation_set=[self.session.config['inflation_1'],self.session.config['inflation_2'],self.session.config['inflation_3']],
             # interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
             # experiment_sequence=self.participant.vars['experiment_sequence'],

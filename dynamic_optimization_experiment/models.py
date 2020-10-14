@@ -14,7 +14,8 @@ The main body of today's experiment
 
 class Constants(BaseConstants):
     # print('creating the constants class')
-    num_rounds = 18
+    # print(self)
+    num_rounds = 10
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -24,11 +25,19 @@ class Constants(BaseConstants):
     players_per_group = None
     # k_payoff = 1.1
 
+    def creating_session(self):
+        print('from Constants class!~!~!~!~!~!~!~!')
+
+    # def creating_session(self):
+    #     print('from Constants class!~!~!~!~!~!~!~!')
+
 class Subsession(BaseSubsession):
     print('subsessions in the models.py for dynamic_optimization_experiment')
 
     # if the first round, set player's experiment_sequence
-    # def creating_session(self):
+    def creating_session(self):
+        print('creating subsessions func')
+        
     #     import math
 
 

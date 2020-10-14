@@ -6,17 +6,25 @@ from os import environ
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-#   
+# custom
     inflation_1=1.0,
-    inflation_2=1.25,
-    inflation_3=1.0,
     interest_rate_1=0,
-    interest_rate_2=0,
-    interest_rate_3=-20.00,
     income=900.00,
-    cost_per_unit=10.00,
-    output_to_points_constant=1.1,
-    number_of_periods_per_decision=2,
+    cost_per_unit=100.00,
+    number_of_rounds=10,
+    decision_horizon_in_rounds=10,
+    start_token_balance = 450,
+    calculator_config_json = [{"name_of_field":"period","start_val":1, "db_type":"integer"},{"name_of_field":"income","start_val":"look-up", "db_type":"integer"},{"name_of_field":"cost_per_unit","start_val":"look-up", "db_type":"integer"},{"name_of_field":"inflation","start_val":"look-up", "db_type":"float"},{"name_of_field":"interest_rate","start_val":"look-up", "db_type":"float"},{"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},{"name_of_field":"purchased_unit","start_val":0,"db_type":"float"},{"name_of_field":"final_token_balance", "start_val":150, "db_type":"float"}],
+
+    # if you get the db_type wrong, it won't work.
+    # {"name_of_field":"final_token_balance", "db_type":"float"},
+    # {"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},
+    # {"name_of_field":"purchased_unit","start_val":null,"db_type":"float"},
+    # {"name_of_field":"income","start_val":"look-up", "db_type":"integer"}
+    # {"name_of_field":"price_per_unit","start_val":"look-up", "db_type":"integer"}
+    # {"name_of_field":"inflation","start_val":"look-up", "db_type":"float"}
+    # {"name_of_field":"interest_rate","start_val":"look-up", "db_type":"float"}
+
 # built-in
     real_world_currency_per_point=1.00, 
     participation_fee=0.00, 
