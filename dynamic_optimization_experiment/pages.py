@@ -10,11 +10,20 @@ class Calculator(Page):
     form_fields = ['purchased_units']
     
     def js_vars(self):
+        current_round = self.round_number
         purchased_units_across_all_rounds = []
         start_token_balance_across_all_rounds = []
         final_token_balance_across_all_rounds = []
 
         every_instance_of_player_class = self.player.in_previous_rounds()
+
+        # note there are a few ways to access the most recent final token balance
+        if ( current_round > 1 ):
+            final_token_balance_most_recent = self.player.in_round(current_round-1).final_token_balance
+            start_token_balance_upcoming = (final_token_balance_most_recent+self.session.config['income']) * ((100+self.session.config['interest_rate_1'])/100)
+        else:
+            final_token_balance_most_recent = "n/a"
+            start_token_balance_upcoming = self.session.config['start_token_balance']
 
         for player in every_instance_of_player_class:
             purchased_units_across_all_rounds.append(player.purchased_units)
@@ -32,6 +41,8 @@ class Calculator(Page):
             start_token_balance=self.session.config['start_token_balance'],
             future_horizon_viewable=self.session.config['future_horizon_viewable'],
             past_horizon_viewable=self.session.config['past_horizon_viewable'],
+            final_token_balance_most_recent=final_token_balance_most_recent,
+            start_token_balance_upcoming=start_token_balance_upcoming,
             # interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
             purchased_units_across_all_rounds=purchased_units_across_all_rounds,
             start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,

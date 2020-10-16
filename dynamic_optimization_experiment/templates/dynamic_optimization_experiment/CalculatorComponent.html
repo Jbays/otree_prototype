@@ -36,6 +36,57 @@
       const currentPeriod = js_vars.current_period;
       const costPerUnit = js_vars.cost_per_unit;
 
+      // TODO: 15 Oct
+      // in next iteration, this object will need to be created based on config values
+      // which are in turn passed thru the backend to the front (via js_vars)
+      const instructionsOnHowToIncrementPast = {
+        "period":'increment',
+        "income":"constant",
+        "cost_per_unit":"constant",
+        "inflation":"constant",
+        "interest_rate":"constant",
+        "start_token_balance":"js_vars_lookup",
+        "purchased_unit":"js_vars_lookup",
+        "final_token_balance":"js_vars_lookup",
+      };
+
+      const instructionsOnHowToIncrement = {
+        "period":'increment',
+        "income":"constant",
+        "cost_per_unit":"constant",
+        "inflation":"constant",
+        "interest_rate":"constant",
+        // note that this is the most_recent_final_token_balance
+        "start_token_balance":["income+(interest_rate*final_token_balance)"],
+        "purchased_unit":"input",
+        "final_token_balance":["start_token_balance-(purchased_units*cost_per_unit)"],
+      };
+
+      // input is the key name
+      // output is the expected value at a given period
+      function calculateValueBasedOnProptype(keyName){
+        if ( keyName === 'period' ) {
+          return currentPeriod;
+        }
+
+        // handle period first
+        // then the rest will be trickier
+        if ( instructionsOnHowToIncrement.hasOwnProperty(keyName) ) {
+          let proptype = instructionsOnHowToIncrement[keyName];
+
+          console.log('proptype',proptype);
+
+          if ( proptype === 'constant' ) {
+            return js_vars[keyName]
+          }
+          if ( proptype === 'js_vars_lookup' ) {
+            console.log(js_vars[`${keyName}_across_all_rounds`])
+            // return js_vars[`${keyName}_across_all_rounds`][currentPeriod-2]
+          }
+        }
+        
+      }
+
       console.log(js_vars)
 
       let defaultPurchasedUnit = document.createElement('input');
@@ -43,7 +94,6 @@
       defaultPurchasedUnit.min = 0;
       defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
 
-      
       function assembleCalculator(configVariableObject){
         let theTable = document.getElementById('myTable');
 
@@ -79,9 +129,7 @@
           appendCurrentPeriodData(theTable,onlyNamesStartValAndPositionArr)
           appendFutureRows(theTable,onlyNamesStartValAndPositionArr)
         }
-        
-
-      }
+      };
 
       // responsible for appending all past rows
       function appendPastPeriodData(table,array){
@@ -108,8 +156,6 @@
 
         // these are columns
         for ( let tableColumn = 0; tableColumn < array.length; tableColumn++ ) {
-          console.log('tableColumn',tableColumn);
-
           // create the jth loop 
           // if the viewable horizon is greater than the currentPeriod
           if ( currentPeriod < js_vars.past_horizon_viewable ){
@@ -149,19 +195,44 @@
 
       function appendCurrentPeriodData(table,array){
         console.log('appendCurrentPeriodData');
-        console.log('table',table);
-        console.log('array',array);
-
         // for each column name in the array,
         // "read the name" then figure out what you need to do based on the name.
         // maybe I don't need to loop through the array I'm passing but the original config?
-        
+        let currentRow = document.createElement('tr');
+        array.forEach((elem)=>{
+          let keyName = elem[0];
+
+          // how to signify that some column elements should be inputs?
+          // put this in the JSON?
+          // currentValIsInput = true?
+          if ( keyName === 'purchased_unit' ) {
+            let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
+            purchasedUnitsInputClone.id = `${keyName}-input-${currentPeriod}`;
+            currentRow.appendChild(purchasedUnitsInputClone);
+          } else if (keyName === 'start_token_balance' || keyName === 'final_token_balance' ) {
+            let keyNameTableData = document.createElement('td');
+            keyNameTableData.id = `${keyName}-${currentPeriod}`;
+            keyNameTableData.innerHTML = js_vars.start_token_balance_upcoming;
+            currentRow.appendChild(keyNameTableData);            
+          } else {
+            let keyNameTableData = document.createElement('td');
+            keyNameTableData.id = `${keyName}-${currentPeriod}`;
+            let currentValue = calculateValueBasedOnProptype(keyName);
+
+            keyNameTableData.innerHTML = currentValue
+            currentRow.appendChild(keyNameTableData);            
+          }
+
+        })
+
+      
+        table.appendChild(currentRow)
       }
 
       function appendFutureRows(table,array){
         console.log('appendFutureRows');
-        console.log('table',table);
-        console.log('array',array);
+        // console.log('table',table);
+        // console.log('array',array);
       }
 
 
@@ -188,7 +259,7 @@
           } else {
             // must handle purchased_unit different since its an input not a primitive data type
             let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
-            purchasedUnitsInputClone.id = `purchased-unit-input-1`
+            purchasedUnitsInputClone.id = 'purchased-unit-input-1';
             startingValues.appendChild(purchasedUnitsInputClone);
           }
         }
