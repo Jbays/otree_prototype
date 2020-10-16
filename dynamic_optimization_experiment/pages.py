@@ -10,77 +10,67 @@ class Calculator(Page):
     form_fields = ['purchased_units']
     
     def js_vars(self):
-        # print('js_vars executing!')
-        # player = self.get_players()[0]
+        purchased_units_across_all_rounds = []
+        start_token_balance_across_all_rounds = []
+        final_token_balance_across_all_rounds = []
+
+        every_instance_of_player_class = self.player.in_previous_rounds()
+
+        for player in every_instance_of_player_class:
+            purchased_units_across_all_rounds.append(player.purchased_units)
+            start_token_balance_across_all_rounds.append(player.start_token_balance)
+            final_token_balance_across_all_rounds.append(player.final_token_balance)
 
         return dict(
-            current_period = self.round_number,
+            current_period=self.round_number,
             the_calculator_config=[self.session.config['calculator_config_json']],
             inflation=self.session.config['inflation_1'],
             interest_rate=self.session.config['interest_rate_1'],
             income=self.session.config['income'],
             cost_per_unit=self.session.config['cost_per_unit'],
-            decision_horizon_in_rounds=self.session.config['decision_horizon_in_rounds'],
             number_of_rounds=self.session.config['number_of_rounds'],
-            start_token_balance = self.session.config['start_token_balance'],
-            # inflation_set=[self.session.config['inflation_1'],self.session.config['inflation_2'],self.session.config['inflation_3']],
+            start_token_balance=self.session.config['start_token_balance'],
+            future_horizon_viewable=self.session.config['future_horizon_viewable'],
+            past_horizon_viewable=self.session.config['past_horizon_viewable'],
             # interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
-            # experiment_sequence=self.participant.vars['experiment_sequence'],
-            # buying_limit=self.session.config['buying_limit'],
-            # income=self.session.config['income'],
-            # cost_per_unit=self.session.config['cost_per_unit'],
-            # current_period=self.round_number,
-            # purchased_units_across_all_rounds=purchased_units_across_all_rounds
+            purchased_units_across_all_rounds=purchased_units_across_all_rounds,
+            start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,
+            final_token_balance_across_all_rounds=final_token_balance_across_all_rounds,
         )
 
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
         print('vars_for_template invoked!')
 
-        # if ( self.round_number % 2 == 1 ):
-        #     period_indicator = 1
-        # else:
-        #     period_indicator = 2
-        
         return dict(
             round_number=self.round_number,
-            # period_indicator = period_indicator 
         )
 
     # writes to the player model 
-    # def before_next_page(self):
-        # print('before next page executed!')
-        
-        # this function selects the correct experimental parameter based on two arguments: that parameter's name and the index of the required element
-        # def demap_elem_from_set(index,set_name):
-        #     suffix = '_' + str(index+1)
-        #     particular_value_name = set_name + suffix
+    def before_next_page(self):
+        print('before next page executed!')
 
-        #     return self.session.config[particular_value_name]
+        current_round = self.round_number
+        cost_per_unit = self.session.config['cost_per_unit']
+        income = self.session.config['income']
+        inflation = self.session.config['inflation_1']
+        # converting interest_rate decimal to percentage
+        interest_rate = (100+(self.session.config['interest_rate_1']))/100
+        cost_per_unit_inflation_adjusted = cost_per_unit * inflation
+        units_just_purchased = self.player.in_round(current_round).purchased_units
+
+        # if its the first round, then final token balance is equal to start_token_balance - (units purchased * cost per unit)
+        # else, all other rounds, final token balance is equal to ((final_token_balance_last_period * interest) + income) - units_purchased_last_round * cost_per_unit
+
+        if ( current_round == 1 ):
+            self.player.start_token_balance = self.session.config['start_token_balance']
+            self.player.final_token_balance = self.session.config['start_token_balance'] - (units_just_purchased * cost_per_unit_inflation_adjusted)
+        else:
+            units_purchased_last_round = self.player.in_round(current_round-1).purchased_units
+            final_token_balance_last_round = self.player.in_round(current_round-1).final_token_balance
             
-        # # this object is a map between the treatment variable, 
-        # # and which inflation, interest_rate, and pay_sequence to use for that particular experiment
-        # map_treatment_variable_to_specific_experiment_arguments = {
-        #   0:[0,0,0],
-        #   1:[1,1,0],
-        #   2:[2,2,0],
-        #   3:[0,0,1],
-        #   4:[1,1,1],
-        #   5:[2,2,1],
-        #   6:[0,0,2],
-        #   7:[1,1,2],
-        #   8:[2,2,2]
-        # }
-
-        # treatment_variable = int(self.player.treatment_variable)
-        # # now select from the corresponding set
-        # index_of_inflation_elem_for_this_treatment = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][0]
-        # index_of_interest_rate_elem_for_this_treatment = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][1]
-
-        # inflation = demap_elem_from_set(index_of_inflation_elem_for_this_treatment,'inflation')
-        # # the output from demap is a percentage.  So convert to decimal.
-        # interest_rate = (100 + demap_elem_from_set(index_of_interest_rate_elem_for_this_treatment,'interest_rate'))/100
-        # pay_sequence = map_treatment_variable_to_specific_experiment_arguments[treatment_variable][2]
+            self.player.start_token_balance = (final_token_balance_last_round * interest_rate) + income - (units_purchased_last_round * cost_per_unit_inflation_adjusted)
+            self.player.final_token_balance = (final_token_balance_last_round*interest_rate)+income - (units_purchased_last_round * cost_per_unit_inflation_adjusted)
 
         # # variables required for calculating ODD rounds
         # current_round = self.round_number
@@ -101,9 +91,6 @@ class Calculator(Page):
         # full_pay_with_interest = full_pay * interest_rate
         # previous_final_token_balance_with_interest = round((previous_final_token_balance * interest_rate),2)
         # total_cost_of_goods = round((cost_per_unit_inflation_adjusted * units_just_purchased),2)
-
-
-
 
         # # if "treatment variable's first round"
         # if ( is_first_round_of_treatment ):
@@ -164,7 +151,6 @@ class Calculator(Page):
         # else:
         #     # NOTE: seems like setting the buying_limit for the second period must happen here!
         #     # NOTE: no, I think we set buying_limit in the previous round.  Then we don't have to touch it here.
-            
 
         #     self.player.cost_per_unit_this_round = cost_per_unit_inflation_adjusted
 

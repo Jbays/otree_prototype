@@ -22,18 +22,7 @@
 
     <table id="myTable" style="text-align: center;">
       <tbody style="text-align: center;" id="table_body">
-        <!-- <tr style="background-color:chartreuse;"> -->
-          <!-- <td>Period</td>
-          <td>Income (Tokens)</td>
-          <td>Price per Unit</td>
-          <td>Inflation</td>
-          <td>Interest Rate (%)</td>
-          <td>Token Balance (beginning of the period)</td>
-          <td>Purchased Units</td>
-          <td>Points</td>
-          <td>Total Points</td>
-          <td>Final Token Balance</td> -->
-        <!-- </tr> -->
+        
       </tbody>
     </table>
 
@@ -44,12 +33,16 @@
     </div>
 
     <script>
+      const currentPeriod = js_vars.current_period;
+      const costPerUnit = js_vars.cost_per_unit;
+
       console.log(js_vars)
 
       let defaultPurchasedUnit = document.createElement('input');
       defaultPurchasedUnit.type = "number";
       defaultPurchasedUnit.min = 0;
       defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+
       
       function assembleCalculator(configVariableObject){
         let theTable = document.getElementById('myTable');
@@ -77,9 +70,101 @@
 
           onlyNamesStartValAndPositionArr.push(arr)
         }
+
+        if ( currentPeriod === 1 ) {
+          attachColumnHeadersAndInitialValues(theTable,onlyNamesStartValAndPositionArr);
+        } else {
+          // no way this is the best way --> but let's get this working asap.  I'll clean up afterward.
+          appendPastPeriodData(theTable,onlyNamesStartValAndPositionArr)
+          appendCurrentPeriodData(theTable,onlyNamesStartValAndPositionArr)
+          appendFutureRows(theTable,onlyNamesStartValAndPositionArr)
+        }
         
-        attachColumnHeadersAndInitialValues(theTable,onlyNamesStartValAndPositionArr);
+
       }
+
+      // responsible for appending all past rows
+      function appendPastPeriodData(table,array){
+        let allColumnHeaders = document.createElement('tr');
+        let firstPeriodData = document.createElement('tr');
+        allColumnHeaders.style.cssText = "background-color:chartreuse";
+        
+        // purchased units and final token balance require special treatment since they're derived values --> not simple "go and look up"
+        // one is from the user, one is derived
+
+        // first you can ONLY append the column names
+        array.forEach((columnTuple)=>{
+          let name = columnTuple[0];
+          let nameTableData = document.createElement('td');
+          nameTableData.innerHTML = name;
+          nameTableData.style.cssText = "padding:.25em";
+
+          allColumnHeaders.appendChild(nameTableData);
+        });
+
+        table.appendChild(allColumnHeaders);
+
+        // for all periods passed up to the past horizon viewable config variable
+
+        // these are columns
+        for ( let tableColumn = 0; tableColumn < array.length; tableColumn++ ) {
+          console.log('tableColumn',tableColumn);
+
+          // create the jth loop 
+          // if the viewable horizon is greater than the currentPeriod
+          if ( currentPeriod < js_vars.past_horizon_viewable ){
+            // special case
+            // if its the second period && the current period is less than the permissable / viewable horizon 
+            if ( currentPeriod === 2 ) {
+              let name = array[tableColumn][0];
+              let startVal = array[tableColumn][1];
+              let mostRecentUnitPurchase = Number(js_vars.purchased_units_across_all_rounds[0]);
+
+              let startValTableData = document.createElement('td');
+              startValTableData.id = `${name}-2`;
+              
+              //how to remove the hard-coding here?
+              // pass boolean which separates these "lookup / dependent" variables
+              if ( name === 'purchased_unit' ){
+                startValTableData.innerHTML = mostRecentUnitPurchase;
+              } else if ( name === 'final_token_balance' ) {
+                startValTableData.innerHTML = js_vars.start_token_balance - (mostRecentUnitPurchase * costPerUnit);
+              } else {
+                startValTableData.innerHTML = startVal;
+              }
+
+              firstPeriodData.style.cssText = "background-color:white";
+              firstPeriodData.appendChild(startValTableData);
+              table.appendChild(firstPeriodData);
+            } else {
+              // 
+              for ( let pastRow = 1; pastRow < currentPeriod; pastRow++ ) {
+                console.log('this is pastRow',pastRow)              
+              }
+            }
+
+          }
+        }
+      }
+
+      function appendCurrentPeriodData(table,array){
+        console.log('appendCurrentPeriodData');
+        console.log('table',table);
+        console.log('array',array);
+
+        // for each column name in the array,
+        // "read the name" then figure out what you need to do based on the name.
+        // maybe I don't need to loop through the array I'm passing but the original config?
+        
+      }
+
+      function appendFutureRows(table,array){
+        console.log('appendFutureRows');
+        console.log('table',table);
+        console.log('array',array);
+      }
+
+
 
       function attachColumnHeadersAndInitialValues(table,array){
         let columnHeaders = document.createElement('tr');
@@ -106,7 +191,6 @@
             purchasedUnitsInputClone.id = `purchased-unit-input-1`
             startingValues.appendChild(purchasedUnitsInputClone);
           }
-
         }
 
         columnHeaders.style.cssText = "background-color:chartreuse";
@@ -116,51 +200,6 @@
       }
 
       assembleCalculator(js_vars.the_calculator_config)
-
-    //taking consts from js_vars
-    //   const incomeConst = js_vars.income;
-    //   const costPerUnitConst = js_vars.cost_per_unit;
-    //   const buyingLimit = js_vars.buying_limit;
-
-    //   //just taking the keys from js_vars.pay_sequence
-    //   const decisionMatrix = [js_vars.inflation_set,js_vars.interest_rate_set]
-    //   const periodNumber = js_vars.current_period;
-
-    //   //if this problem needs to scale, should figure out how to make this programmatically
-    //   //maps the particular decision to its corresponding inflation, interest rate, and pay sequence
-    //   function convertDecisionToMatrix(num){
-    //     const obj = {
-    //       0:[0,0,0],
-    //       1:[1,1,0],
-    //       2:[2,2,0],
-    //       3:[0,0,1],
-    //       4:[1,1,1],
-    //       5:[2,2,1],
-    //       6:[0,0,2],
-    //       7:[1,1,2],
-    //       8:[2,2,2]
-    //     }
-    //     return obj[num]        
-    //   }
-
-    //   //the index of the experiment_sequence string should change every two periods.
-    //   function mapPeriodToIndex(num){
-    //     //if num is odd
-    //     if ( num % 2 === 1 ) {
-    //       return Math.floor(num/2);
-    //     }
-    //     return Math.floor(num/2)-1;
-    //   }
-
-    //   const indexOfDecision = mapPeriodToIndex(periodNumber)
-    //   //two periods per decision
-    //   const particularDecision = Number(js_vars.experiment_sequence[indexOfDecision]);
-    //   const decToChoiceMatrix = convertDecisionToMatrix(particularDecision);
-      
-    //   const inflationThisDecision = decisionMatrix[0][decToChoiceMatrix[0]]
-    //   const interestRateThisDecision = decisionMatrix[1][decToChoiceMatrix[1]]
-    //   const paySequenceThisDecision = decToChoiceMatrix[2]
-    //   console.log('here is the experimental sequence --> particularDecision',particularDecision);
     </script>
 
      <script>

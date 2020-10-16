@@ -154,6 +154,10 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
+    cost_per_unit_this_round = models.FloatField()
+    start_token_balance = models.FloatField()
+    final_token_balance = models.FloatField()
+    inflation = models.IntegerField()
     
     # the buying limit logic will have to be set against purchased_units
     # buying_limit = models.FloatField()
@@ -178,7 +182,5 @@ class Player(BasePlayer):
     #         # difference in logic between the first and second rounds??
 
 
-    cost_per_unit_this_round = models.FloatField()
-    start_token_balance = models.FloatField()
-    final_token_balance = models.FloatField()
+    
     # treatment_variable = models.StringField()
