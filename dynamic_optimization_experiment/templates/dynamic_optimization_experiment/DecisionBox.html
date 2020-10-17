@@ -1,17 +1,22 @@
 {% load otree %}
 
-<div class="card bg-light m-3">
-    <div class="card-body">
-        <h3 style="padding:.5em">
-            Decision Box
-        </h3>
-        <div style="background-color: yellow; padding:1em">
+<div class="card bg-light m-3" style="margin: 0 1.5rem 0 0 !important;">
+    <div class="card-body decision-box">
+        <div class="titleContainer">
+            <div class="flexContainer">
+                <div class="titleDash"></div>
+                <div class="title">
+                    Decision Box
+                </div>
+            </div>
+        </div>
+        <div style="padding:1em">
             <p>
                 Please submit your choice for period: {{round_number}}
                 </br>
             </p>
             <p>
-                Number of units you would like to purchase:  
+                Number of units you would like to purchase:
             </p>
             {% formfield player.purchased_units %}
             {% next_button %}

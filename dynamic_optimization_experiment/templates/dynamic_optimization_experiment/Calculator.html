@@ -2,12 +2,12 @@
 {% load otree %}
 
 {% block title %}
-    Dynamic Optimization Experiment
+    <h1>Dynamic Optimization Experiment</h1>
 {% endblock %}
 
 {% block content %}
 
-    <div style="display:flex;flex-direction:row;">
+    <div style="display: flex; flex-direction: row;">
         <div style="flex-basis:30%">{% include Constants.decision_box_component %}</div>
         <div style="flex-basis:70%;">{% include Constants.output_to_points_conversion_component %}</div>
     </div>
