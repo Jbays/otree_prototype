@@ -32,9 +32,27 @@
       <button style="background-color: red;" onClick=calculateTableVals(event)>Calculate</button>
     </div>
 
+
+    <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
+
     <script>
       const currentPeriod = js_vars.current_period;
       const costPerUnit = js_vars.cost_per_unit;
+      console.log('costPerUnit',costPerUnit);
+      const incomeConst = js_vars.income;
+      const interestRateConst = (100+js_vars.interest_rate)/100;
+      const startTokenBalanceMostRecent = js_vars.start_token_balance_upcoming;
+      const totalNumberOfPeriods = document.getElementById('total_number_of_periods_container').innerHTML;
+      const inflationConst = js_vars.inflation;
+      const futureHorizonViewableConst = js_vars.future_horizon_viewable;
+
+      console.log(js_vars)
+
+      let defaultPurchasedUnit = document.createElement('input');
+      defaultPurchasedUnit.type = "number";
+      defaultPurchasedUnit.min = 0;
+      defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+      // console.log('totalNumberOfPeriods',totalNumberOfPeriods)
 
       // TODO: 15 Oct
       // in next iteration, this object will need to be created based on config values
@@ -57,10 +75,22 @@
         "inflation":"constant",
         "interest_rate":"constant",
         // note that this is the most_recent_final_token_balance
+        // 
         "start_token_balance":["income+(interest_rate*final_token_balance)"],
         "purchased_unit":"input",
         "final_token_balance":["start_token_balance-(purchased_units*cost_per_unit)"],
       };
+
+      const instructionOnHowToIncrementFuture = {
+        "period":"increment",
+        "income":"constant",
+        "cost_per_unit":"constant",
+        "inflation":"constant",
+        "interest_rate":"constant",
+        "start_token_balance":["income+(interest_rate*final_token_balance)"],
+        "purchased_unit":"input",
+        "final_token_balance":["start_token_balance-(purchased_units*cost_per_unit)"],
+      }
 
       // input is the key name
       // output is the expected value at a given period
@@ -74,7 +104,7 @@
         if ( instructionsOnHowToIncrement.hasOwnProperty(keyName) ) {
           let proptype = instructionsOnHowToIncrement[keyName];
 
-          console.log('proptype',proptype);
+          // console.log('proptype',proptype);
 
           if ( proptype === 'constant' ) {
             return js_vars[keyName]
@@ -84,15 +114,41 @@
             // return js_vars[`${keyName}_across_all_rounds`][currentPeriod-2]
           }
         }
-        
       }
 
-      console.log(js_vars)
+      // maybe this function can be passed all the required constants?  Then it can make the calculation itself.
+      function calculateFutureValueBasedOnProptype(keyName, futurePeriod, income, costPerUnit, inflation, interestRate, startTokenBalance){
+        if ( keyName === 'period' ) {
+          return futurePeriod+1;
+        };
 
-      let defaultPurchasedUnit = document.createElement('input');
-      defaultPurchasedUnit.type = "number";
-      defaultPurchasedUnit.min = 0;
-      defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+        if ( keyName === 'purchased_unit' ) {
+          return null;
+        }
+
+        if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ){
+          let num_of_rounds_in_future = futurePeriod - currentPeriod;
+          console.log('num_of_rounds_in_future',num_of_rounds_in_future)
+          let futureTokenBalance = (startTokenBalance + (income * num_of_rounds_in_future)) * interestRate;
+          return futureTokenBalance
+        }
+
+        if ( keyName === 'income' ) {
+          return income;
+        }
+
+        if ( keyName === 'interest_rate' ) {
+          return interestRate;
+        }
+        
+        if ( keyName === 'inflation' ) {
+          return inflation;
+        }
+
+        if ( keyName === 'cost_per_unit' ) {
+          return costPerUnit;
+        }
+      }
 
       function assembleCalculator(configVariableObject){
         let theTable = document.getElementById('myTable');
@@ -222,20 +278,32 @@
             keyNameTableData.innerHTML = currentValue
             currentRow.appendChild(keyNameTableData);            
           }
-
         })
-
-      
         table.appendChild(currentRow)
       }
 
       function appendFutureRows(table,array){
         console.log('appendFutureRows');
-        // console.log('table',table);
-        // console.log('array',array);
+
+        for ( let futureRow = currentPeriod+1; futureRow < futureHorizonViewableConst; futureRow++ ) {
+          let futureTableRow = document.createElement('tr');
+          array.forEach((elem)=>{
+            let keyName = elem[0];
+            if ( keyName === 'purchased_unit' ) {
+              let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
+              purchasedUnitsInputClone.id = `${keyName}-input-${futureRow}`;
+              futureTableRow.appendChild(purchasedUnitsInputClone);
+            } else {
+              let keyNameTableData = document.createElement('td');
+              keyNameTableData.id = `${keyName}-${futureRow}`;
+              let futureVal = calculateFutureValueBasedOnProptype(keyName,futureRow, incomeConst, costPerUnit,inflationConst, interestRateConst,startTokenBalanceMostRecent);
+              keyNameTableData.innerHTML = futureVal;
+              futureTableRow.appendChild(keyNameTableData);
+            };
+          });
+          table.appendChild(futureTableRow);
+        }
       }
-
-
 
       function attachColumnHeadersAndInitialValues(table,array){
         let columnHeaders = document.createElement('tr');

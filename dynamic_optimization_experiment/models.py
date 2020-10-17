@@ -25,12 +25,6 @@ class Constants(BaseConstants):
     players_per_group = None
     # k_payoff = 1.1
 
-    def creating_session(self):
-        print('from Constants class!~!~!~!~!~!~!~!')
-
-    # def creating_session(self):
-    #     print('from Constants class!~!~!~!~!~!~!~!')
-
 class Subsession(BaseSubsession):
     print('subsessions in the models.py for dynamic_optimization_experiment')
 
