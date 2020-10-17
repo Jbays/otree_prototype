@@ -90,7 +90,7 @@
       }
 
       let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"past_type");
-      // let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"current_type");
+      let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"current_type");
       let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"future_type");
 
       function processConfigObjsToInstructions(array,keyDesired){
@@ -160,30 +160,53 @@
 
       // append the array of values to the table.
       // NOTE: this will only work with purchased_unit
-      function appendCurrentRow(table,array,period){
+      function appendCurrentRow(table,keyNameArr,startValuesArr,columnRulesArr,period,totalPeriods){
         let thisPeriodsRow = document.createElement('tr');
 
-        array.forEach((dataElem)=>{
-          let tableDataElem = document.createElement('td');
-          let dataElemType = typeof dataElem;
-          
-          if ( dataElemType === 'number' ) {
-            tableDataElem.innerHTML = dataElem;
-          } else if ( dataElemType === 'string' ) {
-            let inputRequired = dataElem.split('-')[0];
+        if ( period === 1 ) {
+          startValuesArr.forEach((dataElem)=>{
+            let tableDataElem = document.createElement('td');
+            let dataElemType = typeof dataElem;
 
-            if ( inputRequired === 'purchased_units') {
+            if ( dataElemType === 'number' ) {
+              tableDataElem.innerHTML = dataElem;
+            } else if ( dataElemType === 'string' ) {
+              let inputRequired = dataElem.split('-')[0];
+
+              if ( inputRequired === 'purchased_units') {
+                tableDataElem = defaultPurchasedUnit.cloneNode(true);
+                tableDataElem.id = `${inputRequired}-input-${period}`;
+              }
+              //NOTE: here is where you'd add more extensible logic to handle the other input cases
+              // else if ( inputRequired === 'something new' ){}
+            };
+            thisPeriodsRow.appendChild(tableDataElem);
+          });
+
+          thisPeriodsRow.style.cssText = "background-color:white";
+          table.appendChild(thisPeriodsRow);
+        } else {
+
+          keyNameArr.forEach((keyName,index)=>{
+            let tableDataElem = document.createElement('td');
+            let whatToDoWithKeyName = columnRulesArr[index];
+
+            if ( whatToDoWithKeyName === 'increment' ) {
+              tableDataElem.innerHTML = period;
+            } else if ( whatToDoWithKeyName === 'constant' ) {
+              tableDataElem.innerHTML = startValuesArr[index];
+            } else if ( whatToDoWithKeyName === 'input' ) {
               tableDataElem = defaultPurchasedUnit.cloneNode(true);
-              tableDataElem.id = `${inputRequired}-input-${period}`;
+              tableDataElem.id = `${keyName}-input-${period}`;
+            } else if ( whatToDoWithKeyName === 'look-up' ) {
+              if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ){
+                tableDataElem.innerHTML = js_vars.start_token_balance_upcoming;
+              }
             }
-            //NOTE: here is where you'd add more extensible logic to handle the other input cases
-            // else if ( inputRequired === 'something new' ){}
-          };
-          thisPeriodsRow.appendChild(tableDataElem);
-        });
-
-        thisPeriodsRow.style.cssText = "background-color:white";
-        table.appendChild(thisPeriodsRow);
+            thisPeriodsRow.appendChild(tableDataElem);
+          });
+          table.appendChild(thisPeriodsRow);
+        };
       };
 
       function appendFutureRows(table,keyNamesArr,startValuesArr,columnRulesArr,period,totalPeriods,futureHorizon){
@@ -252,17 +275,13 @@
         appendColumnNamesToTable(budgetingCalculator,arrayOfKeynames);
 
         if ( period === 1 ) {
-          console.log('youre here!')
-          appendCurrentRow(budgetingCalculator,arrayOfStartValues,period);
+          appendCurrentRow(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForCurrentRows,period,totalPeriods);
           appendFutureRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForFutureRows,period,totalPeriods,futureHorizon);
         } else {
-          // append past rows
           appendPastRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForPastRows,period,totalPeriods,pastHorizon);
-          // append current row
-          // append future rows
-
+          appendCurrentRow(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForCurrentRows,period,totalPeriods);
+          appendFutureRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForFutureRows,period,totalPeriods,futureHorizon);
         }
-
       }
 
       assembleNewCalculator(js_vars.the_calculator_config,currentPeriod,totalNumberOfPeriods,futureHorizonViewableConst,pastHorizonViewableConst);
