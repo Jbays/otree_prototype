@@ -11,11 +11,13 @@ SESSION_CONFIG_DEFAULTS = dict(
     interest_rate_1=0,
     income=900.00,
     cost_per_unit=100.00,
-    number_of_rounds=10,
-    decision_horizon_in_rounds=10,
     start_token_balance = 450,
-    calculator_config_json = [{"name_of_field":"period","start_val":1, "db_type":"integer"},{"name_of_field":"income","start_val":"look-up", "db_type":"integer"},{"name_of_field":"cost_per_unit","start_val":"look-up", "db_type":"integer"},{"name_of_field":"inflation","start_val":"look-up", "db_type":"float"},{"name_of_field":"interest_rate","start_val":"look-up", "db_type":"float"},{"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},{"name_of_field":"purchased_unit","start_val":0,"db_type":"float"},{"name_of_field":"final_token_balance", "start_val":150, "db_type":"float"}],
-
+    final_token_balance = 450,
+    calculator_config_json = [{"name_of_field":"period","past_type":"increment","current_type":"increment", "future_type":"increment", "start_val":1, "db_type":"integer"},{"name_of_field":"income","past_type":"constant","current_type":"constant", "future_type":"constant", "start_val":"look-up", "db_type":"integer"},{"name_of_field":"cost_per_unit","past_type":"constant","current_type":"constant", "future_type":"constant", "start_val":"look-up", "db_type":"integer"},{"name_of_field":"inflation","past_type":"constant","current_type":"constant", "future_type":"constant", "start_val":"look-up", "db_type":"float"},{"name_of_field":"interest_rate","past_type":"constant","current_type":"constant", "future_type":"constant", "start_val":"look-up", "db_type":"float"},{"name_of_field":"start_token_balance","past_type":"look-up","current_type":"look-up", "future_type":"calculate", "start_val":"look-up", "db_type":"float"},{"name_of_field":"purchased_unit","past_type":"look-up","current_type":"input", "future_type":"input", "start_val":"input","db_type":"float"},{"name_of_field":"final_token_balance", "past_type":"look-up","current_type":"look-up", "future_type":"calculate", "start_val":"look-up", "db_type":"float"}],
+    # calculator_config_json = [{"name_of_field":"period","start_val":1, "db_type":"integer"},{"name_of_field":"income","start_val":"look-up", "db_type":"integer"},{"name_of_field":"cost_per_unit","start_val":"look-up", "db_type":"integer"},{"name_of_field":"inflation","start_val":"look-up", "db_type":"float"},{"name_of_field":"interest_rate","start_val":"look-up", "db_type":"float"},{"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},{"name_of_field":"purchased_unit","start_val":"input","db_type":"float"},{"name_of_field":"final_token_balance", "start_val":450, "db_type":"float"}],
+    number_of_rounds=10,
+    past_horizon_viewable = 10,
+    future_horizon_viewable = 10,
     # if you get the db_type wrong, it won't work.
     # {"name_of_field":"final_token_balance", "db_type":"float"},
     # {"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},
