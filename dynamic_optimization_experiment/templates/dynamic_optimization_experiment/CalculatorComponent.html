@@ -35,23 +35,9 @@
 
     <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
 
+
+    <!-- here are the constants and calculator helpers -->
     <script>
-      const currentPeriod = js_vars.current_period;
-      const costPerUnit = js_vars.cost_per_unit;
-      console.log('costPerUnit',costPerUnit);
-      const incomeConst = js_vars.income;
-      const interestRateConst = (100+js_vars.interest_rate)/100;
-      const startTokenBalanceMostRecent = js_vars.start_token_balance_upcoming;
-      const totalNumberOfPeriods = document.getElementById('total_number_of_periods_container').innerHTML;
-      const inflationConst = js_vars.inflation;
-      const futureHorizonViewableConst = js_vars.future_horizon_viewable;
-
-      console.log(js_vars)
-
-      let defaultPurchasedUnit = document.createElement('input');
-      defaultPurchasedUnit.type = "number";
-      defaultPurchasedUnit.min = 0;
-      defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
       // console.log('totalNumberOfPeriods',totalNumberOfPeriods)
 
       // TODO: 15 Oct
@@ -75,7 +61,6 @@
         "inflation":"constant",
         "interest_rate":"constant",
         // note that this is the most_recent_final_token_balance
-        // 
         "start_token_balance":["income+(interest_rate*final_token_balance)"],
         "purchased_unit":"input",
         "final_token_balance":["start_token_balance-(purchased_units*cost_per_unit)"],
@@ -127,9 +112,9 @@
         }
 
         if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ){
-          let num_of_rounds_in_future = futurePeriod - currentPeriod;
-          console.log('num_of_rounds_in_future',num_of_rounds_in_future)
-          let futureTokenBalance = (startTokenBalance + (income * num_of_rounds_in_future)) * interestRate;
+          let num_of_rounds_in_future = (futurePeriod - currentPeriod)+1;
+          // console.log('num_of_rounds_in_future',num_of_rounds_in_future)
+          let futureTokenBalance = (startTokenBalance + (income * num_of_rounds_in_future)) * ((100+interestRate)/100);
           return futureTokenBalance
         }
 
@@ -149,6 +134,215 @@
           return costPerUnit;
         }
       }
+    </script>
+
+    <!-- new set of calculator helper functions.  Trying to consider this problem with clarity -->
+    <script>
+      console.log('js_vars',js_vars);
+      const currentPeriod = js_vars.current_period;
+      const costPerUnit = js_vars.cost_per_unit;
+      const incomeConst = js_vars.income;
+      const interestRateConst = js_vars.interest_rate;
+      const startTokenBalanceMostRecent = js_vars.start_token_balance_upcoming;
+      const totalNumberOfPeriods = Number(document.getElementById('total_number_of_periods_container').innerHTML);
+      const inflationConst = js_vars.inflation;
+      const futureHorizonViewableConst = js_vars.future_horizon_viewable;
+      const pastHorizonViewableConst = js_vars.past_horizon_viewable;
+
+      let defaultPurchasedUnit = document.createElement('input');
+          defaultPurchasedUnit.type = "number";
+          defaultPurchasedUnit.min = 0;
+          defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+
+      function keyNameExtractor(arrayOfObjs){
+        let output = []
+
+        arrayOfObjs.forEach((elem)=>{
+          if ( elem.hasOwnProperty('name_of_field') ) {
+            output.push(elem.name_of_field);
+          }
+        })
+      
+        return output
+      }
+
+      function startValueExtractor(arrayOfObjs){
+        let output = []
+
+        arrayOfObjs.forEach((elem)=>{
+          let keyName = elem.name_of_field;
+          if ( elem.hasOwnProperty('start_val') ) {
+            let startValType = typeof elem.start_val;
+            
+            if ( startValType === 'number' ) {
+              output.push(elem.start_val);
+            } else if (startValType === 'string') {
+              if ( elem.start_val === 'look-up' ) {
+                output.push(js_vars[keyName])
+              } else if (elem.start_val === 'input' ) {
+                output.push(`${keyName}-input`)
+              }
+            }
+          }
+        })
+      
+        return output
+      }
+
+      // let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0]);
+      // let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"current_type");
+      let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"future_type");
+
+      function processConfigObjsToInstructions(array,keyDesired){
+        let output = [];
+
+        array.forEach((elem)=>{
+          if ( elem.hasOwnProperty('future_type') ) {
+            output.push(elem.future_type);
+          };
+        });
+
+        return output;
+      };
+      
+    </script>
+
+
+    <!-- here are the main calculator functions -->
+    <script>
+      // creates the row, creates the table data elements, to those elements adds the correct label
+      // appends those elements the row, then appends the row to the budgeting calculator
+      function appendColumnNamesToTable(table,array){
+        let columnHeadersRow = document.createElement('tr');
+
+        array.forEach((columnName)=>{
+          let columnTableData = document.createElement('td');
+          columnTableData.innerHTML = columnName;
+          columnTableData.style.cssText = "padding:.25em";
+          columnHeadersRow.appendChild(columnTableData);
+        })
+
+        columnHeadersRow.style.cssText = "background-color:chartreuse";
+        table.appendChild(columnHeadersRow);
+      };
+
+      // append the array of values to the table.
+      // NOTE: this will only work with purchased_unit
+      function appendCurrentRow(table,array,period){
+        let thisPeriodsRow = document.createElement('tr');
+
+        array.forEach((dataElem)=>{
+          let tableDataElem = document.createElement('td');
+          let dataElemType = typeof dataElem;
+          
+          if ( dataElemType === 'number' ) {
+            tableDataElem.innerHTML = dataElem;
+          } else if ( dataElemType === 'string' ) {
+            let inputRequired = dataElem.split('-')[0];
+
+            if ( inputRequired === 'purchased_unit') {
+              tableDataElem = defaultPurchasedUnit.cloneNode(true);
+              tableDataElem.id = `${inputRequired}-input-${period}`;
+            }
+            //NOTE: here is where you'd add more extensible logic to handle the other input cases
+            // else if ( inputRequired === 'something new' ){}
+          };
+          thisPeriodsRow.appendChild(tableDataElem);
+        });
+
+        thisPeriodsRow.style.cssText = "background-color:white";
+        table.appendChild(thisPeriodsRow);
+      };
+
+      function appendFutureRows(table,keyNamesArr,startValuesArr,columnRulesArr,period,totalPeriods,futureHorizon){
+        console.log('table',table);
+        console.log('keyNamesArr',keyNamesArr);
+        console.log('startValuesArr',startValuesArr);
+        console.log('columnRulesArr',columnRulesArr);
+        console.log('period',period);
+        console.log('totalPeriods',totalPeriods);
+        console.log('futureHorizon',futureHorizon);
+
+        // then all this code will have to be x number of times
+        // where x equals the future horizon viewable UPTO the total periods in the entire game
+
+        // totalViewablePeriods
+        // if future horizon is greater than total periods, then show total periods.  Else, only show period + future horizon
+        let totalViewablePeriods = ( futureHorizon > totalPeriods ) ? totalPeriods : (period+futureHorizon) 
+
+        for ( let futureRow = period+1 ; futureRow < totalViewablePeriods; futureRow++ ) {
+          console.log('futureRow',futureRow);
+
+          let futurePeriodRow = document.createElement('tr');
+
+          keyNamesArr.forEach((keyName,index)=>{
+            let tableDataElem = document.createElement('td');
+            let whatToDoWithKeyName = columnRulesArr[index];
+            
+            //NOTE: this is pretty assumptive.  :/
+            // what about an increment value other than period?
+            if ( whatToDoWithKeyName === 'increment' ) {
+              // this'll be updated!
+              tableDataElem.innerHTML = futureRow;
+            } else if ( whatToDoWithKeyName === 'constant' ) {
+              tableDataElem.innerHTML = startValuesArr[index];
+            } else if ( whatToDoWithKeyName === 'calculate' ) {
+              
+              if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ) {
+                let income = js_vars.income;
+                let interestRateDecimal = (100+js_vars.interest_rate)/100;
+                // this'll be updated!
+                let numberOfRoundsInTheFuture = futureRow-1;
+
+                if ( period === 1 ) {
+                  tableDataElem.innerHTML = (js_vars.start_token_balance + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
+                } else {
+                  tableDataElem.innerHTML = (js_vars.final_token_balance_most_recent + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
+                }
+                tableDataElem.id = `${keyName}-${futureRow}`;
+              }
+            } else if ( whatToDoWithKeyName === 'input' ) {
+              if ( keyName === 'purchased_unit' ) {
+                tableDataElem = defaultPurchasedUnit.cloneNode(true);
+                tableDataElem.id = `${keyName}-input-${futureRow}`;
+              }
+            }
+
+            futurePeriodRow.appendChild(tableDataElem);
+          });
+
+          table.appendChild(futurePeriodRow);
+        
+        }
+
+        
+      }
+
+      function assembleNewCalculator(configVariableObject,period,totalPeriods,futureHorizon,pastHorizon){
+        let budgetingCalculator = document.getElementById('myTable');
+        let arrayOfKeynames = keyNameExtractor(configVariableObject[0]);
+        let arrayOfStartValues = startValueExtractor(configVariableObject[0]);
+
+        appendColumnNamesToTable(budgetingCalculator,arrayOfKeynames);
+
+        if ( period === 1 ) {
+          console.log('youre here!')
+          appendCurrentRow(budgetingCalculator,arrayOfStartValues,period);
+          appendFutureRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForFutureRows,period,totalPeriods,futureHorizon);
+          // append future rows
+        } else {
+          // append past rows
+
+          // append current row
+          // append future rows
+
+        }
+
+      }
+
+      assembleNewCalculator(js_vars.the_calculator_config,currentPeriod,totalNumberOfPeriods,futureHorizonViewableConst,pastHorizonViewableConst);
+
+      // below is deprecated.
 
       function assembleCalculator(configVariableObject){
         let theTable = document.getElementById('myTable');
@@ -179,6 +373,8 @@
 
         if ( currentPeriod === 1 ) {
           attachColumnHeadersAndInitialValues(theTable,onlyNamesStartValAndPositionArr);
+          appendFutureRows(theTable,onlyNamesStartValAndPositionArr);
+
         } else {
           // no way this is the best way --> but let's get this working asap.  I'll clean up afterward.
           appendPastPeriodData(theTable,onlyNamesStartValAndPositionArr)
@@ -282,28 +478,29 @@
         table.appendChild(currentRow)
       }
 
-      function appendFutureRows(table,array){
-        console.log('appendFutureRows');
+      // function appendFutureRows(table,array){
+      //   console.log('appendFutureRows');
 
-        for ( let futureRow = currentPeriod+1; futureRow < futureHorizonViewableConst; futureRow++ ) {
-          let futureTableRow = document.createElement('tr');
-          array.forEach((elem)=>{
-            let keyName = elem[0];
-            if ( keyName === 'purchased_unit' ) {
-              let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
-              purchasedUnitsInputClone.id = `${keyName}-input-${futureRow}`;
-              futureTableRow.appendChild(purchasedUnitsInputClone);
-            } else {
-              let keyNameTableData = document.createElement('td');
-              keyNameTableData.id = `${keyName}-${futureRow}`;
-              let futureVal = calculateFutureValueBasedOnProptype(keyName,futureRow, incomeConst, costPerUnit,inflationConst, interestRateConst,startTokenBalanceMostRecent);
-              keyNameTableData.innerHTML = futureVal;
-              futureTableRow.appendChild(keyNameTableData);
-            };
-          });
-          table.appendChild(futureTableRow);
-        }
-      }
+      //   for ( let futureRow = currentPeriod; futureRow < futureHorizonViewableConst; futureRow++ ) {
+      //     console.log('futureRow',futureRow);
+      //     let futureTableRow = document.createElement('tr');
+      //     array.forEach((elem)=>{
+      //       let keyName = elem[0];
+      //       if ( keyName === 'purchased_unit' ) {
+      //         let purchasedUnitsInputClone = defaultPurchasedUnit.cloneNode(true);
+      //         purchasedUnitsInputClone.id = `${keyName}-input-${futureRow}`;
+      //         futureTableRow.appendChild(purchasedUnitsInputClone);
+      //       } else {
+      //         let keyNameTableData = document.createElement('td');
+      //         keyNameTableData.id = `${keyName}-${futureRow}`;
+      //         let futureVal = calculateFutureValueBasedOnProptype(keyName,futureRow, incomeConst, costPerUnit,inflationConst, interestRateConst,startTokenBalanceMostRecent);
+      //         keyNameTableData.innerHTML = futureVal;
+      //         futureTableRow.appendChild(keyNameTableData);
+      //       };
+      //     });
+      //     table.appendChild(futureTableRow);
+      //   }
+      // }
 
       function attachColumnHeadersAndInitialValues(table,array){
         let columnHeaders = document.createElement('tr');
@@ -338,7 +535,7 @@
         table.appendChild(startingValues);
       }
 
-      assembleCalculator(js_vars.the_calculator_config)
+      
     </script>
 
      <script>

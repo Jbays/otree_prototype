@@ -42,6 +42,7 @@ class Calculator(Page):
             future_horizon_viewable=self.session.config['future_horizon_viewable'],
             past_horizon_viewable=self.session.config['past_horizon_viewable'],
             final_token_balance_most_recent=final_token_balance_most_recent,
+            final_token_balance=self.session.config['final_token_balance'],
             start_token_balance_upcoming=start_token_balance_upcoming,
             # interest_rate_set=[self.session.config['interest_rate_1'],self.session.config['interest_rate_2'],self.session.config['interest_rate_3']],
             purchased_units_across_all_rounds=purchased_units_across_all_rounds,
@@ -52,6 +53,8 @@ class Calculator(Page):
     # this code makes "var a" accessible in  Calculator.html 
     def vars_for_template(self):
         print('vars_for_template invoked!')
+        # print('self',self)
+        # print('self.player',self.player)
 
         return dict(
             round_number=self.round_number,
