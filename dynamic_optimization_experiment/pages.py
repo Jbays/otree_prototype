@@ -80,11 +80,10 @@ class Calculator(Page):
             self.player.start_token_balance = self.session.config['start_token_balance']
             self.player.final_token_balance = self.session.config['start_token_balance'] - (units_just_purchased * cost_per_unit_inflation_adjusted)
         else:
-            units_purchased_last_round = self.player.in_round(current_round-1).purchased_units
-            final_token_balance_last_round = self.player.in_round(current_round-1).final_token_balance
-            
-            self.player.start_token_balance = (final_token_balance_last_round * interest_rate) + income - (units_purchased_last_round * cost_per_unit_inflation_adjusted)
-            self.player.final_token_balance = (final_token_balance_last_round*interest_rate)+income - (units_purchased_last_round * cost_per_unit_inflation_adjusted)
+            final_token_balance_most_recent = self.player.in_round(current_round-1).final_token_balance
+
+            self.player.start_token_balance = (final_token_balance_most_recent + income ) * interest_rate
+            self.player.final_token_balance = self.player.start_token_balance - (units_just_purchased * cost_per_unit_inflation_adjusted)
 
         # # variables required for calculating ODD rounds
         # current_round = self.round_number
