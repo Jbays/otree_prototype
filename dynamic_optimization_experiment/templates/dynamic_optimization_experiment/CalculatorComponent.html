@@ -222,6 +222,7 @@
             } else if ( whatToDoWithKeyName === 'look-up' ) {
               if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ){
                 tableDataElem.innerHTML = js_vars.start_token_balance_upcoming;
+                tableDataElem.id = `${keyName}-${period}`;
               }
             }
             thisPeriodsRow.appendChild(tableDataElem);
@@ -268,9 +269,10 @@
 
                 if (period === 1) {
                   tableDataElem.innerHTML = (js_vars.start_token_balance + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
+                  tableDataElem.id = `${keyName}-${period}`;
                 } else {
-
                   tableDataElem.innerHTML = (js_vars.final_token_balance_most_recent + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
+                  tableDataElem.id = `${keyName}-${period}`;
                 }
                 tableDataElem.id = `${keyName}-${futureRow}`;
               }
