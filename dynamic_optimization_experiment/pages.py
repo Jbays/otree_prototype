@@ -68,6 +68,7 @@ class Calculator(Page):
         cost_per_unit = self.session.config['cost_per_unit']
         income = self.session.config['income']
         inflation = self.session.config['inflation_1']
+        
         # converting interest_rate decimal to percentage
         interest_rate = (100+(self.session.config['interest_rate_1']))/100
         cost_per_unit_inflation_adjusted = cost_per_unit * inflation
