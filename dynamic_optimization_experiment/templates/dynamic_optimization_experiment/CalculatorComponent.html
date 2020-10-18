@@ -184,7 +184,6 @@
       }
 
       // append the array of values to the table.
-      // NOTE: this will only work with purchased_unit
       function appendCurrentRow(table,keyNameArr,startValuesArr,columnRulesArr,period,totalPeriods){
         let thisPeriodsRow = document.createElement('tr');
 
@@ -234,18 +233,9 @@
       };
 
       function appendFutureRows(table, keyNamesArr, startValuesArr, columnRulesArr, period, totalPeriods, futureHorizon) {
-        console.log('table', table);
-        console.log('keyNamesArr', keyNamesArr);
-        console.log('startValuesArr', startValuesArr);
-        console.log('columnRulesArr', columnRulesArr);
-        console.log('period', period);
-        console.log('totalPeriods', totalPeriods);
-        console.log('futureHorizon', futureHorizon);
+        let numberOfPeriodsRemaining = totalPeriods-(period-1);
 
-        // if future horizon is greater than total periods, then show total periods.  Else, only show period + future horizon
-        let totalViewablePeriods = ( futureHorizon > totalPeriods ) ? totalPeriods : (period+futureHorizon);
-
-        for ( let futureRow = period+1 ; futureRow < totalViewablePeriods; futureRow++ ) {
+        for ( let futureRow = period+1 ; futureRow <= totalPeriods; futureRow++ ) {
           let futurePeriodRow = document.createElement('tr');
 
           keyNamesArr.forEach((keyName, index) => {
@@ -265,11 +255,12 @@
                 let income = js_vars.income;
                 let interestRateDecimal = (100 + js_vars.interest_rate) / 100;
                 // this'll be updated!
-                let numberOfRoundsInTheFuture = futureRow - 1;
+                let numberOfRoundsInTheFuture = futureRow - period+1;
 
                 if (period === 1) {
                   tableDataElem.innerHTML = (js_vars.start_token_balance + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
                 } else {
+
                   tableDataElem.innerHTML = (js_vars.final_token_balance_most_recent + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
                 }
                 tableDataElem.id = `${keyName}-${futureRow}`;
@@ -280,15 +271,10 @@
                 tableDataElem.id = `${keyName}-input-${futureRow}`;
               }
             }
-
             futurePeriodRow.appendChild(tableDataElem);
           });
-
           table.appendChild(futurePeriodRow);
-
         }
-
-
       }
 
       function assembleNewCalculator(configVariableObject, period, totalPeriods, futureHorizon, pastHorizon) {
