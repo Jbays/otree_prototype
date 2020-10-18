@@ -41,11 +41,19 @@
       }
 
       function calculateNaturalLogVals(number) {
-        let output = [0];
+        let output = [];
+
+        // for (let i = -20; i < 0; i++) {
+        //   output.push(getBaseLog(Math.E, i));
+        // }
+
+        // output.push(0);
 
         for (let i = 2; i <= number; i++) {
           output.push(getBaseLog(Math.E, i));
         }
+
+        console.log(output)
 
         return output
       }
@@ -72,7 +80,7 @@
           }
         },
         yAxis: {
-          softMin: -2,
+          min: -2,
           title: {
             text: 'Points',
             style: {
@@ -98,7 +106,7 @@
               color: '#fff'
             }
           },
-          // max: 4
+          max: 30
         },
         legend: {
           layout: 'horizontal',
