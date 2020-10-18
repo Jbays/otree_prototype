@@ -40,7 +40,7 @@ class Player(BasePlayer):
     cost_per_unit_this_round = models.FloatField()
     start_token_balance = models.FloatField()
     final_token_balance = models.FloatField()
-    inflation = models.IntegerField()
+    inflation = models.FloatField()
     points_this_period = models.FloatField()
     total_points = models.FloatField()
 

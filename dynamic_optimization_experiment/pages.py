@@ -22,7 +22,7 @@ class Calculator(Page):
         # note there are a few ways to access the most recent final token balance
         if ( current_round > 1 ):
             final_token_balance_most_recent = self.player.in_round(current_round-1).final_token_balance
-            start_token_balance_upcoming = (final_token_balance_most_recent+self.session.config['income']) * ((100+self.session.config['interest_rate_1'])/100)
+            start_token_balance_upcoming = round(((final_token_balance_most_recent+self.session.config['income']) * ((100+self.session.config['interest_rate_1'])/100)),2)
             
             total_points_most_recent = self.player.in_round(current_round-1).total_points
         else:
@@ -84,19 +84,25 @@ class Calculator(Page):
         units_just_purchased = self.player.in_round(current_round).purchased_units
         convert_purchased_units_to_points = self.session.config['convert_purchased_units_to_output']
 
-        self.player.points_this_period = convert_purchased_units_to_points(units_just_purchased)
+        print('units_just_purchased',units_just_purchased)
+
+        self.player.cost_per_unit_this_round = cost_per_unit_inflation_adjusted
+        self.player.inflation = inflation
+        self.player.points_this_period = round(convert_purchased_units_to_points(units_just_purchased),2)
 
         if ( current_round == 1 ):
-            self.player.start_token_balance = self.session.config['start_token_balance']
-            self.player.final_token_balance = self.session.config['start_token_balance'] - (units_just_purchased * cost_per_unit_inflation_adjusted)
+            self.player.start_token_balance = round(self.session.config['start_token_balance'],2)
+            self.player.final_token_balance = round((self.session.config['start_token_balance'] - (units_just_purchased * cost_per_unit_inflation_adjusted)),2)
             self.player.total_points = self.player.points_this_period
 
         else:
-            final_token_balance_most_recent = self.player.in_round(current_round-1).final_token_balance
-            total_points_most_recent = self.player.in_round(current_round-1).total_points
+            final_token_balance_most_recent = round(self.player.in_round(current_round-1).final_token_balance,2)
+            total_points_most_recent = round(self.player.in_round(current_round-1).total_points,2)
 
-            self.player.start_token_balance = (final_token_balance_most_recent + income ) * interest_rate
-            self.player.final_token_balance = self.player.start_token_balance - (units_just_purchased * cost_per_unit_inflation_adjusted)
-            self.player.total_points = self.player.points_this_period + total_points_most_recent
+            print('((final_token_balance_most_recent + income ) * interest_rate)',((final_token_balance_most_recent + income ) * interest_rate))
+
+            self.player.start_token_balance = round(((final_token_balance_most_recent + income ) * interest_rate),2)
+            self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_inflation_adjusted)),2)
+            self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
 
 page_sequence = [Calculator]
