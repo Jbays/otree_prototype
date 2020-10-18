@@ -43,20 +43,32 @@
       function calculateNaturalLogVals(number) {
         let output = [];
 
-        // for (let i = -20; i < 0; i++) {
-        //   output.push(getBaseLog(Math.E, i));
-        // }
-
-        // output.push(0);
-
-        for (let i = 2; i <= number; i++) {
-          output.push(getBaseLog(Math.E, i));
+        for ( let i = 0.1; i < 1; i=i+.1 ){
+          output.push([i,getBaseLog(Math.E, i)]);
         }
 
-        console.log(output)
+        output.push([1,0])
+
+        for (let i = 1; i <= number; i++) {
+          output.push([i,getBaseLog(Math.E, i)]);
+        }
 
         return output
       }
+
+      // function calculateNaturalLogVals(number) {
+      //   let output = [0];
+
+      //   // for ( let i = 0.1; i < 1; i=i+.1 ){
+      //   //   output.push(getBaseLog(Math.E, i));
+      //   // }
+
+      //   for (let i = 1; i <= number; i++) {
+      //     output.push(getBaseLog(Math.E, i));
+      //   }
+
+      //   return output
+      // }
     </script>
 
     <!-- here's the code which appends the chart -->
@@ -80,7 +92,7 @@
           }
         },
         yAxis: {
-          min: -2,
+          // min: -2,
           title: {
             text: 'Points',
             style: {
@@ -123,7 +135,7 @@
             label: {
               connectorAllowed: false
             },
-            pointStart: 0,
+            // pointStart: 0,
             color: '#60FF5F'
           }
         },
