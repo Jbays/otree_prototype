@@ -156,7 +156,7 @@
         // if number of elapsed periods is greater than past horizon, only reveal up to past horizon.
         let revealThisManyPastPeriods = (numberOfElapsedPeriods < pastHorizon) ? numberOfElapsedPeriods : pastHorizon;
         
-        for ( let pastRow = 1; pastRow <= revealThisManyPastPeriods; pastRow++ ) {
+        for ( let pastRow = period-revealThisManyPastPeriods; pastRow <= numberOfElapsedPeriods; pastRow++ ) {
           let pastPeriodRow = document.createElement('tr');
           keyNamesArr.forEach((keyName,index)=>{
             let tableDataElem = document.createElement('td');
