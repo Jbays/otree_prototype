@@ -43,6 +43,9 @@ class Player(BasePlayer):
     inflation = models.IntegerField()
     points_this_period = models.FloatField()
     total_points = models.FloatField()
+
+    # if certain config variable is present
+    # then add new model
     
     # the buying limit logic will have to be set against purchased_units
     # buying_limit = models.FloatField()

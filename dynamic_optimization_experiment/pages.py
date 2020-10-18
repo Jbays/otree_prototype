@@ -1,5 +1,5 @@
 from ._builtin import Page, WaitPage
-import json
+
 
 class DecisionBox(Page):
     form_model = 'player'
