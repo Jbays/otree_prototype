@@ -255,6 +255,11 @@
                 // this'll be updated!
                 let numberOfRoundsInTheFuture = futureRow - period+1;
 
+                // I don't know why --> but if its the first period, you have to subtract one to get the math correct
+                if ( period === 1 ) {
+                  numberOfRoundsInTheFuture = numberOfRoundsInTheFuture - 1;
+                }
+
                 if (period === 1) {
                   tableDataElem.innerHTML = (js_vars.start_token_balance + (income * numberOfRoundsInTheFuture)) * interestRateDecimal;
                 } else {
