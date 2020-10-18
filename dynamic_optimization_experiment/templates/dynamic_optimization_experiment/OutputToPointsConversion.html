@@ -1,23 +1,32 @@
 {% load otree %}
 
-<div class="card bg-light m-3">
-  <div class="card-body">
+<div class="card bg-light m-3" style="margin: 0 !important;">
+  <div class="card-body decision-box" style="border-radius: 3px;">
     <!-- <h3 style="text-align: center;">
         Utility Plot
     </h3>
     <br/> -->
 
+    <div class="titleContainer">
+      <div class="flexContainer">
+        <div class="titleDash"></div>
+        <div class="title">
+          Output To Points Conversion
+        </div>
+      </div>
+    </div>
+
     <figure class="highcharts-figure">
       <div id="container"></div>
-      <br/>
-      <p class="highcharts-description">
+      <br />
+      <p class="highcharts-description" style="padding: 0 1rem;">
         Here is a description
         <!-- Basic line chart showing trends in a dataset. This chart includes the
         <code>series-label</code> module, which adds a label to each line for
         enhanced readability. -->
       </p>
     </figure>
-    
+
 
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/series-label.js"></script>
@@ -27,49 +36,84 @@
 
     <!-- here's the code which calculates the first 100 points for the natural log of x -->
     <script>
-      function getBaseLog(x,y){
+      function getBaseLog(x, y) {
         return Math.log(y) / Math.log(x);
       }
 
-      function calculateNaturalLogVals(number){
+      function calculateNaturalLogVals(number) {
         let output = [0];
 
-        for ( let i = 2; i <= number; i++ ) {
-          output.push(getBaseLog(Math.E,i));
+        for (let i = 2; i <= number; i++) {
+          output.push(getBaseLog(Math.E, i));
         }
-        
+
         return output
       }
     </script>
 
     <!-- here's the code which appends the chart -->
     <script>
+      Highcharts.setOptions({
+        chart: {
+          style: {
+            fontFamily: 'Roboto Condensed',
+            marginTop: '10px'
+          },
+          backgroundColor: '#272d38'
+        }
+      })
+
       Highcharts.chart('container', {
         title: {
-            text: 'Output to Points Conversion'
+          // text: 'Output to Points Conversion',
+          text: '',
+          style: {
+            color: '#fff'
+          }
         },
         yAxis: {
-            title: {
-                text: 'Points'
+          title: {
+            text: 'Points',
+            style: {
+              color: '#fff'
             }
+          },
+          labels: {
+            style: {
+              color: '#fff'
+            }
+          }
         },
         xAxis: {
-            title: {
-                text: 'Purchased Units'
-            },
+          title: {
+            text: 'Purchased Units',
+            style: {
+              color: '#fff'
+            }
+          },
+          labels: {
+            style: {
+              color: '#fff'
+            }
+          }
         },
         legend: {
-            layout: 'horizontal',
-            align: 'right',
-            // verticalAlign: 'middle',
-            // enabled: false
+          layout: 'horizontal',
+          align: 'right',
+          itemStyle: {
+            color: '#fff',
+            fontWeight: 'bold'
+          }
+          // verticalAlign: 'middle',
+          // enabled: false
         },
         plotOptions: {
           series: {
             label: {
               connectorAllowed: false
             },
-            pointStart: 0
+            pointStart: 0,
+            color: 'red'
           }
         },
 
@@ -77,25 +121,25 @@
           {
             name: 'Output to Points',
             data: calculateNaturalLogVals(100)
-          }, 
+          },
         ],
         responsive: {
           rules: [{
-              condition: {
-                  maxWidth: 500
-              },
-              chartOptions: {
-                  legend: {
-                      layout: 'horizontal',
-                      align: 'center',
-                      verticalAlign: 'bottom'
-                  }
+            condition: {
+              maxWidth: 500
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
               }
+            }
           }]
         }
       });
 
-      </script>
+    </script>
 
     <!-- here's the code which removes the highcharts.com credit -->
     <script>
