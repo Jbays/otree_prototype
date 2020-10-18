@@ -364,6 +364,50 @@
     //     console.log('calculator values reset!')
     //   }
 
+    function calculateTableVals(event){
+      event.preventDefault();
+      let currentPeriod = js_vars.current_period;
+      let numberOfRounds = js_vars.number_of_rounds;
+      let costPerUnit = js_vars.cost_per_unit;
+      let income = js_vars.income;
+      let futureHorizon = js_vars.future_horizon_viewable;
+
+      for(let i = currentPeriod; i <= numberOfRounds && i<= currentPeriod + futureHorizon; i++){
+        let purchasedUnits = Number(document.getElementById(`purchased_units-input-${i}`).value);
+
+        let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+        let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
+        let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+
+        let startTokenBalanceValue = Number(startTokenBalance.innerText);
+        let finalTokenBalanceValue = startTokenBalanceValue - purchasedUnits * costPerUnit;
+
+        finalTokenBalance.innerHTML = finalTokenBalanceValue;
+        nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+      }
+    }
+
+    function resetTableVals(event){
+      event.preventDefault();
+      let currentPeriod = js_vars.current_period;
+      let numberOfRounds = js_vars.number_of_rounds;
+      let income = js_vars.income;
+      for(let i = currentPeriod; i <= numberOfRounds; i++){
+        let purchasedUnits = document.getElementById(`purchased_units-input-${i}`);
+        let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+        let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
+        let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+
+        let startTokenBalanceValue = Number(startTokenBalance.innerText);
+        let finalTokenBalanceValue = startTokenBalanceValue;
+
+        purchasedUnits.value = '';
+        console.log(purchasedUnits)
+        finalTokenBalance.innerHTML = finalTokenBalanceValue;
+        nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+      }
+    }
+
 
     //   function calculateTableVals(event){
     //     event.preventDefault()
