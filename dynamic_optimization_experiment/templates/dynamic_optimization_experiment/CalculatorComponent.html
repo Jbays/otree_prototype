@@ -159,8 +159,8 @@
         // if number of elapsed periods is less than past horizon, then reveal data for all elapsed periods
         // if number of elapsed periods is greater than past horizon, only reveal up to past horizon.
         let revealThisManyPastPeriods = (numberOfElapsedPeriods < pastHorizon) ? numberOfElapsedPeriods : pastHorizon;
-
-        for (let pastRow = 1; pastRow <= revealThisManyPastPeriods; pastRow++) {
+        
+        for ( let pastRow = period-revealThisManyPastPeriods; pastRow <= numberOfElapsedPeriods; pastRow++ ) {
           let pastPeriodRow = document.createElement('tr');
           keyNamesArr.forEach((keyName, index) => {
             let tableDataElem = document.createElement('td');
@@ -234,10 +234,16 @@
         };
       };
 
+      // 
       function appendFutureRows(table, keyNamesArr, startValuesArr, columnRulesArr, period, totalPeriods, futureHorizon) {
-        let numberOfPeriodsRemaining = totalPeriods-(period-1);
+        // does not count the current period
+        let numberOfPeriodsRemaining = totalPeriods-(period)
 
-        for ( let futureRow = period+1 ; futureRow <= totalPeriods; futureRow++ ) {
+        // if number of number of periods remaining is less than future horizon, then populate rows for all remaining number of periods
+        // if number of number of periods remaining is greater than future horizon, then populate rows up to future horizon
+        let populateThisManyFutureRows = (numberOfPeriodsRemaining < futureHorizon) ? numberOfPeriodsRemaining : futureHorizon;
+
+        for ( let futureRow = period+1 ; futureRow <= period+populateThisManyFutureRows; futureRow++ ) {
           let futurePeriodRow = document.createElement('tr');
 
           keyNamesArr.forEach((keyName, index) => {

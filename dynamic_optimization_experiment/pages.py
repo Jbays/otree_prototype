@@ -68,11 +68,14 @@ class Calculator(Page):
         cost_per_unit = self.session.config['cost_per_unit']
         income = self.session.config['income']
         inflation = self.session.config['inflation_1']
-        
+
         # converting interest_rate decimal to percentage
         interest_rate = (100+(self.session.config['interest_rate_1']))/100
         cost_per_unit_inflation_adjusted = cost_per_unit * inflation
         units_just_purchased = self.player.in_round(current_round).purchased_units
+
+        # put the point calculating / recording logic here
+        # can have the points to equation 
 
         # if its the first round, then final token balance is equal to start_token_balance - (units purchased * cost per unit)
         # else, all other rounds, final token balance is equal to ((final_token_balance_last_period * interest) + income) - units_purchased_last_round * cost_per_unit
