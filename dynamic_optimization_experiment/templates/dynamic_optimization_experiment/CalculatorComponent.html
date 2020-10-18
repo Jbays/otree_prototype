@@ -132,6 +132,12 @@
         return output;
       };
 
+
+      function calculateNaturalLogVals(num){
+        return Math.log(Math.E) / Math.log(num);
+      }
+
+
     </script>
 
 
@@ -227,6 +233,13 @@
               if (keyName === 'start_token_balance' || keyName === 'final_token_balance') {
                 tableDataElem.innerHTML = js_vars.start_token_balance_upcoming;
                 tableDataElem.id = `${keyName}-${period}`;
+              } else if ( keyName === 'points' ) {
+                // starting point value is always zero
+                tableDataElem.innerHTML = 0;
+                tableDataElem.id = `${keyName}-${period}`;
+              } else if ( keyName === 'total_points' ) {
+                tableDataElem.innerHTML = js_vars.total_points_most_recent;
+                tableDataElem.id = `${keyName}-${period}`;
               }
             }
             thisPeriodsRow.appendChild(tableDataElem);
@@ -235,10 +248,10 @@
         };
       };
 
-      // 
-      function appendFutureRows(table, keyNamesArr, startValuesArr, columnRulesArr, period, totalPeriods, futureHorizon) {
+      
+      function appendFutureRows(table, keyNamesArr, startValuesArr, columnRulesArr, period, totalPeriods, futureHorizon){
         // does not count the current period
-        let numberOfPeriodsRemaining = totalPeriods-(period)
+        let numberOfPeriodsRemaining = totalPeriods-(period);
 
         // if number of number of periods remaining is less than future horizon, then populate rows for all remaining number of periods
         // if number of number of periods remaining is greater than future horizon, then populate rows up to future horizon
@@ -258,8 +271,16 @@
               tableDataElem.innerHTML = futureRow;
             } else if (whatToDoWithKeyName === 'constant') {
               tableDataElem.innerHTML = startValuesArr[index];
+            } else if (whatToDoWithKeyName === 'look-up') {
+              // for future rows, the starting points value is 0 --> don't purchase units, don't get points
+              if ( keyName === 'points' ) {
+                tableDataElem.innerHTML = 0;
+                tableDataElem.id = `${keyName}-${period}`;
+              } else if ( keyName === 'total_points' ) {
+                tableDataElem.innerHTML = js_vars.total_points_most_recent;
+                tableDataElem.id = `${keyName}-${period}`;
+              }
             } else if (whatToDoWithKeyName === 'calculate') {
-
               if (keyName === 'start_token_balance' || keyName === 'final_token_balance') {
                 let income = js_vars.income;
                 let interestRateDecimal = (100 + js_vars.interest_rate) / 100;
@@ -280,6 +301,7 @@
                 }
                 tableDataElem.id = `${keyName}-${futureRow}`;
               }
+
             } else if (whatToDoWithKeyName === 'input') {
               if (keyName === 'purchased_units') {
                 tableDataElem = defaultPurchasedUnit.cloneNode(true);
