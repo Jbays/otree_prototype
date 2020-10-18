@@ -41,11 +41,19 @@
       }
 
       function calculateNaturalLogVals(number) {
-        let output = [0];
+        let output = [];
+
+        // for (let i = -20; i < 0; i++) {
+        //   output.push(getBaseLog(Math.E, i));
+        // }
+
+        // output.push(0);
 
         for (let i = 2; i <= number; i++) {
           output.push(getBaseLog(Math.E, i));
         }
+
+        console.log(output)
 
         return output
       }
@@ -72,6 +80,7 @@
           }
         },
         yAxis: {
+          min: -2,
           title: {
             text: 'Points',
             style: {
@@ -85,6 +94,7 @@
           }
         },
         xAxis: {
+          min: -1,
           title: {
             text: 'Purchased Units',
             style: {
@@ -95,7 +105,8 @@
             style: {
               color: '#fff'
             }
-          }
+          },
+          max: 30
         },
         legend: {
           layout: 'horizontal',
@@ -113,10 +124,15 @@
               connectorAllowed: false
             },
             pointStart: 0,
-            color: 'red'
+            color: '#60FF5F'
           }
         },
-
+        tooltip: {
+          backgroundColor: 'rgba(39, 45, 56, 0.9)',
+          style: {
+            color: '#fff'
+          }
+        },
         series: [
           {
             name: 'Output to Points',

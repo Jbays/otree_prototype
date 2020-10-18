@@ -1,7 +1,7 @@
 {% load otree %}
 
 <div class="card bg-light m-3">
-  <div class="card-body decision-box">
+  <div class="card-body decision-box" style="padding-bottom: 20px;">
     <div class="titleContainer">
       <div class="flexContainer">
         <div class="titleDash"></div>
@@ -13,10 +13,6 @@
 
     <style>
       button {
-        border: none;
-        border-radius: 2px;
-        box-shadow: 0px 0px 5px 0px rgba(196, 196, 196, 1);
-        padding: 4px 12px;
         min-width: 120px;
       }
 
@@ -39,6 +35,10 @@
         margin: 1.5rem 0 0 0 !important
       }
 
+      .red-button:hover {
+        box-shadow: 0px 0px 0px 3px rgba(96, 255, 95, 0.3) !important;
+      }
+
       #myTable {
         text-align: center;
         margin: 0 auto 1.25rem auto;
@@ -53,8 +53,9 @@
     </table>
 
     <div style="text-align: center;">
-      <button onClick=resetTableVals(event)>Reset values</button>
-      <button style="background-color: red;" onClick=calculateTableVals(event)>Calculate</button>
+      <button class="red-button" style="background-color: white !important; color: #23272f !important; border-color: white !important;" onClick=resetTableVals(event)>Reset
+        Values</button>
+      <button onClick=calculateTableVals(event)>Calculate</button>
     </div>
 
     <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
@@ -75,13 +76,16 @@
       let defaultPurchasedUnit = document.createElement('input');
       defaultPurchasedUnit.type = "number";
       defaultPurchasedUnit.min = 0;
-      defaultPurchasedUnit.style.cssText = "background-color:#ffbbff;text-align:center";
+      defaultPurchasedUnit.style.cssText = "text-align: center; width: 100%; border-radius: 0 !important; border-bottom: 1px solid #23272f !important;";
 
       function keyNameExtractor(arrayOfObjs) {
         let output = []
 
         arrayOfObjs.forEach((elem) => {
           if (elem.hasOwnProperty('name_of_field')) {
+            // output.push(elem.name_of_field.split('_').map(string => {
+            //   return string.charAt(0).toUpperCase() + string.slice(1);
+            // }).join(' '));
             output.push(elem.name_of_field);
           }
         })
@@ -112,15 +116,15 @@
         return output
       }
 
-      let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"past_type");
-      let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"current_type");
-      let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0],"future_type");
+      let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "past_type");
+      let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "current_type");
+      let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "future_type");
 
       function processConfigObjsToInstructions(array, keyDesired) {
         let output = [];
 
-        array.forEach((elem)=>{
-          if ( elem.hasOwnProperty(keyDesired) ) {
+        array.forEach((elem) => {
+          if (elem.hasOwnProperty(keyDesired)) {
             output.push(elem[keyDesired]);
           };
         });
@@ -145,12 +149,12 @@
           columnHeadersRow.appendChild(columnTableData);
         })
 
-        columnHeadersRow.style.cssText = "background-color:chartreuse";
+        columnHeadersRow.style.cssText = "background-color: #60FF5F; color: #23272f; font-weight: 700;";
         table.appendChild(columnHeadersRow);
       };
 
-      function appendPastRows(table,keyNamesArr,startValuesArr,columnRulesArr,period,totalPeriods,pastHorizon){
-        let numberOfElapsedPeriods = period-1;
+      function appendPastRows(table, keyNamesArr, startValuesArr, columnRulesArr, period, totalPeriods, pastHorizon) {
+        let numberOfElapsedPeriods = period - 1;
 
         // if number of elapsed periods is less than past horizon, then reveal data for all elapsed periods
         // if number of elapsed periods is greater than past horizon, only reveal up to past horizon.
@@ -158,20 +162,20 @@
         
         for ( let pastRow = period-revealThisManyPastPeriods; pastRow <= numberOfElapsedPeriods; pastRow++ ) {
           let pastPeriodRow = document.createElement('tr');
-          keyNamesArr.forEach((keyName,index)=>{
+          keyNamesArr.forEach((keyName, index) => {
             let tableDataElem = document.createElement('td');
             let whatToDoWithKeyName = columnRulesArr[index];
 
-            if ( whatToDoWithKeyName === 'increment' ) {
+            if (whatToDoWithKeyName === 'increment') {
               tableDataElem.innerHTML = pastRow;
-            } else if ( whatToDoWithKeyName === 'constant' ) {
+            } else if (whatToDoWithKeyName === 'constant') {
               tableDataElem.innerHTML = startValuesArr[index];
-            } else if ( whatToDoWithKeyName === 'look-up' ) {
+            } else if (whatToDoWithKeyName === 'look-up') {
               // to fetch from js_var, must modify the keyName slightly
               let jsVarKey = `${keyName}_across_all_rounds`
 
-              if ( js_vars.hasOwnProperty(jsVarKey) ) {
-                tableDataElem.innerHTML = js_vars[jsVarKey][pastRow-1];
+              if (js_vars.hasOwnProperty(jsVarKey)) {
+                tableDataElem.innerHTML = js_vars[jsVarKey][pastRow - 1];
               }
             }
             pastPeriodRow.appendChild(tableDataElem);
@@ -185,17 +189,17 @@
       function appendCurrentRow(table,keyNameArr,startValuesArr,columnRulesArr,period,totalPeriods){
         let thisPeriodsRow = document.createElement('tr');
 
-        if ( period === 1 ) {
-          startValuesArr.forEach((dataElem)=>{
+        if (period === 1) {
+          startValuesArr.forEach((dataElem) => {
             let tableDataElem = document.createElement('td');
             let dataElemType = typeof dataElem;
 
-            if ( dataElemType === 'number' ) {
+            if (dataElemType === 'number') {
               tableDataElem.innerHTML = dataElem;
-            } else if ( dataElemType === 'string' ) {
+            } else if (dataElemType === 'string') {
               let inputRequired = dataElem.split('-')[0];
 
-              if ( inputRequired === 'purchased_units') {
+              if (inputRequired === 'purchased_units') {
                 tableDataElem = defaultPurchasedUnit.cloneNode(true);
                 tableDataElem.id = `${inputRequired}-input-${period}`;
               }
@@ -208,19 +212,19 @@
           table.appendChild(thisPeriodsRow);
         } else {
 
-          keyNameArr.forEach((keyName,index)=>{
+          keyNameArr.forEach((keyName, index) => {
             let tableDataElem = document.createElement('td');
             let whatToDoWithKeyName = columnRulesArr[index];
 
-            if ( whatToDoWithKeyName === 'increment' ) {
+            if (whatToDoWithKeyName === 'increment') {
               tableDataElem.innerHTML = period;
-            } else if ( whatToDoWithKeyName === 'constant' ) {
+            } else if (whatToDoWithKeyName === 'constant') {
               tableDataElem.innerHTML = startValuesArr[index];
-            } else if ( whatToDoWithKeyName === 'input' ) {
+            } else if (whatToDoWithKeyName === 'input') {
               tableDataElem = defaultPurchasedUnit.cloneNode(true);
               tableDataElem.id = `${keyName}-input-${period}`;
-            } else if ( whatToDoWithKeyName === 'look-up' ) {
-              if ( keyName === 'start_token_balance' || keyName === 'final_token_balance' ){
+            } else if (whatToDoWithKeyName === 'look-up') {
+              if (keyName === 'start_token_balance' || keyName === 'final_token_balance') {
                 tableDataElem.innerHTML = js_vars.start_token_balance_upcoming;
                 tableDataElem.id = `${keyName}-${period}`;
               }
@@ -276,8 +280,8 @@
                 }
                 tableDataElem.id = `${keyName}-${futureRow}`;
               }
-            } else if ( whatToDoWithKeyName === 'input' ) {
-              if ( keyName === 'purchased_units' ) {
+            } else if (whatToDoWithKeyName === 'input') {
+              if (keyName === 'purchased_units') {
                 tableDataElem = defaultPurchasedUnit.cloneNode(true);
                 tableDataElem.id = `${keyName}-input-${futureRow}`;
               }
@@ -295,17 +299,17 @@
 
         appendColumnNamesToTable(budgetingCalculator, arrayOfKeynames);
 
-        if ( period === 1 ) {
-          appendCurrentRow(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForCurrentRows,period,totalPeriods);
-          appendFutureRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForFutureRows,period,totalPeriods,futureHorizon);
+        if (period === 1) {
+          appendCurrentRow(budgetingCalculator, arrayOfKeynames, arrayOfStartValues, columnRulesForCurrentRows, period, totalPeriods);
+          appendFutureRows(budgetingCalculator, arrayOfKeynames, arrayOfStartValues, columnRulesForFutureRows, period, totalPeriods, futureHorizon);
         } else {
-          appendPastRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForPastRows,period,totalPeriods,pastHorizon);
-          appendCurrentRow(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForCurrentRows,period,totalPeriods);
-          appendFutureRows(budgetingCalculator,arrayOfKeynames,arrayOfStartValues,columnRulesForFutureRows,period,totalPeriods,futureHorizon);
+          appendPastRows(budgetingCalculator, arrayOfKeynames, arrayOfStartValues, columnRulesForPastRows, period, totalPeriods, pastHorizon);
+          appendCurrentRow(budgetingCalculator, arrayOfKeynames, arrayOfStartValues, columnRulesForCurrentRows, period, totalPeriods);
+          appendFutureRows(budgetingCalculator, arrayOfKeynames, arrayOfStartValues, columnRulesForFutureRows, period, totalPeriods, futureHorizon);
         }
       }
 
-      assembleNewCalculator(js_vars.the_calculator_config,currentPeriod,totalNumberOfPeriods,futureHorizonViewableConst,pastHorizonViewableConst);
+      assembleNewCalculator(js_vars.the_calculator_config, currentPeriod, totalNumberOfPeriods, futureHorizonViewableConst, pastHorizonViewableConst);
     </script>
 
     <script>
