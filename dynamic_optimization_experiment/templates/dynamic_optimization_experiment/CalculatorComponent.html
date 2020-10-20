@@ -177,12 +177,14 @@
               tableDataElem.innerHTML = pastRow;
             } else if (whatToDoWithKeyName === 'constant') {
               tableDataElem.innerHTML = startValuesArr[index];
+              tableDataElem.id = `${keyName}-${pastRow}`;
             } else if (whatToDoWithKeyName === 'look-up') {
               // to fetch from js_var, must modify the keyName slightly
               let jsVarKey = `${keyName}_across_all_rounds`
 
               if (js_vars.hasOwnProperty(jsVarKey)) {
                 tableDataElem.innerHTML = js_vars[jsVarKey][pastRow - 1];
+                tableDataElem.id = `${keyName}-${pastRow}`;
               }
             }
             pastPeriodRow.appendChild(tableDataElem);
