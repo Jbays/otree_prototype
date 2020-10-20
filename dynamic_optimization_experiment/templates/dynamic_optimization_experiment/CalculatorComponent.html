@@ -75,6 +75,7 @@
 
       let defaultPurchasedUnit = document.createElement('input');
       defaultPurchasedUnit.type = "number";
+      defaultPurchasedUnit.step = "any";
       defaultPurchasedUnit.min = 0;
       defaultPurchasedUnit.style.cssText = "text-align: center; width: 100%; border-radius: 0 !important; border-bottom: 1px solid #23272f !important;";
 
@@ -196,12 +197,14 @@
         let thisPeriodsRow = document.createElement('tr');
 
         if (period === 1) {
-          startValuesArr.forEach((dataElem) => {
+          startValuesArr.forEach((dataElem,index) => {
             let tableDataElem = document.createElement('td');
             let dataElemType = typeof dataElem;
+            let keyName = keyNameArr[index];
 
             if (dataElemType === 'number') {
               tableDataElem.innerHTML = dataElem;
+              tableDataElem.id = `${keyName}-${period}`;
             } else if (dataElemType === 'string') {
               let inputRequired = dataElem.split('-')[0];
 
@@ -269,16 +272,18 @@
             if (whatToDoWithKeyName === 'increment') {
               // this'll be updated!
               tableDataElem.innerHTML = futureRow;
+              tableDataElem.id = `${keyName}-${futureRow}`;
             } else if (whatToDoWithKeyName === 'constant') {
               tableDataElem.innerHTML = startValuesArr[index];
+              tableDataElem.id = `${keyName}-${futureRow}`;
             } else if (whatToDoWithKeyName === 'look-up') {
               // for future rows, the starting points value is 0 --> don't purchase units, don't get points
               if ( keyName === 'points' ) {
                 tableDataElem.innerHTML = 0;
-                tableDataElem.id = `${keyName}-${period}`;
+                tableDataElem.id = `${keyName}-${futureRow}`;
               } else if ( keyName === 'total_points' ) {
                 tableDataElem.innerHTML = js_vars.total_points_most_recent;
-                tableDataElem.id = `${keyName}-${period}`;
+                tableDataElem.id = `${keyName}-${futureRow}`;
               }
             } else if (whatToDoWithKeyName === 'calculate') {
               if (keyName === 'start_token_balance' || keyName === 'final_token_balance') {
@@ -334,14 +339,97 @@
       assembleNewCalculator(js_vars.the_calculator_config, currentPeriod, totalNumberOfPeriods, futureHorizonViewableConst, pastHorizonViewableConst);
     </script>
 
-    <!-- here is all code which runs AFTER the rows are appended. -->
+    <!-- here're all code which runs AFTER the rows are appended. -->
     <script>
 
-      function miscCleanup(){
-        console.log('hello from misc clean up');
+      function calculateTableVals(event){
+        event.preventDefault();
+        let currentPeriod = js_vars.current_period;
+        let numberOfRounds = js_vars.number_of_rounds;
+        let costPerUnit = js_vars.cost_per_unit;
+        let income = js_vars.income;
+        let futureHorizon = js_vars.future_horizon_viewable;
+
+        for(let i = currentPeriod; i <= numberOfRounds && i<= currentPeriod + futureHorizon; i++){
+          let purchasedUnits = Number(document.getElementById(`purchased_units-input-${i}`).value);
+          let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+          let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
+          let startTokenBalanceValue = Number(startTokenBalance.innerText);
+          
+          // NOTE: should multiply this by interest_rate.
+          let finalTokenBalanceValue = startTokenBalanceValue - purchasedUnits * costPerUnit;
+          finalTokenBalance.innerHTML = finalTokenBalanceValue;
+
+          // if there is a next period, write to the next period
+          if ( i <= (currentPeriod + futureHorizon-2) ){
+            let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+            nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+          }
+        }
       }
 
-      miscCleanup();
+      function resetTableVals(event){
+        event.preventDefault();
+        let currentPeriod = js_vars.current_period;
+        let numberOfRounds = js_vars.number_of_rounds;
+        let income = js_vars.income;
+        for(let i = currentPeriod; i <= numberOfRounds; i++){
+          // if there is an input, you're free to begin modifications
+          if ( document.getElementById(`purchased_units-input-${i}`) ){
+            let purchasedUnits = document.getElementById(`purchased_units-input-${i}`);
+            let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+            let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
+
+            let startTokenBalanceValue = Number(startTokenBalance.innerText);
+            let finalTokenBalanceValue = startTokenBalanceValue;
+
+            purchasedUnits.value = '';
+            finalTokenBalance.innerHTML = finalTokenBalanceValue;
+
+            // if there is an future input, you're free to begin modifications
+            if ( document.getElementById(`purchased_units-input-${i+1}`) ){
+              let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+              nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- here're all code which runs AFTER the rows are appended. -->
+    <script>
+
+      function miscCleanup(table){
+        console.log('hello from misc clean up');
+        convertSnakeCaseToUpperCase(table.rows[0]);
+        roundDownTokenBalanceAndPoints();
+      }
+
+      function convertSnakeCaseToUpperCase(rowOfColumnTitles){
+        console.log('rowOfColumnTitles',rowOfColumnTitles);
+        let allColumnsInRow = rowOfColumnTitles.children;
+        console.log('allColumnsInRow',allColumnsInRow);
+        console.log('allColumnsInRow.length',allColumnsInRow.length);
+
+        for ( let i = 0; i < allColumnsInRow.length; i++ ) {
+          let columnName = allColumnsInRow[i].innerHTML;
+          let splitColumnName = columnName.split('_')
+          console.log('allColumnsInRow[i]',allColumnsInRow[i]);
+          console.log('columnName',columnName);
+          console.log('splitColumnName',splitColumnName);
+        }
+
+
+        // children.forEach((titleElem)=>{
+        //   console.log('titleElem',titleElem);
+        // })
+      };
+
+      function roundDownTokenBalanceAndPoints(column){
+        console.log('take a moment to round down all the annoying super long decimal values.')
+      }
+
+      miscCleanup(myTable);
     
     </script>
   </div>
