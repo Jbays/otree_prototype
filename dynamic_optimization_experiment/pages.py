@@ -57,6 +57,7 @@ class Calculator(Page):
             total_points_most_recent=total_points_most_recent,
             points_across_all_rounds=points_across_all_rounds,
             total_points_across_all_rounds=total_points_across_all_rounds,
+            obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
         )
 
     # this code makes "var a" accessible in  Calculator.html 
@@ -84,7 +85,7 @@ class Calculator(Page):
         units_just_purchased = self.player.in_round(current_round).purchased_units
         convert_purchased_units_to_points = self.session.config['convert_purchased_units_to_output']
 
-        print('units_just_purchased',units_just_purchased)
+        # print('units_just_purchased',units_just_purchased)
 
         self.player.cost_per_unit_this_round = cost_per_unit_inflation_adjusted
         self.player.inflation = inflation
@@ -99,7 +100,7 @@ class Calculator(Page):
             final_token_balance_most_recent = round(self.player.in_round(current_round-1).final_token_balance,2)
             total_points_most_recent = round(self.player.in_round(current_round-1).total_points,2)
 
-            print('((final_token_balance_most_recent + income ) * interest_rate)',((final_token_balance_most_recent + income ) * interest_rate))
+            # print('((final_token_balance_most_recent + income ) * interest_rate)',((final_token_balance_most_recent + income ) * interest_rate))
 
             self.player.start_token_balance = round(((final_token_balance_most_recent + income ) * interest_rate),2)
             self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_inflation_adjusted)),2)

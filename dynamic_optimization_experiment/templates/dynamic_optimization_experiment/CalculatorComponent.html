@@ -339,7 +339,7 @@
       assembleNewCalculator(js_vars.the_calculator_config, currentPeriod, totalNumberOfPeriods, futureHorizonViewableConst, pastHorizonViewableConst);
     </script>
 
-    <!-- here're all code which runs AFTER the rows are appended. -->
+    <!-- here're the calculator's functions -->
     <script>
 
       function calculateTableVals(event){
@@ -398,35 +398,41 @@
 
     <!-- here're all code which runs AFTER the rows are appended. -->
     <script>
-
       function miscCleanup(table){
-        console.log('hello from misc clean up');
         convertSnakeCaseToUpperCase(table.rows[0]);
         roundDownTokenBalanceAndPoints();
+        obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
       }
 
       function convertSnakeCaseToUpperCase(rowOfColumnTitles){
-        console.log('rowOfColumnTitles',rowOfColumnTitles);
         let allColumnsInRow = rowOfColumnTitles.children;
-        console.log('allColumnsInRow',allColumnsInRow);
-        console.log('allColumnsInRow.length',allColumnsInRow.length);
 
         for ( let i = 0; i < allColumnsInRow.length; i++ ) {
           let columnName = allColumnsInRow[i].innerHTML;
-          let splitColumnName = columnName.split('_')
-          console.log('allColumnsInRow[i]',allColumnsInRow[i]);
-          console.log('columnName',columnName);
-          console.log('splitColumnName',splitColumnName);
-        }
+          
+          let upperCasedColumnName = columnName.split('_').map((singleWord)=>{
+            return singleWord[0].toUpperCase()+singleWord.slice(1,singleWord.length);
+          }).join(' ');
 
-
-        // children.forEach((titleElem)=>{
-        //   console.log('titleElem',titleElem);
-        // })
+          allColumnsInRow[i].innerHTML = upperCasedColumnName
+        };
       };
 
       function roundDownTokenBalanceAndPoints(column){
         console.log('take a moment to round down all the annoying super long decimal values.')
+      }
+
+      // takes as input a string --> "inflation,5,10"
+      // "${name of column you want obscured},{period you want to start obscuring},{obscure up to this period}"
+      function obscureColumnStartingAtPeriod(string){
+        let columnAndPeriodTuple = string.split(',');
+
+        for ( let i = Number(columnAndPeriodTuple[1]); i <= Number(columnAndPeriodTuple[2]); i++ ) {
+          let tableDataElem = document.getElementById(`${columnAndPeriodTuple[0]}-${i}`);
+          tableDataElem.innerText = 'hidden';
+          tableDataElem.style.cssText = `background-color: silver`;
+        };
+
       }
 
       miscCleanup(myTable);

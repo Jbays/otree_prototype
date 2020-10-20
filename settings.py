@@ -14,7 +14,8 @@ SESSION_CONFIG_DEFAULTS = dict(
     cost_per_unit=100.00,
     start_token_balance = 900,
     final_token_balance = 900,
-    mask_this_column_at_certain_period = "inflation,5",
+    # comma-separated --> name of column, then first number is the start period, second number is the stop period
+    obscure_this_column_name_at_certain_period = "inflation,5,10",
     # hello_number=0,
     # hello_boolean=True,
     # hello_string="string",
