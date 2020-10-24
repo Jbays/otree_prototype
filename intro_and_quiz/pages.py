@@ -2,12 +2,14 @@ from ._builtin import Page, WaitPage
 import json
 
 class ConsentForm(Page):
-    def is_displayed(self):
-        return self.round_number == 1
+    print('consent form class')
+    # def is_displayed(self):
+    #     return self.round_number == 1
 
 class Introduction(Page):
-    def is_displayed(self):
-        return self.round_number == 2
+    print('introduction')
+    # def is_displayed(self):
+    #     return self.round_number == 2
 
 class Quiz(Page):
     print('quiz')

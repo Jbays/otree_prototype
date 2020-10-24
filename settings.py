@@ -14,6 +14,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     cost_per_unit=100.00,
     start_token_balance = 900,
     final_token_balance = 900,
+    buying_limit = 900,
     # comma-separated --> name of column, then first number is the start period, second number is the stop period
     obscure_a_column=False,
     obscure_this_column_name_at_certain_period = "interest_rate,5,9",

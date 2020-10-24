@@ -37,6 +37,11 @@ class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
 
+    def purchased_units_error_message(self,units_to_be_purchased):
+        print('error message')
+        if ( units_to_be_purchased < 0 ):
+            return 'you must purchase some amount of units'
+
     # validation
     cost_per_unit_this_round = models.FloatField()
     start_token_balance = models.FloatField()
