@@ -14,7 +14,7 @@ The main body of today's experiment
 
 class Constants(BaseConstants):
     print('creating the constants class of dynamic_optimization_experiment')
-    num_rounds = 10
+    num_rounds = 5
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -37,6 +37,8 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     print('creating the Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
+
+    # validation
     cost_per_unit_this_round = models.FloatField()
     start_token_balance = models.FloatField()
     final_token_balance = models.FloatField()
