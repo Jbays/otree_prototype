@@ -403,7 +403,9 @@
       function miscCleanup(table){
         convertSnakeCaseToUpperCase(table.rows[0]);
         roundDownTokenBalanceAndPoints();
-        obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
+        if ( js_vars.obscure_a_column ) {
+          obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
+        }
       }
 
       function convertSnakeCaseToUpperCase(rowOfColumnTitles){

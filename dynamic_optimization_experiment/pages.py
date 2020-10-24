@@ -38,6 +38,7 @@ class Calculator(Page):
             total_points_across_all_rounds.append(player.total_points)
 
         return dict(
+            obscure_a_column=self.session.config['obscure_a_column'],
             current_period=self.round_number,
             the_calculator_config=[self.session.config['calculator_config_json']],
             inflation=self.session.config['inflation_1'],
