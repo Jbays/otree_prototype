@@ -1,0 +1,21 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+    Consent Form
+{% endblock %}
+
+{% block content %}
+
+<div class="card bg-light m-3">
+    <div class="card-body">
+        <p>This is your consent form.</p>
+        <p>Sign here.  Or you can't play.</p>
+        <!-- TODO: put a checkmark which user must check or else cannot proceed through the app -->
+        </br>
+        {% next_button %}
+    </div>
+</div>
+
+
+{% endblock %}

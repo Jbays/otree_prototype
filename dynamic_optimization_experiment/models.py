@@ -14,7 +14,7 @@ The main body of today's experiment
 
 class Constants(BaseConstants):
     print('creating the constants class of dynamic_optimization_experiment')
-    num_rounds = 5
+    num_rounds = 8
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'

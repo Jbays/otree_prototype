@@ -16,6 +16,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     final_token_balance = 900,
     # comma-separated --> name of column, then first number is the start period, second number is the stop period
     obscure_this_column_name_at_certain_period = "interest_rate,5,9",
+    
     # hello_number=0,
     # hello_boolean=True,
     # hello_string="string",
@@ -54,8 +55,8 @@ SESSION_CONFIGS = [
     dict(
         name='dyn_opt_exp',
         display_name="Dynamic Optimization Experiment",
-        num_demo_participants=1,
-        app_sequence=['dynamic_optimization_experiment', 'payment_info'],
+        num_demo_participants=5,
+        app_sequence=['intro_and_quiz','dynamic_optimization_experiment', 'payment_info'],
     ),
     # dict(
     #     name='survey',
