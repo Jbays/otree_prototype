@@ -9,12 +9,20 @@ from numpy import log
 SESSION_CONFIG_DEFAULTS = dict(
 # custom
     inflation_1=1.0,
+    multiple_inflations=True,
+    # other_inflations="1.25,1.25"
     interest_rate_1=0,
+    multiple_interest_rates=True,
+    # other_interest_rates="1,0.8"
     income=900.00,
+    multiple_incomes=True,
+    # other_incomes="0,450"
+
     cost_per_unit=100.00,
     start_token_balance = 900,
     final_token_balance = 900,
     buying_limit = 900,
+
     # comma-separated --> name of column, then first number is the start period, second number is the stop period
     obscure_a_column=False,
     obscure_this_column_name_at_certain_period = "interest_rate,5,9",

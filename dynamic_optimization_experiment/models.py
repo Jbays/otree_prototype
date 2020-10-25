@@ -14,7 +14,7 @@ The main body of today's experiment
 
 class Constants(BaseConstants):
     print('creating the constants class of dynamic_optimization_experiment')
-    num_rounds = 10
+    num_rounds = 18
     name_in_url = 'dyn_opt_exp'
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
@@ -28,7 +28,16 @@ class Subsession(BaseSubsession):
 
     # if the first round, set player's experiment_sequence
     def creating_session(self):
+        import math
         print('creating subsessions func')
+        current_round = self.round_number
+        print('current_round',current_round)
+        every_other_round = math.floor((current_round-1)/2)
+        all_players = self.get_players()
+        
+        for player in all_players:
+            player.treatment_variable = player.participant.vars['experiment_sequence'][every_other_round]
+        
 
 class Group(BaseGroup):
     print('creating the Group class')
@@ -42,13 +51,14 @@ class Player(BasePlayer):
         if ( units_to_be_purchased < 0 ):
             return 'you must purchase some amount of units'
 
-    # validation
     cost_per_unit_this_round = models.FloatField()
     start_token_balance = models.FloatField()
     final_token_balance = models.FloatField()
     inflation = models.FloatField()
     points_this_period = models.FloatField()
     total_points = models.FloatField()
+    treatment_variable = models.StringField()
+
 
     # if certain config variable is present
     # then add new model

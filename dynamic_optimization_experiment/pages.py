@@ -37,28 +37,32 @@ class Calculator(Page):
             points_across_all_rounds.append(player.points_this_period)
             total_points_across_all_rounds.append(player.total_points)
 
+        # here is where I'll put the logic to handle passing multiple inflations, interest_rates, and incomes.
+        # if self.session.config['multiple_whatevers']:
+        #   then do some more work. 
+
         return dict(
-            obscure_a_column=self.session.config['obscure_a_column'],
-            current_period=self.round_number,
-            the_calculator_config=[self.session.config['calculator_config_json']],
-            inflation=self.session.config['inflation_1'],
-            interest_rate=self.session.config['interest_rate_1'],
-            income=self.session.config['income'],
             cost_per_unit=self.session.config['cost_per_unit'],
-            number_of_rounds=self.session.config['number_of_rounds'],
-            start_token_balance=self.session.config['start_token_balance'],
-            future_horizon_viewable=self.session.config['future_horizon_viewable'],
-            past_horizon_viewable=self.session.config['past_horizon_viewable'],
+            current_period=self.round_number,
             final_token_balance_most_recent=final_token_balance_most_recent,
             final_token_balance=self.session.config['final_token_balance'],
-            start_token_balance_upcoming=start_token_balance_upcoming,
-            purchased_units_across_all_rounds=purchased_units_across_all_rounds,
-            start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,
             final_token_balance_across_all_rounds=final_token_balance_across_all_rounds,
-            total_points_most_recent=total_points_most_recent,
-            points_across_all_rounds=points_across_all_rounds,
-            total_points_across_all_rounds=total_points_across_all_rounds,
+            future_horizon_viewable=self.session.config['future_horizon_viewable'],
+            income=self.session.config['income'],
+            inflation=self.session.config['inflation_1'],
+            interest_rate=self.session.config['interest_rate_1'],
+            number_of_rounds=self.session.config['number_of_rounds'],
+            obscure_a_column=self.session.config['obscure_a_column'],
             obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
+            past_horizon_viewable=self.session.config['past_horizon_viewable'],
+            points_across_all_rounds=points_across_all_rounds,
+            purchased_units_across_all_rounds=purchased_units_across_all_rounds,
+            start_token_balance=self.session.config['start_token_balance'],
+            start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,
+            start_token_balance_upcoming=start_token_balance_upcoming,
+            the_calculator_config=[self.session.config['calculator_config_json']],
+            total_points_most_recent=total_points_most_recent,
+            total_points_across_all_rounds=total_points_across_all_rounds,
         )
 
     # this code makes "var a" accessible in  Calculator.html 
