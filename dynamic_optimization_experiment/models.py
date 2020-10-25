@@ -34,7 +34,7 @@ class Subsession(BaseSubsession):
         current_round = self.round_number
         every_other_round = math.floor((current_round-1)/2)
         
-        print('current_round',current_round)
+        print('current_round>>>>>>>>>>>>>',current_round)
 
         # here I have access to player.treatment variable.  
         # Since these values (income, interest_rate, inflation) are all pre-determined, i could write all these values while creating subsession.
@@ -52,18 +52,23 @@ class Subsession(BaseSubsession):
             other_inflations_arr = self.session.config['other_inflations'].split(',')
             other_interest_rates_arr = self.session.config['other_interest_rates'].split(',')
 
+            # what is the logic for buying limit?
+            # if first round, 
+
             # in future, will need to make this programmatic.  However, for now, let's go simple and quick.  Rather than grand.
             for player in all_players:
                 player.treatment_variable = player.participant.vars['experiment_sequence'][every_other_round]
 
                 # handle setting income first, since that's simple and straightforward
                 
+                # FIRST, assign income values
                 # treatments 0, 1, 2 are "pay full round 1, pay zero, round 2"
                 if ( player.treatment_variable == '0' or player.treatment_variable == '1' or player.treatment_variable == '2'):
                     if ( current_round_is_odd ):
                         player.income = self.session.config['income']
                     else:
                         player.income = 0
+                        
                 # treatments 0, 1, 2 are "pay zero round 1, pay full, round 2"
                 if ( player.treatment_variable == '3' or player.treatment_variable == '4' or player.treatment_variable == '5'):
                     if ( current_round_is_odd ):
@@ -73,9 +78,10 @@ class Subsession(BaseSubsession):
                 
                 # treatments 6,7,8 are "pay half round 1, pay half, round 2"
                 if ( player.treatment_variable == '6' or player.treatment_variable == '7' or player.treatment_variable == '8'):
-                    player.income = 450
+                    # math.trunc drops any decimals
+                    player.income = math.trunc(self.session.config['income']/2)
 
-                
+                # SECOND, assign values for inflation, interest_rate, and cost_per_unit_this_round 
                 # treatments 0, 3, 6 use the first inflation, first interest_rate
                 if ( player.treatment_variable == '0' or player.treatment_variable == '3' or player.treatment_variable == '6' ):
                     player.inflation = self.session.config['inflation_1']
@@ -93,18 +99,63 @@ class Subsession(BaseSubsession):
 
                 player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
 
+                # actually this needs to live in the model?
+                # since I need interest_rate, cost_of_unit_this_period, and income, I'll assign buying_limit here at the end.  Will use the same logical grouping as 
+                # if "paid full period 1, paid zero period 2"
+                # if ( player.treatment_variable == '0' or player.treatment_variable == '1' or player.treatment_variable == '2'):
+                #     if ( current_round_is_odd ):
+                #         # buying_limit = 0 + starting_income_balance
+                #         player.buying_limit = 0
+                #     else:
+                #         # if the period is even, then the buying_limit is equal to zero plus the final_token_balance_from_previous_period
+                #         # trouble is, at this point in time I do not have access to the player's previous token balance.
+                #         # in the Player model, will need to now add final_token_balance_from_previous_period
+                #         player.buying_limit = 0
+                #         # buying_limit = 0 + final_token_balance_from_prev_period
+
+                # # if "paid zero period 1, paid full period 2"
+                # if ( player.treatment_variable == '3' or player.treatment_variable == '4' or player.treatment_variable == '5'):
+                #     if ( current_round_is_odd ):
+                #         player.buying_limit = self.session.config['income'] * player.interest_rate
+                #     else:
+                #         # buying_limit = 0 + final_token_balance_from_prev_period
+                #         player.buying_limit = 0 
+
+                # # if "paid half period 1, paid half period 2"
+                # if ( player.treatment_variable == '6' or player.treatment_variable == '7' or player.treatment_variable == '8'):
+                    
+                #     if ( current_round_is_odd ):
+                #         # buying_limit = starting_token_balance + 
+                #         player.buying_limit = (self.session.config['income']/2) * player.interest_rate
+                #     else:
+                #         # buying_limit = 0 + final_token_balance_from_prev_period
+                #         player.buying_limit = 0 
+
+
 
 class Group(BaseGroup):
     print('creating the Group class')
 
 class Player(BasePlayer):
-    print('creating the Player class')
+    print('creating the DOE Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
     buying_limit = models.FloatField()
+
+    def buying_limit_max(self):
+        print('self in buying_limit_max',self)
+        print('self.player',self.player)
+        print('self.player.treatment_variable',self.player.treatment_variable)
+        current_period_is_odd = (self.round_number % 2) == 1
+        print('current_period_is_odd',current_period_is_odd)
 
     # the buying limit logic will have to be set against purchased_units
     def purchased_units_error_message(self,units_to_be_purchased):
         print('error message')
+        print('self',self)
+        print('self.income',self.income)
+        print('self.round_number',self.round_number)
+        print('self.cost_per_unit_this_period',self.cost_per_unit_this_period)
+        # print('self.player.income',self.player.income)
         if ( units_to_be_purchased < 0 ):
             return 'you must purchase some amount of units'
 

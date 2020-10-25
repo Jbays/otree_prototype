@@ -22,6 +22,13 @@ class Calculator(Page):
 
         if ( self.session.config['two_round_experiments'] ):
             print('well do it live!')
+
+            # what do I need to pass to the calculator?
+            # income, interest_rate, inflation,
+            return dict(
+                two_period_experiments=self.session.config['two_round_experiments']
+            )
+
         else:
             same_player_throughout_their_history = self.player.in_previous_rounds()
 
@@ -90,10 +97,21 @@ class Calculator(Page):
     # this function passes round_number to the templates.  round_number is accessed in Decision_box
     def vars_for_template(self):
         print('vars_for_template invoked!')
+        if ( self.session.config['two_round_experiments'] ):
+            period_is_odd = (self.round_number % 2) == 1
 
-        return dict(
-            round_number=self.round_number,
-        )
+            if ( period_is_odd ):
+                return dict(
+                    round_number=1
+                )
+            else:
+                return dict(
+                    round_number=2
+                )
+        else:
+            return dict(
+                round_number=self.round_number,
+            )
 
     # writes to the player model 
     def before_next_page(self):
