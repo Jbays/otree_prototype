@@ -21,17 +21,11 @@ class Subsession(BaseSubsession):
     # sets the experiment_sequence for the participant
     print('intro and quiz subsession')
     def creating_session(self):
-        # total_number_of_periods = self.session.config['total_number_of_periods']
-        # attach the map 
-
         number_of_diff_treatments = self.session.config["number_of_diff_treatments"]
-        print(number_of_diff_treatments)
 
         # returns a string of the numbers 0 thru n, shuffled
         # where n equals the length of string_length
         def randomNumbersStringified(number):
-            print('number',number)
-            print('number',number)
             import random
 
             arr = []
@@ -53,14 +47,14 @@ class Subsession(BaseSubsession):
             for player in all_players:
                 # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # first is "pay full round 1, no pay round 2"
-                # player.participant.vars['experiment_sequence'] = '012345678'
+                player.participant.vars['experiment_sequence'] = '012345678'
 
                 # first is "no pay round 1, no pay round 2"
                 # player.participant.vars['experiment_sequence'] = '345678012'
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
 
-                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
+                # player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 

@@ -10,13 +10,12 @@ SESSION_CONFIG_DEFAULTS = dict(
 # custom
     inflation_1=1.0,
     multiple_inflations=True,
-    # other_inflations="1.25,1.25"
-    interest_rate_1=0,
+    other_inflations="1.25,1.0",
+    interest_rate_1=1.0,
     multiple_interest_rates=True,
-    # other_interest_rates="1,0.8"
-    income=900.00,
-    multiple_incomes=True,
-    # other_incomes="0,450"
+    other_interest_rates="1.0,0.8",
+    income=900,
+    two_round_experiments = True,
 
     cost_per_unit=100.00,
     start_token_balance = 900,
