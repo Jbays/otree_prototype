@@ -9,7 +9,9 @@ class Calculator(Page):
     form_model = 'player'
     form_fields = ['purchased_units']
     
+    # js_vars passes these variables to Calculator.html.  
     def js_vars(self):
+        import math
         current_round = self.round_number
         purchased_units_across_all_rounds = []
         start_token_balance_across_all_rounds = []
@@ -17,7 +19,11 @@ class Calculator(Page):
         points_across_all_rounds = []
         total_points_across_all_rounds = []
 
-        every_instance_of_player_class = self.player.in_previous_rounds()
+        same_player_throughout_their_history = self.player.in_previous_rounds()
+
+        # print('self.constants',self.constants)
+        # grab the most recent player.in_previous_rounds()
+        print('same_player_throughout_their_history',same_player_throughout_their_history)
 
         # note there are a few ways to access the most recent final token balance
         if ( current_round > 1 ):
@@ -30,12 +36,23 @@ class Calculator(Page):
             start_token_balance_upcoming = self.session.config['start_token_balance']
             total_points_most_recent = 0
 
-        for player in every_instance_of_player_class:
+        for player in same_player_throughout_their_history:
             purchased_units_across_all_rounds.append(player.purchased_units)
             start_token_balance_across_all_rounds.append(player.start_token_balance)
             final_token_balance_across_all_rounds.append(player.final_token_balance)
             points_across_all_rounds.append(player.points_this_period)
             total_points_across_all_rounds.append(player.total_points)
+
+        # figure out the treatement_variable.  Then adding all other fields should be straight-forward.  Can figure out the 
+        
+        every_other_round = math.floor((current_round-1)/2)
+        # current_treatment_variable = 
+        print('self',self)
+        print('self.round_number',self.round_number)
+        print('self.participant.vars',self.participant.vars)
+        # print('self.participant.vars[every_other_round]',self.participant.vars[every_other_round])
+        print('self.participant.vars["experiment_sequence"][every_other_round]',self.participant.vars['experiment_sequence'][every_other_round])
+
 
         # here is where I'll put the logic to handle passing multiple inflations, interest_rates, and incomes.
         # if self.session.config['multiple_whatevers']:
@@ -44,6 +61,7 @@ class Calculator(Page):
         return dict(
             cost_per_unit=self.session.config['cost_per_unit'],
             current_period=self.round_number,
+            current_treatment = self.participant.vars['experiment_sequence'][every_other_round],
             final_token_balance_most_recent=final_token_balance_most_recent,
             final_token_balance=self.session.config['final_token_balance'],
             final_token_balance_across_all_rounds=final_token_balance_across_all_rounds,
@@ -51,7 +69,7 @@ class Calculator(Page):
             income=self.session.config['income'],
             inflation=self.session.config['inflation_1'],
             interest_rate=self.session.config['interest_rate_1'],
-            number_of_rounds=self.session.config['number_of_rounds'],
+            # number_of_rounds=self.session.config['number_of_rounds'],
             obscure_a_column=self.session.config['obscure_a_column'],
             obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
             past_horizon_viewable=self.session.config['past_horizon_viewable'],
@@ -65,12 +83,11 @@ class Calculator(Page):
             total_points_across_all_rounds=total_points_across_all_rounds,
         )
 
-    # this code makes "var a" accessible in  Calculator.html 
+    # this function passes round_number to the templates.  round_number is accessed in Decision_box
     def vars_for_template(self):
         print('vars_for_template invoked!')
-        # print('self',self)
-        # print('self.player',self.player)
 
+        # something's funny about this pattern
         return dict(
             round_number=self.round_number,
         )
@@ -91,6 +108,9 @@ class Calculator(Page):
         convert_purchased_units_to_points = self.session.config['convert_purchased_units_to_output']
 
         # print('units_just_purchased',units_just_purchased)
+
+        print('self',self)
+        print('self.participant.vars',self.participant.vars)
 
         self.player.cost_per_unit_this_round = cost_per_unit_inflation_adjusted
         self.player.inflation = inflation

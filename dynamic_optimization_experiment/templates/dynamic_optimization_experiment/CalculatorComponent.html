@@ -58,7 +58,7 @@
       <button onClick=calculateTableVals(event)>Calculate</button>
     </div>
 
-    <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
+    <div id="total_number_of_periods_container" style="">{{Constants.num_rounds}}</div>
 
     <!-- new set of calculator helper functions.  Trying to consider this problem with clarity -->
     <script>
@@ -137,7 +137,6 @@
       function calculateNaturalLogVals(num){
         return Math.log(Math.E) / Math.log(num);
       }
-
 
     </script>
 
@@ -345,9 +344,10 @@
     <script>
 
       function calculateTableVals(event){
+        console.log('calculate called!')
         event.preventDefault();
         let currentPeriod = js_vars.current_period;
-        let numberOfRounds = js_vars.number_of_rounds;
+        // let numberOfRounds = js_vars.number_of_rounds;
         let costPerUnit = js_vars.cost_per_unit;
         let income = js_vars.income;
         let futureHorizon = js_vars.future_horizon_viewable;

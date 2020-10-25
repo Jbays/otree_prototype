@@ -21,21 +21,28 @@ class Subsession(BaseSubsession):
     # sets the experiment_sequence for the participant
     print('intro and quiz subsession')
     def creating_session(self):
+        # total_number_of_periods = self.session.config['total_number_of_periods']
         # attach the map 
 
-        # returns a string of the numbers 0 thru 8, shuffled
-        def randomNumbersStringified():
+        number_of_diff_treatments = self.session.config["number_of_diff_treatments"]
+        print(number_of_diff_treatments)
+
+        # returns a string of the numbers 0 thru n, shuffled
+        # where n equals the length of string_length
+        def randomNumbersStringified(number):
+            print('number',number)
+            print('number',number)
             import random
 
             arr = []
             output = ''
 
-            for num in range(0,9):
+            for num in range(0,number):
                 arr.append(str(num))
 
             random.shuffle(arr)
 
-            for num in range(0,9):
+            for num in range(0,number):
                 output += arr[num]
 
             return output
@@ -44,28 +51,17 @@ class Subsession(BaseSubsession):
             all_players = self.get_players()
 
             for player in all_players:
+                # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # first is "pay full round 1, no pay round 2"
-                player.participant.vars['experiment_sequence'] = '012345678'
+                # player.participant.vars['experiment_sequence'] = '012345678'
 
                 # first is "no pay round 1, no pay round 2"
                 # player.participant.vars['experiment_sequence'] = '345678012'
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
 
-                # player.participant.vars['experiment_sequence'] = randomNumbersStringified()
+                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
-            
-            # player = self.get_players()[0]
-    #         # these are constants throughout so let's set them now
-    #         player.income = self.session.config['income']
-    #         player.cost_per_unit = self.session.config['cost_per_unit']
-            
-    #         # temp mock out of experiment_sequence --> for clarity's / simplicity's sake
-    #         # first is "pay full round 1, no pay round 2"
-    #         player.participant.vars['experiment_sequence'] = '012345678'
-            
-
-    #         player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
 class Group(BaseGroup):
@@ -73,8 +69,6 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     # print('creating the Player class intro_and_quiz')
-    # income = models.FloatField()
-    # cost_per_unit = models.FloatField()
     experiment_sequence = models.StringField()
 
     quiz_question_1 = models.StringField(

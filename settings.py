@@ -34,19 +34,15 @@ SESSION_CONFIG_DEFAULTS = dict(
     # hello_arr=[],
     calculator_config_json = [{"name_of_field":"period","past_type":"increment","current_type":"increment","future_type":"increment","start_val":1,"db_type":"integer"},{"name_of_field":"income","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"cost_per_unit","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"inflation","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"interest_rate","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"start_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"},{"name_of_field":"purchased_units","past_type":"look-up","current_type":"input","future_type":"input","start_val":"input","db_type":"float"},{"name_of_field":"points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"total_points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"final_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"}],
     # calculator_config_json = [{"name_of_field":"period","past_type":"increment","current_type":"increment","future_type":"increment","start_val":1,"db_type":"integer"},{"name_of_field":"income","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"cost_per_unit","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"inflation","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"interest_rate","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"start_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"},{"name_of_field":"purchased_units","past_type":"look-up","current_type":"input","future_type":"input","start_val":"input","db_type":"float"},{"name_of_field":"points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"total_points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"}{"name_of_field":"final_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"}],
-    number_of_rounds=10,
-    past_horizon_viewable = 10,
-    future_horizon_viewable = 10,
+    # number_of_rounds=5,
+    past_horizon_viewable = 18,
+    future_horizon_viewable = 18,
+    # decision_optimization_experiment's desired number of periods
+    number_of_periods_per_DOE = 2,
+    total_number_of_periods_for_all_DOEs = 18,
+    
+    number_of_diff_treatments = 9,
     convert_purchased_units_to_output = log,
-
-    # if you get the db_type wrong, it won't work.
-    # {"name_of_field":"final_token_balance", "db_type":"float"},
-    # {"name_of_field":"start_token_balance","start_val":"look-up", "db_type":"float"},
-    # {"name_of_field":"purchased_unit","start_val":null,"db_type":"float"},
-    # {"name_of_field":"income","start_val":"look-up", "db_type":"integer"}
-    # {"name_of_field":"price_per_unit","start_val":"look-up", "db_type":"integer"}
-    # {"name_of_field":"inflation","start_val":"look-up", "db_type":"float"}
-    # {"name_of_field":"interest_rate","start_val":"look-up", "db_type":"float"}
 
 # built-in
     real_world_currency_per_point=1.00, 
