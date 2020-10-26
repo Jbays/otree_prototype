@@ -66,6 +66,7 @@ class Subsession(BaseSubsession):
                 if ( player.treatment_variable == '0' or player.treatment_variable == '1' or player.treatment_variable == '2'):
                     if ( current_round_is_odd ):
                         player.income = self.session.config['income']
+                        player.start_token_balance = self.session.config['income']
                     else:
                         player.income = 0
                         
@@ -73,11 +74,15 @@ class Subsession(BaseSubsession):
                 if ( player.treatment_variable == '3' or player.treatment_variable == '4' or player.treatment_variable == '5'):
                     if ( current_round_is_odd ):
                         player.income = 0
+                        player.start_token_balance = 0
                     else:
                         player.income = self.session.config['income']
                 
                 # treatments 6,7,8 are "pay half round 1, pay half, round 2"
                 if ( player.treatment_variable == '6' or player.treatment_variable == '7' or player.treatment_variable == '8'):
+                    if ( current_round_is_odd ):
+                        player.start_token_balance = math.trunc(self.session.config['income']/2)
+
                     # math.trunc drops any decimals
                     player.income = math.trunc(self.session.config['income']/2)
 
@@ -131,52 +136,100 @@ class Subsession(BaseSubsession):
                 #         # buying_limit = 0 + final_token_balance_from_prev_period
                 #         player.buying_limit = 0 
 
-
-
 class Group(BaseGroup):
     print('creating the Group class')
 
 class Player(BasePlayer):
     print('creating the DOE Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
-    buying_limit = models.FloatField()
+    # token_debt_limit = models.FloatField()
 
-    def buying_limit_max(self):
-        print('self in buying_limit_max',self)
-        print('self.player',self.player)
-        print('self.player.treatment_variable',self.player.treatment_variable)
-        current_period_is_odd = (self.round_number % 2) == 1
-        print('current_period_is_odd',current_period_is_odd)
+    # I don't think this works as I want.
+    # I need to dynamically calculate the token_debt_limit.  Not put a ceiling on its max value.
+    # def token_debt_limit(self):
+    #     current_period_is_odd = (self.round_number % 2) == 1
+        
+    #     # if "pay full period 1, pay zero period 2"
+    #     if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
+    #         if ( current_period_is_odd ):
+    #             return 0
+
+    #     print('self in token_debt_limit_max',self)
+    #     print('self.player',self.player)
+    #     print('self.player.treatment_variable',self.player.treatment_variable)
+    #     print('current_period_is_odd',current_period_is_odd)
+
 
     # the buying limit logic will have to be set against purchased_units
     def purchased_units_error_message(self,units_to_be_purchased):
-        print('error message')
-        print('self',self)
-        print('self.income',self.income)
-        print('self.round_number',self.round_number)
-        print('self.cost_per_unit_this_period',self.cost_per_unit_this_period)
-        # print('self.player.income',self.player.income)
-        if ( units_to_be_purchased < 0 ):
-            return 'you must purchase some amount of units'
+        if ( self.session.config['two_round_experiments'] ):
+            current_period_is_odd = (self.round_number % 2) == 1
+            cost_per_unit_this_period = self.cost_per_unit_this_period
+            total_cost_of_desired_purchase = units_to_be_purchased * cost_per_unit_this_period
 
-        # def purchased_units_error_message(self,units_to_be_purchased):
-        #     print('purchased_units_error_message')
-        #     print('units_to_be_purchased',units_to_be_purchased)
+            print('current_period_is_odd',current_period_is_odd)
+            print('self.income',self.income)
+            print('self.round_number',self.round_number)
+            print('cost_per_unit_this_period',cost_per_unit_this_period)
+            print('total_cost_of_desired_purchase',total_cost_of_desired_purchase)
 
-        #     # print('self.player',self.player)
-        #     # print('self.player.buying_limit',self.player.buying_limit)
-        #     print('self.buying_limit',self.buying_limit)
+            token_debt_limit = self.start_token_balance
 
-        #     if ( units_to_be_purchased > self.buying_limit ):
-        #         print('you cannot afford that many units!')
-        #         return 'you cant afford that vato'
+            print('BEFORE ------ token_debt_limit',token_debt_limit)
+            print('self.treatment_variable',self.treatment_variable)
+
+            # if first period
+            if ( current_period_is_odd ):
+                income_next_period = self.in_round(self.round_number+1).income
+                print('income_next_period',income_next_period)
+                # if "pay full period 1, pay zero period 2"
+                if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
+                    token_debt_limit = token_debt_limit * self.interest_rate
+
+                # if "pay zero period 1, pay full period 2"
+                if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
+                    token_debt_limit = income_next_period * self.interest_rate
                 
-        #         # return 'your purchase would cost'
+                # if "pay half period 1, pay half period 2"
+                if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
+                    token_debt_limit = token_debt_limit + (self.income * self.interest_rate)
 
-        #         # what do I need to determine their buying_limit?
-        #         # buying_limit = income_in_second_period / ( interest_rate_as_decimal)
-        #         # therefore, I need the pay_sequence and interest_rate. and cost per unit.  and for second, I need interest rate and inflation
-        #         # difference in logic between the first and second rounds??
+            # else in second period
+            else:
+                final_token_balance_from_prev_period = self.in_round(self.round_number-1).final_token_balance
+                print('final_token_balance_from_prev_period',final_token_balance_from_prev_period)
+                print('starting_token_balance >>>>>',self.start_token_balance)
+
+                # if "pay full period 1, pay zero period 2"
+                if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
+                    token_debt_limit = final_token_balance_from_prev_period * self.interest_rate
+
+                # # if "pay zero period 1, pay full period 2"
+                if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
+                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * self.interest_rate
+                
+                # # if "pay half period 1, pay half period 2"
+                if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
+                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * self.interest_rate
+
+            print('AFTER ------ token_debt_limit',token_debt_limit)
+
+            # print('self.player.income',self.player.income)
+            if ( units_to_be_purchased < 0 ):
+                return 'Purchased units must be positive'
+
+            if ( total_cost_of_desired_purchase > token_debt_limit ):
+                return "You cannot afford that purchase."
+
+            # if its the second period
+            if ( not current_period_is_odd ):
+                # and you have some left-over money, aka
+                # if what player wishes to purchase is less than they can afford
+                if ( total_cost_of_desired_purchase < self.start_token_balance ):
+                    number_of_units_player_can_afford = self.start_token_balance / cost_per_unit_this_period
+                    return f"You're leaving money on the table.  You can afford: {number_of_units_player_can_afford} more units!"
+        else:
+            pass
 
     cost_per_unit_this_period = models.FloatField()
     final_token_balance = models.FloatField()

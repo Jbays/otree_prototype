@@ -58,11 +58,11 @@ class Calculator(Page):
             
             every_other_round = math.floor((current_round-1)/2)
             # current_treatment_variable = 
-            print('self',self)
-            print('self.round_number',self.round_number)
-            print('self.participant.vars',self.participant.vars)
+            # print('self',self)
+            # print('self.round_number',self.round_number)
+            # print('self.participant.vars',self.participant.vars)
             # print('self.participant.vars[every_other_round]',self.participant.vars[every_other_round])
-            print('self.participant.vars["experiment_sequence"][every_other_round]',self.participant.vars['experiment_sequence'][every_other_round])
+            # print('self.participant.vars["experiment_sequence"][every_other_round]',self.participant.vars['experiment_sequence'][every_other_round])
 
 
             # here is where I'll put the logic to handle passing multiple inflations, interest_rates, and incomes.
@@ -118,6 +118,7 @@ class Calculator(Page):
         print('before next page executed!')
 
         current_period = self.round_number
+        current_period_is_odd = (current_period % 2) == 1 
         convert_purchased_units_to_points_function = self.session.config['convert_purchased_units_to_output']
 
         # gather all the fields required from the player model
@@ -133,16 +134,24 @@ class Calculator(Page):
 
         self.player.points_this_period = points_scored_this_period
 
-        if ( current_period == 1 ):
-            self.player.start_token_balance = self.session.config['start_token_balance']
-            self.player.final_token_balance = round((self.session.config['start_token_balance'] - (units_just_purchased * cost_per_unit_this_period)),2)
+        if ( current_period_is_odd ):
+        # if ( current_period == 1 ):
+            # self.player.start_token_balance = self.session.config['start_token_balance']
+            self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
             self.player.total_points = points_scored_this_period
+
+            player_next_period = self.player.in_round(current_period+1)
+            player_next_period.start_token_balance = self.player.final_token_balance * interest_rate_this_period
         else:
             # fetch two values from the previous round
             final_token_balance_most_recent = round(self.player.in_round(current_period-1).final_token_balance,2)
             total_points_most_recent = round(self.player.in_round(current_period-1).total_points,2)
 
-            self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period ) * interest_rate_this_period),2)
+            if ( current_period_is_odd ):
+                self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period )),2)
+            else:
+                self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period ) * interest_rate_this_period),2)
+            
             self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
             self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
 
