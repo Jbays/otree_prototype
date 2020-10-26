@@ -7,12 +7,16 @@ class DecisionBox(Page):
 
 class Calculator(Page):
     form_model = 'player'
-    form_fields = ['purchased_units']
+    form_fields = ['purchased_units','all_inputs_made_in_calculator']
     
     # js_vars passes these variables to Calculator.html.  
     def js_vars(self):
         import math
         current_round = self.round_number
+
+        current_period = self.round_number
+        current_period_is_odd = (current_period % 2) == 1
+
         purchased_units_across_all_rounds = []
         start_token_balance_across_all_rounds = []
         final_token_balance_across_all_rounds = []
@@ -21,12 +25,25 @@ class Calculator(Page):
 
 
         if ( self.session.config['two_round_experiments'] ):
-            print('well do it live!')
+            current_player = self.player.in_round(current_period)
 
             # what do I need to pass to the calculator?
             # income, interest_rate, inflation,
             return dict(
-                two_period_experiments=self.session.config['two_round_experiments']
+                two_period_experiments=self.session.config['two_round_experiments'],
+                current_period_is_odd=current_period_is_odd,
+                # current_period=current_period,
+                obj={
+                    "a":1,
+                    "b":2
+                },
+                income=current_player.income,
+                start_token_balance=current_player.start_token_balance,
+                cost_per_unit_this_period=current_player.cost_per_unit_this_period,
+                inflation=current_player.inflation,
+                interest_rate=current_player.interest_rate,
+                treatment_variable=current_player.treatment_variable,
+                calculator_config_json=self.session.config['calculator_config_json'],
             )
 
         else:
@@ -140,8 +157,17 @@ class Calculator(Page):
             self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
             self.player.total_points = points_scored_this_period
 
+
             player_next_period = self.player.in_round(current_period+1)
-            player_next_period.start_token_balance = self.player.final_token_balance * interest_rate_this_period
+            
+            # print('---------------------------------')
+            # print('self.player.start_token_balance',self.player.start_token_balance)
+            # print('self.player.final_token_balance',self.player.final_token_balance)
+            # print('interest_rate_this_period',interest_rate_this_period)
+            # print('player_next_period.income',player_next_period.income)
+            # print('---------------------------------')
+
+            player_next_period.start_token_balance = (self.player.final_token_balance + player_next_period.income ) * interest_rate_this_period
         else:
             # fetch two values from the previous round
             final_token_balance_most_recent = round(self.player.in_round(current_period-1).final_token_balance,2)

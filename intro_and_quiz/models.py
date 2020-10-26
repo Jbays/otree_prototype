@@ -48,9 +48,11 @@ class Subsession(BaseSubsession):
                 # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # first is "pay full round 1, no pay round 2"
                 player.participant.vars['experiment_sequence'] = '012345678'
+                # player.participant.vars['experiment_sequence'] = '123456780'
 
                 # first is "no pay round 1, no pay round 2"
                 # player.participant.vars['experiment_sequence'] = '345678012'
+                # player.participant.vars['experiment_sequence'] = '567801234'
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
 

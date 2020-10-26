@@ -2,7 +2,7 @@ from ._builtin import Page, WaitPage
 import json
 
 class ConsentForm(Page):
-    print('consent form class')
+    print('consent form')
     # def is_displayed(self):
     #     return self.round_number == 1
 

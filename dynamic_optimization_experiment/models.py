@@ -34,7 +34,7 @@ class Subsession(BaseSubsession):
         current_round = self.round_number
         every_other_round = math.floor((current_round-1)/2)
         
-        print('current_round>>>>>>>>>>>>>',current_round)
+        # print('current_round>>>>>>>>>>>>>',current_round)
 
         # here I have access to player.treatment variable.  
         # Since these values (income, interest_rate, inflation) are all pre-determined, i could write all these values while creating subsession.
@@ -167,16 +167,16 @@ class Player(BasePlayer):
             cost_per_unit_this_period = self.cost_per_unit_this_period
             total_cost_of_desired_purchase = units_to_be_purchased * cost_per_unit_this_period
 
-            print('current_period_is_odd',current_period_is_odd)
-            print('self.income',self.income)
-            print('self.round_number',self.round_number)
-            print('cost_per_unit_this_period',cost_per_unit_this_period)
-            print('total_cost_of_desired_purchase',total_cost_of_desired_purchase)
+            # print('current_period_is_odd',current_period_is_odd)
+            # print('self.income',self.income)
+            # print('self.round_number',self.round_number)
+            # print('cost_per_unit_this_period',cost_per_unit_this_period)
+            # print('total_cost_of_desired_purchase',total_cost_of_desired_purchase)
 
             token_debt_limit = self.start_token_balance
 
-            print('BEFORE ------ token_debt_limit',token_debt_limit)
-            print('self.treatment_variable',self.treatment_variable)
+            # print('BEFORE ------ token_debt_limit',token_debt_limit)
+            # print('self.treatment_variable',self.treatment_variable)
 
             # if first period
             if ( current_period_is_odd ):

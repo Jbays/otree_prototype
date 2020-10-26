@@ -59,10 +59,72 @@
     </div>
 
     <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
+    <div style="display:none">{% formfield player.all_inputs_made_in_calculator %}</div>
 
     
     <script>
       console.log('js_vars', js_vars);
+
+      let allInputsMadeInCalculator = document.getElementById('id_all_inputs_made_in_calculator')
+      allInputsMadeInCalculator.value = "asdf";
+
+      function keyNameExtractor(arrayOfObjs) {
+        let output = []
+
+        arrayOfObjs.forEach((elem) => {
+          if (elem.hasOwnProperty('name_of_field')) {
+            // output.push(elem.name_of_field.split('_').map(string => {
+            //   return string.charAt(0).toUpperCase() + string.slice(1);
+            // }).join(' '));
+            output.push(elem.name_of_field);
+          }
+        })
+
+        return output
+      }
+
+      function startValueExtractor(arrayOfObjs) {
+        let output = []
+
+        arrayOfObjs.forEach((elem) => {
+          let keyName = elem.name_of_field;
+          if (elem.hasOwnProperty('start_val')) {
+            let startValType = typeof elem.start_val;
+
+            if (startValType === 'number') {
+              output.push(elem.start_val);
+            } else if (startValType === 'string') {
+              if (elem.start_val === 'look-up') {
+                output.push(js_vars[keyName])
+              } else if (elem.start_val === 'input') {
+                output.push(`${keyName}-input`)
+              }
+            }
+          }
+        })
+
+        return output
+      }
+
+      // let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "past_type");
+      // let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "current_type");
+      // let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "future_type");
+
+      function processConfigObjsToInstructions(array, keyDesired) {
+        let output = [];
+
+        array.forEach((elem) => {
+          if (elem.hasOwnProperty(keyDesired)) {
+            output.push(elem[keyDesired]);
+          };
+        });
+
+        return output;
+      };
+
+      function calculateNaturalLogVals(num){
+        return Math.log(Math.E) / Math.log(num);
+      }
 
     </script>
 
@@ -144,10 +206,9 @@
       //   return output;
       // };
 
-
-      function calculateNaturalLogVals(num){
-        return Math.log(Math.E) / Math.log(num);
-      }
+      // function calculateNaturalLogVals(num){
+      //   return Math.log(Math.E) / Math.log(num);
+      // }
 
     </script>
 
@@ -356,55 +417,59 @@
       function calculateTableVals(event){
         console.log('calculate called!')
         event.preventDefault();
-        let currentPeriod = js_vars.current_period;
+        // let currentPeriod = js_vars.current_period;
         // let numberOfRounds = js_vars.number_of_rounds;
-        let costPerUnit = js_vars.cost_per_unit;
+        let costPerUnit = js_vars.cost_per_unit_this_period;
         let income = js_vars.income;
-        let futureHorizon = js_vars.future_horizon_viewable;
+        // let futureHorizon = js_vars.future_horizon_viewable;
 
-        for(let i = currentPeriod; i <= numberOfRounds && i<= currentPeriod + futureHorizon; i++){
-          let purchasedUnits = Number(document.getElementById(`purchased_units-input-${i}`).value);
-          let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
-          let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
-          let startTokenBalanceValue = Number(startTokenBalance.innerText);
+        // for(let i = currentPeriod; i <= numberOfRounds && i<= currentPeriod + futureHorizon; i++){
+        //   let purchasedUnits = Number(document.getElementById(`purchased_units-input-${i}`).value);
+        //   let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+        //   let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
+        //   let startTokenBalanceValue = Number(startTokenBalance.innerText);
           
-          // NOTE: should multiply this by interest_rate.
-          let finalTokenBalanceValue = startTokenBalanceValue - purchasedUnits * costPerUnit;
-          finalTokenBalance.innerHTML = finalTokenBalanceValue;
+        //   // NOTE: should multiply this by interest_rate.
+        //   let finalTokenBalanceValue = startTokenBalanceValue - purchasedUnits * costPerUnit;
+        //   finalTokenBalance.innerHTML = finalTokenBalanceValue;
 
-          // if there is a next period, write to the next period
-          if ( i <= (currentPeriod + futureHorizon-2) ){
-            let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
-            nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
-          }
-        }
+        //   // if there is a next period, write to the next period
+        //   if ( i <= (currentPeriod + futureHorizon-2) ){
+        //     let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+        //     nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+        //   }
+        // }
       }
 
       function resetTableVals(event){
+        console.log('reset table values');
         event.preventDefault();
-        let currentPeriod = js_vars.current_period;
-        let numberOfRounds = js_vars.number_of_rounds;
-        let income = js_vars.income;
-        for(let i = currentPeriod; i <= numberOfRounds; i++){
-          // if there is an input, you're free to begin modifications
-          if ( document.getElementById(`purchased_units-input-${i}`) ){
-            let purchasedUnits = document.getElementById(`purchased_units-input-${i}`);
-            let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
-            let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
 
-            let startTokenBalanceValue = Number(startTokenBalance.innerText);
-            let finalTokenBalanceValue = startTokenBalanceValue;
 
-            purchasedUnits.value = '';
-            finalTokenBalance.innerHTML = finalTokenBalanceValue;
+        
+        // let currentPeriod = js_vars.current_period;
+        // let numberOfRounds = js_vars.number_of_rounds;
+        // let income = js_vars.income;
+        // for(let i = currentPeriod; i <= numberOfRounds; i++){
+        //   // if there is an input, you're free to begin modifications
+        //   if ( document.getElementById(`purchased_units-input-${i}`) ){
+        //     let purchasedUnits = document.getElementById(`purchased_units-input-${i}`);
+        //     let startTokenBalance = document.getElementById(`start_token_balance-${i}`);
+        //     let finalTokenBalance = document.getElementById(`final_token_balance-${i}`);
 
-            // if there is an future input, you're free to begin modifications
-            if ( document.getElementById(`purchased_units-input-${i+1}`) ){
-              let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
-              nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
-            }
-          }
-        }
+        //     let startTokenBalanceValue = Number(startTokenBalance.innerText);
+        //     let finalTokenBalanceValue = startTokenBalanceValue;
+
+        //     purchasedUnits.value = '';
+        //     finalTokenBalance.innerHTML = finalTokenBalanceValue;
+
+        //     // if there is an future input, you're free to begin modifications
+        //     if ( document.getElementById(`purchased_units-input-${i+1}`) ){
+        //       let nextStartTokenBalance = document.getElementById(`start_token_balance-${i+1}`);
+        //       nextStartTokenBalance.innerHTML = finalTokenBalanceValue + income;
+        //     }
+        //   }
+        // }
       }
     </script>
 
