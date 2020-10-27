@@ -67,11 +67,69 @@
 
       let allInputsMadeInCalculator = document.getElementById('id_all_inputs_made_in_calculator');
       let budgetingCalculator = document.getElementById('myTable');
-      
+      let isFirstPeriod = js_vars.current_period_is_odd
+      let calculatorConfig = js_vars.calculator_config_json
 
       allInputsMadeInCalculator.value = "asdf";
 
+      let defaultPurchasedUnit = document.createElement('input');
+      defaultPurchasedUnit.type = "number";
+      defaultPurchasedUnit.step = "any";
+      defaultPurchasedUnit.min = 0;
+      defaultPurchasedUnit.style.cssText = "text-align: center; width: 100%; border-radius: 0 !important; border-bottom: 1px solid #23272f !important;";
 
+      function assembleTwoPeriodCalculator(table,configArrays,firstPeriodBool){
+        console.log({table,configArrays,firstPeriodBool});
+
+        let columnLabelRow = document.createElement('tr');
+        columnLabelRow.id = 'table_row_0';
+        let firstPeriodRow = document.createElement('tr');
+        firstPeriodRow.id = 'table_row_1';
+        let secondPeriodRow = document.createElement('tr');
+        secondPeriodRow.id = 'table_row_2';
+        
+        for ( let i = 0; i < configArrays.length; i++ ) {
+          let columnTableData = document.createElement('td');
+          let firstPeriodColumnTableData = document.createElement('td');
+          let secondPeriodColumnTableData = document.createElement('td');
+          
+          let columnLabel = configArrays[i][0];
+          
+          firstPeriodColumnTableData.id = `${columnLabel}-1`;
+          secondPeriodColumnTableData.id = `${columnLabel}-2`;
+
+          let firstColumnData = configArrays[i][1];
+          let secondColumnData = configArrays[i][2];
+          
+          columnTableData.innerText = columnLabel;
+
+          if ( firstColumnData !== 'input' ){
+            firstPeriodColumnTableData.innerText = configArrays[i][1];
+          } else {
+            let inputClone = defaultPurchasedUnit.cloneNode(true);
+            inputClone.id = `${columnLabel}-1`;
+            firstPeriodColumnTableData = inputClone;
+          };
+          
+          if ( secondColumnData !== 'input' ){
+            secondPeriodColumnTableData.innerText = configArrays[i][2];
+          } else {
+            let inputClone = defaultPurchasedUnit.cloneNode(true);
+            inputClone.id = `${columnLabel}-2`;
+            secondPeriodColumnTableData = inputClone;
+          };
+
+          columnLabelRow.append(columnTableData);
+          firstPeriodRow.append(firstPeriodColumnTableData);
+          secondPeriodRow.append(secondPeriodColumnTableData);
+        };
+
+        table.append(columnLabelRow);
+        table.append(firstPeriodRow);
+        table.append(secondPeriodRow);
+      };
+
+      assembleTwoPeriodCalculator(budgetingCalculator, calculatorConfig, isFirstPeriod);
     </script>
 
     <script>

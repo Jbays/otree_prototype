@@ -52,13 +52,13 @@ class Calculator(Page):
                 purchased_units_arr.append("input")
                 
                 start_token_balance_arr.append(current_player.start_token_balance)
-                start_token_balance_arr.append(player_in_future_period.start_token_balance)
+                start_token_balance_arr.append((current_player.start_token_balance+player_in_future_period.income))
 
                 total_points_arr.append(0)
                 total_points_arr.append(0)
 
                 final_token_balance_arr.append(current_player.start_token_balance)
-                final_token_balance_arr.append(player_in_future_period.start_token_balance)
+                final_token_balance_arr.append((current_player.start_token_balance+player_in_future_period.income))
 
             # else player has a past
             else:
