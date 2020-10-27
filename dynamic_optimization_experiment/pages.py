@@ -31,7 +31,7 @@ class Calculator(Page):
             inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
             interest_rate_arr = ["interest_rate",current_player.interest_rate,current_player.interest_rate]
             period_arr = ["period",1,2]
-            points_arr = ["points",0,0]
+            points_arr = ["points",0.00,0.00]
             
             income_arr = ["income"]
             purchased_units_arr = ["purchased_units"]
