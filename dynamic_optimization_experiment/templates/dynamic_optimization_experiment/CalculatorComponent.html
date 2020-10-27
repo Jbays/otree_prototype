@@ -65,62 +65,69 @@
     <script>
       console.log('js_vars', js_vars);
 
-      let allInputsMadeInCalculator = document.getElementById('id_all_inputs_made_in_calculator')
+      let allInputsMadeInCalculator = document.getElementById('id_all_inputs_made_in_calculator');
+      let budgetingCalculator = document.getElementById('myTable');
+      
+
       allInputsMadeInCalculator.value = "asdf";
 
-      function keyNameExtractor(arrayOfObjs) {
-        let output = []
 
-        arrayOfObjs.forEach((elem) => {
-          if (elem.hasOwnProperty('name_of_field')) {
-            // output.push(elem.name_of_field.split('_').map(string => {
-            //   return string.charAt(0).toUpperCase() + string.slice(1);
-            // }).join(' '));
-            output.push(elem.name_of_field);
-          }
-        })
+    </script>
 
-        return output
-      }
+    <script>
+      // function keyNameExtractor(arrayOfObjs) {
+      //   let output = []
 
-      function startValueExtractor(arrayOfObjs) {
-        let output = []
+      //   arrayOfObjs.forEach((elem) => {
+      //     if (elem.hasOwnProperty('name_of_field')) {
+      //       // output.push(elem.name_of_field.split('_').map(string => {
+      //       //   return string.charAt(0).toUpperCase() + string.slice(1);
+      //       // }).join(' '));
+      //       output.push(elem.name_of_field);
+      //     }
+      //   })
 
-        arrayOfObjs.forEach((elem) => {
-          let keyName = elem.name_of_field;
-          if (elem.hasOwnProperty('start_val')) {
-            let startValType = typeof elem.start_val;
+      //   return output
+      // }
 
-            if (startValType === 'number') {
-              output.push(elem.start_val);
-            } else if (startValType === 'string') {
-              if (elem.start_val === 'look-up') {
-                output.push(js_vars[keyName])
-              } else if (elem.start_val === 'input') {
-                output.push(`${keyName}-input`)
-              }
-            }
-          }
-        })
+      // function startValueExtractor(arrayOfObjs) {
+      //   let output = []
 
-        return output
-      }
+      //   arrayOfObjs.forEach((elem) => {
+      //     let keyName = elem.name_of_field;
+      //     if (elem.hasOwnProperty('start_val')) {
+      //       let startValType = typeof elem.start_val;
 
-      // let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "past_type");
-      // let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "current_type");
-      // let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "future_type");
+      //       if (startValType === 'number') {
+      //         output.push(elem.start_val);
+      //       } else if (startValType === 'string') {
+      //         if (elem.start_val === 'look-up') {
+      //           output.push(js_vars[keyName])
+      //         } else if (elem.start_val === 'input') {
+      //           output.push(`${keyName}-input`)
+      //         }
+      //       }
+      //     }
+      //   })
 
-      function processConfigObjsToInstructions(array, keyDesired) {
-        let output = [];
+      //   return output
+      // }
 
-        array.forEach((elem) => {
-          if (elem.hasOwnProperty(keyDesired)) {
-            output.push(elem[keyDesired]);
-          };
-        });
+      // // let columnRulesForPastRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "past_type");
+      // // let columnRulesForCurrentRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "current_type");
+      // // let columnRulesForFutureRows = processConfigObjsToInstructions(js_vars.the_calculator_config[0], "future_type");
 
-        return output;
-      };
+      // function processConfigObjsToInstructions(array, keyDesired) {
+      //   let output = [];
+
+      //   array.forEach((elem) => {
+      //     if (elem.hasOwnProperty(keyDesired)) {
+      //       output.push(elem[keyDesired]);
+      //     };
+      //   });
+
+      //   return output;
+      // };
 
       function calculateNaturalLogVals(num){
         return Math.log(Math.E) / Math.log(num);

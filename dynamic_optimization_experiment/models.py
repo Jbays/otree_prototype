@@ -142,23 +142,6 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     print('creating the DOE Player class')
     purchased_units = models.FloatField(label="Purchased Units:")
-    # token_debt_limit = models.FloatField()
-
-    # I don't think this works as I want.
-    # I need to dynamically calculate the token_debt_limit.  Not put a ceiling on its max value.
-    # def token_debt_limit(self):
-    #     current_period_is_odd = (self.round_number % 2) == 1
-        
-    #     # if "pay full period 1, pay zero period 2"
-    #     if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
-    #         if ( current_period_is_odd ):
-    #             return 0
-
-    #     print('self in token_debt_limit_max',self)
-    #     print('self.player',self.player)
-    #     print('self.player.treatment_variable',self.player.treatment_variable)
-    #     print('current_period_is_odd',current_period_is_odd)
-
 
     # the buying limit logic will have to be set against purchased_units
     def purchased_units_error_message(self,units_to_be_purchased):
@@ -167,16 +150,7 @@ class Player(BasePlayer):
             cost_per_unit_this_period = self.cost_per_unit_this_period
             total_cost_of_desired_purchase = units_to_be_purchased * cost_per_unit_this_period
 
-            # print('current_period_is_odd',current_period_is_odd)
-            # print('self.income',self.income)
-            # print('self.round_number',self.round_number)
-            # print('cost_per_unit_this_period',cost_per_unit_this_period)
-            # print('total_cost_of_desired_purchase',total_cost_of_desired_purchase)
-
             token_debt_limit = self.start_token_balance
-
-            # print('BEFORE ------ token_debt_limit',token_debt_limit)
-            # print('self.treatment_variable',self.treatment_variable)
 
             # if first period
             if ( current_period_is_odd ):
@@ -238,6 +212,7 @@ class Player(BasePlayer):
     interest_rate = models.FloatField()
     points_this_period = models.FloatField()
     start_token_balance = models.FloatField()
+    points_scored_this_treatment = models.FloatField()
     total_points = models.FloatField()
     treatment_variable = models.StringField()
     all_inputs_made_in_calculator = models.StringField()
