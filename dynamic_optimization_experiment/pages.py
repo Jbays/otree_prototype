@@ -25,17 +25,62 @@ class Calculator(Page):
 
         if ( self.session.config['two_round_experiments'] ):
             current_player = self.player.in_round(current_period)
-            period_tuple = ["period",1]
-            income_tuple = ["income",current_player.income]
-            cost_per_unit_tuple = ["cost_per_unit",current_player.cost_per_unit_this_period]
-            inflation_tuple = ["inflation",current_player.inflation]
-            interest_rate_tuple = ["interest_rate",current_player.interest_rate]
-            start_token_balance_tuple = ["start_token_balance",current_player.start_token_balance]
-            points_tuple = ["points",current_player.points_this_period]
+
+            # these are constant throughout the two periods
+            cost_per_unit_arr = ["cost_per_unit",current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
+            inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
+            interest_rate_arr = ["interest_rate",current_player.interest_rate,current_player.interest_rate]
+            period_arr = ["period",1,2]
+            points_arr = ["points",0,0]
+            
+            income_arr = ["income"]
+            purchased_units_arr = ["purchased_units"]
+            start_token_balance_arr = ["start_token_balance"]
+            
+            # though this is labeled total_points, in actuality the player model used is "points_scored_this_treatment"
+            total_points_arr = ["total_points"]
+            final_token_balance_arr = ["final_token_balance"]
+
+            # if first period, then player has a future
+            if ( current_period_is_odd ):
+                player_in_future_period = self.player.in_round(current_period+1)
+                
+                income_arr.append(current_player.income)
+                income_arr.append(player_in_future_period.income)
+                
+                purchased_units_arr.append("input")
+                purchased_units_arr.append("input")
+                
+                start_token_balance_arr.append(current_player.start_token_balance)
+                start_token_balance_arr.append(player_in_future_period.start_token_balance)
+
+                total_points_arr.append(0)
+                total_points_arr.append(0)
+
+                final_token_balance_arr.append(current_player.start_token_balance)
+                final_token_balance_arr.append(player_in_future_period.start_token_balance)
+
+            # else player has a past
+            else:
+                player_in_past_period = self.player.in_round(current_period-1)
+                
+                income_arr.append(player_in_past_period.income)
+                income_arr.append(current_player.income)
+                
+                purchased_units_arr.append(player_in_past_period.purchased_units)
+                purchased_units_arr.append("input")
+                
+                start_token_balance_arr.append(player_in_past_period.start_token_balance)
+                start_token_balance_arr.append(current_player.start_token_balance)
+
+                total_points_arr.append(player_in_past_period.points_scored_this_treatment)
+                total_points_arr.append(player_in_past_period.points_scored_this_treatment)
+
+                final_token_balance_arr.append(player_in_past_period.final_token_balance)
+                final_token_balance_arr.append(current_player.start_token_balance)
+
             # this value is labeled total_points.  BUT its value is actually "points_scored_this_period"
-            total_points_tuple = ["total_points",current_player.points_scored_this_treatment]
-            purchased_units_tuple = ["purchased_units","input"]
-            two_period_calculator_config = [period_tuple,income_tuple,cost_per_unit_tuple,inflation_tuple,interest_rate_tuple,start_token_balance_tuple,purchased_units_tuple,points_tuple,total_points_tuple]
+            two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,inflation_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
 
             # what do I need to pass to the calculator?
             # income, interest_rate, inflation,
@@ -50,6 +95,7 @@ class Calculator(Page):
                 interest_rate=current_player.interest_rate,
                 treatment_variable=current_player.treatment_variable,
                 calculator_config_json=two_period_calculator_config,
+                # calculator_config_json_2=self.session.config['calculator_config_json'],
             )
 
         else:
