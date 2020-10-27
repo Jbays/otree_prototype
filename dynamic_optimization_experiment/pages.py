@@ -31,7 +31,7 @@ class Calculator(Page):
             inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
             interest_rate_arr = ["interest_rate",current_player.interest_rate,current_player.interest_rate]
             period_arr = ["period",1,2]
-            points_arr = ["points",0.00,0.00]
+            points_arr = ["points"]
             
             income_arr = ["income"]
             purchased_units_arr = ["purchased_units"]
@@ -54,6 +54,9 @@ class Calculator(Page):
                 start_token_balance_arr.append(current_player.start_token_balance)
                 start_token_balance_arr.append((current_player.start_token_balance+player_in_future_period.income))
 
+                points_arr.append(0)
+                points_arr.append(0)
+
                 total_points_arr.append(0)
                 total_points_arr.append(0)
 
@@ -72,6 +75,9 @@ class Calculator(Page):
                 
                 start_token_balance_arr.append(player_in_past_period.start_token_balance)
                 start_token_balance_arr.append(current_player.start_token_balance)
+
+                points_arr.append(player_in_past_period.points_scored_this_treatment)
+                points_arr.append(0)
 
                 total_points_arr.append(player_in_past_period.points_scored_this_treatment)
                 total_points_arr.append(player_in_past_period.points_scored_this_treatment)
