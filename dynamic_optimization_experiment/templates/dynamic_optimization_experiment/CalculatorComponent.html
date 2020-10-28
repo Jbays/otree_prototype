@@ -65,7 +65,7 @@
       console.log('js_vars', js_vars);
 
       let allInputsMadeInCalculator = document.getElementById('id_all_inputs_made_in_calculator');
-      allInputsMadeInCalculator.value = "null";
+      allInputsMadeInCalculator.value = "-";
 
       let budgetingCalculator = document.getElementById('myTable');
       let isFirstPeriod = js_vars.current_period_is_odd
@@ -144,7 +144,8 @@
 
         let purchasedUnitSecondPeriodElem = document.getElementById('purchased_units-2');
         let purchasedUnitSecondPeriod = Number(purchasedUnitSecondPeriodElem.value);
-        // let secondPurchasedUnits = Number(secondInput.value);
+
+        appendStringToOutputString(allInputsMadeInCalculator,2,purchasedUnitSecondPeriod);
 
         let pointsSecondPeriodElem = document.getElementById('points-2');
         let totalPointsSecondPeriodElem = document.getElementById('total_points-2');
@@ -160,6 +161,8 @@
 
           let purchasedUnitFirstPeriodElem = document.getElementById('purchased_units-1');
           let purchasedUnitFirstPeriod = Number(purchasedUnitFirstPeriodElem.value);
+
+          appendStringToOutputString(allInputsMadeInCalculator,1,purchasedUnitFirstPeriod);
           
           pointsScoredFirstPeriod = Number((calculateNaturalLogVals(purchasedUnitFirstPeriod)).toFixed(2));
           
@@ -189,42 +192,39 @@
         totalPointsSecondPeriodElem.innerText = (Number(totalPointsFirstPeriodElem.innerText) + pointsScoredSecondPeriod).toFixed(2);
         finalTokenBalanceSecondPeriodElem.innerText = Number(startTokenBalanceSecondPeriodElem.innerText) - totalCostSecondPeriod;
 
-        let allInputsMadeInCalculatorInput = document.getElementById('id_all_inputs_made_in_calculator');
-
-        gatherPurchasedUnitInputsAndAppend(allInputsMadeInCalculatorInput);
-        
-        function gatherPurchasedUnitInputsAndAppend(input){
+        function appendStringToOutputString(input,period,number){
           // now write those values submitted to the string
-          let stringToAppend = '';
           console.log('input.value',input.value);
+          console.log('period',period);
+          console.log('number',number);
   
-          
-          // if its the first period, then grab values from both inputs
-          // if its the second period, the only grab value from the second input
-          // 
-  
-          if ( input.value === 'null' ){
+          if ( input.value === '-' ){
             // then overwrite this value
             console.log('youre free to write to me!');
+
+            if ( period === 1 ) {
+              input.value = `${number};` + input.value;
+            } else {
+              input.value = input.value + `${number};`
+            }
           } else {
+            // split then prepend to the corect array then join again.
             // then append to this value
-          }
-          
-          // let stringifiedFirstPurchase = `${firstPurchasedUnits};`
-          // console.log('firstPurchasedUnits',firstPurchasedUnits)
-  
-          // if ( js_vars.current_period_is_odd ){
-          //   let secondInput = document.getElementById('purchased_units-2');
-          //   let secondPurchasedUnits = Number(secondInput.value);
+            console.log('lets do it a little different');
+            let splitOnDash = input.value.split('-');
+            console.log('splitOnDash',splitOnDash);
             
-          //   console.log('secondPurchasedUnits',secondPurchasedUnits)
-          // }
-
+            if ( period === 1 ) {
+              splitOnDash[0] += `${number};`; 
+            } else {
+              splitOnDash[1] += `${number};`;
+            }
+            console.log('after write! splitOnDash',splitOnDash);
+            
+            input.value = splitOnDash.join('-');
+          }
+          console.log('input.value',input.value);
         }
-        
-
-        
-
       }
 
 
@@ -676,13 +676,14 @@
     </script>
 
     <!-- here're all code which runs AFTER the rows are appended. -->
-    <!-- <script>
+    <script>
       function miscCleanup(table){
         convertSnakeCaseToUpperCase(table.rows[0]);
         roundDownTokenBalanceAndPoints();
-        if ( js_vars.obscure_a_column ) {
-          obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
-        }
+        
+        // if ( js_vars.obscure_a_column ) {
+        //   obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
+        // }
       }
 
       function convertSnakeCaseToUpperCase(rowOfColumnTitles){
@@ -705,19 +706,19 @@
 
       // takes as input a string like "inflation,5,10"
       // "${name of column you want obscured},{period you want to start obscuring},{obscure up to this period}"
-      function obscureColumnStartingAtPeriod(string){
-        let columnAndPeriodTuple = string.split(',');
+      // function obscureColumnStartingAtPeriod(string){
+      //   let columnAndPeriodTuple = string.split(',');
 
-        for ( let i = Number(columnAndPeriodTuple[1]); i <= Number(columnAndPeriodTuple[2]); i++ ) {
-          let tableDataElem = document.getElementById(`${columnAndPeriodTuple[0]}-${i}`);
-          tableDataElem.innerText = 'hidden';
-          tableDataElem.style.cssText = `background-color: silver`;
-        };
+      //   for ( let i = Number(columnAndPeriodTuple[1]); i <= Number(columnAndPeriodTuple[2]); i++ ) {
+      //     let tableDataElem = document.getElementById(`${columnAndPeriodTuple[0]}-${i}`);
+      //     tableDataElem.innerText = 'hidden';
+      //     tableDataElem.style.cssText = `background-color: silver`;
+      //   };
 
-      }
+      // }
 
-      miscCleanup(myTable);
+      miscCleanup(budgetingCalculator);
     
-    </script> -->
+    </script>
   </div>
 </div>
