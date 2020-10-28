@@ -21,5 +21,24 @@
             {% formfield player.purchased_units %}
             {% next_button %}
         </div>
+        <div style="display:none">{% formfield player.seconds_spent_on_page %}</div>
     </div>
+
 </div>
+
+<script>
+    let startTime = Date.now();
+
+    function attachEventHandlerToNext(){
+        let nextButtonElem = document.getElementsByClassName('otree-btn-next')[0];
+        let timeSpentOnPageInput = document.getElementById("id_seconds_spent_on_page");
+
+        nextButtonElem.addEventListener('click',()=>{
+            let timeSpentOnPage = (Date.now() - startTime)/1000;
+
+            timeSpentOnPageInput.value = timeSpentOnPage
+        });
+    };
+
+    attachEventHandlerToNext();
+</script>

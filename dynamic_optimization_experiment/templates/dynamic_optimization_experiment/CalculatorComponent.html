@@ -53,13 +53,15 @@
     </table>
 
     <div style="text-align: center;">
-      <button class="red-button" style="background-color: white !important; color: #23272f !important; border-color: white !important;" onClick=resetTableVals(event)>Reset
-        Values</button>
+      <button class="red-button" style="background-color: white !important; color: #23272f !important; border-color: white !important;" onClick=resetTableVals(event)>
+        Reset Values
+      </button>
       <button onClick=calculateTableVals(event)>Calculate</button>
     </div>
 
     <div id="total_number_of_periods_container" style="display:none">{{Constants.num_rounds}}</div>
     <div style="display:none">{% formfield player.all_inputs_made_in_calculator %}</div>
+    
 
     <script>
       console.log('js_vars', js_vars);
@@ -78,8 +80,6 @@
       defaultPurchasedUnit.style.cssText = "text-align: center; width: 100%; border-radius: 0 !important; border-bottom: 1px solid #23272f !important;";
 
       function assembleTwoPeriodCalculator(table,configArrays,firstPeriodBool){
-        console.log({table,configArrays,firstPeriodBool});
-
         let columnLabelRow = document.createElement('tr');
         columnLabelRow.id = 'table_row_0';
         let firstPeriodRow = document.createElement('tr');
@@ -193,37 +193,22 @@
         finalTokenBalanceSecondPeriodElem.innerText = Number(startTokenBalanceSecondPeriodElem.innerText) - totalCostSecondPeriod;
 
         function appendStringToOutputString(input,period,number){
-          // now write those values submitted to the string
-          console.log('input.value',input.value);
-          console.log('period',period);
-          console.log('number',number);
-  
           if ( input.value === '-' ){
-            // then overwrite this value
-            console.log('youre free to write to me!');
-
             if ( period === 1 ) {
               input.value = `${number};` + input.value;
             } else {
               input.value = input.value + `${number};`
             }
           } else {
-            // split then prepend to the corect array then join again.
-            // then append to this value
-            console.log('lets do it a little different');
             let splitOnDash = input.value.split('-');
-            console.log('splitOnDash',splitOnDash);
             
             if ( period === 1 ) {
               splitOnDash[0] += `${number};`; 
             } else {
               splitOnDash[1] += `${number};`;
             }
-            console.log('after write! splitOnDash',splitOnDash);
-            
             input.value = splitOnDash.join('-');
           }
-          console.log('input.value',input.value);
         }
       }
 

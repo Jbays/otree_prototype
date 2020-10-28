@@ -3,11 +3,11 @@ from ._builtin import Page, WaitPage
 
 class DecisionBox(Page):
     form_model = 'player'
-    form_fields = ['purchased_units']
+    form_fields = ['purchased_units', 'seconds_spent_on_page']
 
 class Calculator(Page):
     form_model = 'player'
-    form_fields = ['purchased_units','all_inputs_made_in_calculator']
+    form_fields = ['purchased_units','all_inputs_made_in_calculator','seconds_spent_on_page']
     
     # js_vars passes these variables to Calculator.html.  
     def js_vars(self):

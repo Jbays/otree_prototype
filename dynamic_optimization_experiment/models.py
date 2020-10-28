@@ -216,3 +216,4 @@ class Player(BasePlayer):
     total_points = models.FloatField()
     treatment_variable = models.StringField()
     all_inputs_made_in_calculator = models.StringField()
+    seconds_spent_on_page = models.FloatField()
