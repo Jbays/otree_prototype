@@ -22,6 +22,46 @@
             {% next_button %}
         </div>
         <div style="display:none">{% formfield player.seconds_spent_on_page %}</div>
+        <!-- calculator lives right here -->
+        <!-- <div class="title">
+            <div class="titleDash"></div>
+            Simple Calculator
+        </div>
+        <div style="padding:1em; display:flex; flex-direction:row;">
+            <div class="calculator">
+                <input type="text" class="calculator-screen" value="" />
+                <div class="calculator-keys">
+                    <div>
+                        <button type="button" class="operator" value="+">+</button>
+                        <button type="button" class="operator" value="-">-</button>
+                        <button type="button" class="operator" value="*">&times;</button>
+                        <button type="button" class="operator" value="/">&divide;</button>
+                    </div>
+                    <div>
+                        <button type="button" value="7">7</button>
+                        <button type="button" value="8">8</button>
+                        <button type="button" value="9">9</button>
+                    </div>
+                    <div>
+                        <button type="button" value="4">4</button>
+                        <button type="button" value="5">5</button>
+                        <button type="button" value="6">6</button>
+                    </div>
+                    <div>
+                        <button type="button" value="1">1</button>
+                        <button type="button" value="2">2</button>
+                        <button type="button" value="3">3</button>
+                    </div>
+                    <div>
+                        <button type="button" value="0">0</button>
+                        <button type="button" class="decimal" value=".">.</button>
+                        <button type="button" class="all-clear" value="all-clear">AC</button>
+                        <button type="button" class="equal-sign operator" value="=">=</button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- here is where the calculator ends -->
     </div>
 
 </div>
@@ -41,4 +81,119 @@
     };
 
     attachEventHandlerToNext();
+</script>
+
+<!-- heres the logic for the calculator -->
+<script>
+    // const calculator = {
+    //     displayValue: '0',
+    //     firstOperand: null,
+    //     waitingForSecondOperand: false,
+    //     operator: null,
+    // };
+
+    // function inputDigit(digit) {
+    //     const { displayValue, waitingForSecondOperand } = calculator;
+
+    //     if (waitingForSecondOperand === true) {
+    //         calculator.displayValue = digit;
+    //         calculator.waitingForSecondOperand = false;
+    //     } else {
+    //         calculator.displayValue =
+    //         displayValue === '0' ? digit : displayValue + digit;
+    //     }
+    // }
+
+    // function inputDecimal(dot) {
+    //     if (calculator.waitingForSecondOperand === true) {
+    //         calculator.displayValue = '0.';
+    //         calculator.waitingForSecondOperand = false;
+    //         return;
+    //     }
+
+    //     if (!calculator.displayValue.includes(dot)) {
+    //         calculator.displayValue += dot;
+    //     }
+    // }
+
+    // function handleOperator(nextOperator) {
+    //     const { firstOperand, displayValue, operator } = calculator;
+    //     const inputValue = parseFloat(displayValue);
+
+    //     if (operator && calculator.waitingForSecondOperand) {
+    //         calculator.operator = nextOperator;
+    //         return;
+    //     }
+
+    //     if (firstOperand == null && !isNaN(inputValue)) {
+    //         calculator.firstOperand = inputValue;
+    //     } else if (operator) {
+    //         const currentValue = firstOperand || 0;
+    //         const result = calculate(currentValue, inputValue, operator);
+
+    //         calculator.displayValue = String(result);
+    //         calculator.firstOperand = result;
+    //     }
+
+    //     calculator.waitingForSecondOperand = true;
+    //     calculator.operator = nextOperator;
+    // }
+
+    // function calculate(firstOperand, secondOperand, operator) {
+    //     if (operator === '+') {
+    //         return firstOperand + secondOperand;
+    //     } else if (operator === '-') {
+    //         return firstOperand - secondOperand;
+    //     } else if (operator === '*') {
+    //         return firstOperand * secondOperand;
+    //     } else if (operator === '/') {
+    //         return firstOperand / secondOperand;
+    //     }
+
+    //     return secondOperand;
+    // }
+
+    // function resetCalculator() {
+    //     calculator.displayValue = '0';
+    //     calculator.firstOperand = null;
+    //     calculator.waitingForSecondOperand = false;
+    //     calculator.operator = null;
+    // }
+
+    // function updateDisplay() {
+    //     const display = document.querySelector('.calculator-screen');
+    //     display.value = calculator.displayValue;
+    // }
+
+    // updateDisplay();
+
+    // const keys = document.querySelector('.calculator-keys');
+    // keys.addEventListener('click', event => {
+    //     const { target } = event;
+    //     if (!target.matches('button')) {
+    //         return;
+    //     }
+
+    //     if (target.classList.contains('operator')) {
+    //         handleOperator(target.value);
+    //         updateDisplay();
+    //         return;
+    //     }
+
+    //     if (target.classList.contains('decimal')) {
+    //         inputDecimal(target.value);
+    //         updateDisplay();
+    //         return;
+    //     }
+
+    //     if (target.classList.contains('all-clear')) {
+    //         resetCalculator();
+    //         updateDisplay();
+    //         return;
+    //     }
+
+    //     inputDigit(target.value);
+    //     updateDisplay();
+    // });
+
 </script>
