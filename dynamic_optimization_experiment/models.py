@@ -34,26 +34,12 @@ class Subsession(BaseSubsession):
         current_round = self.round_number
         every_other_round = math.floor((current_round-1)/2)
         
-        # print('current_round>>>>>>>>>>>>>',current_round)
-
-        # here I have access to player.treatment variable.  
-        # Since these values (income, interest_rate, inflation) are all pre-determined, i could write all these values while creating subsession.
-
-        # if multiple_inflations==True, then split the string by its delimiter, then you can inflation_this_period its correct value
-        # by using the player.treatment_variable.
-        # inflation_this_period
-        # interest_rate_this_period
-        # income_this_period
-
         # this is the simplest way to divert the logic between the N number of two-period experiments and the 1 experiment of M-periods.
         if ( self.session.config['two_round_experiments'] ):
             all_players = self.get_players()
             current_round_is_odd = (current_round % 2) == 1
             other_inflations_arr = self.session.config['other_inflations'].split(',')
             other_interest_rates_arr = self.session.config['other_interest_rates'].split(',')
-
-            # what is the logic for buying limit?
-            # if first round, 
 
             # in future, will need to make this programmatic.  However, for now, let's go simple and quick.  Rather than grand.
             for player in all_players:
@@ -104,38 +90,6 @@ class Subsession(BaseSubsession):
 
                 player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
 
-                # actually this needs to live in the model?
-                # since I need interest_rate, cost_of_unit_this_period, and income, I'll assign buying_limit here at the end.  Will use the same logical grouping as 
-                # if "paid full period 1, paid zero period 2"
-                # if ( player.treatment_variable == '0' or player.treatment_variable == '1' or player.treatment_variable == '2'):
-                #     if ( current_round_is_odd ):
-                #         # buying_limit = 0 + starting_income_balance
-                #         player.buying_limit = 0
-                #     else:
-                #         # if the period is even, then the buying_limit is equal to zero plus the final_token_balance_from_previous_period
-                #         # trouble is, at this point in time I do not have access to the player's previous token balance.
-                #         # in the Player model, will need to now add final_token_balance_from_previous_period
-                #         player.buying_limit = 0
-                #         # buying_limit = 0 + final_token_balance_from_prev_period
-
-                # # if "paid zero period 1, paid full period 2"
-                # if ( player.treatment_variable == '3' or player.treatment_variable == '4' or player.treatment_variable == '5'):
-                #     if ( current_round_is_odd ):
-                #         player.buying_limit = self.session.config['income'] * player.interest_rate
-                #     else:
-                #         # buying_limit = 0 + final_token_balance_from_prev_period
-                #         player.buying_limit = 0 
-
-                # # if "paid half period 1, paid half period 2"
-                # if ( player.treatment_variable == '6' or player.treatment_variable == '7' or player.treatment_variable == '8'):
-                    
-                #     if ( current_round_is_odd ):
-                #         # buying_limit = starting_token_balance + 
-                #         player.buying_limit = (self.session.config['income']/2) * player.interest_rate
-                #     else:
-                #         # buying_limit = 0 + final_token_balance_from_prev_period
-                #         player.buying_limit = 0 
-
 class Group(BaseGroup):
     print('creating the Group class')
 
@@ -155,7 +109,7 @@ class Player(BasePlayer):
             # if first period
             if ( current_period_is_odd ):
                 income_next_period = self.in_round(self.round_number+1).income
-                print('income_next_period',income_next_period)
+
                 # if "pay full period 1, pay zero period 2"
                 if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
                     token_debt_limit = token_debt_limit * self.interest_rate
@@ -171,8 +125,6 @@ class Player(BasePlayer):
             # else in second period
             else:
                 final_token_balance_from_prev_period = self.in_round(self.round_number-1).final_token_balance
-                print('final_token_balance_from_prev_period',final_token_balance_from_prev_period)
-                print('starting_token_balance >>>>>',self.start_token_balance)
 
                 # if "pay full period 1, pay zero period 2"
                 if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
@@ -186,14 +138,12 @@ class Player(BasePlayer):
                 if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
                     token_debt_limit = (final_token_balance_from_prev_period + self.income) * self.interest_rate
 
-            print('AFTER ------ token_debt_limit',token_debt_limit)
-
-            # print('self.player.income',self.player.income)
             if ( units_to_be_purchased < 0 ):
                 return 'Purchased units must be positive'
 
+            # print('token_debt_limit',token_debt_limit)
             if ( total_cost_of_desired_purchase > token_debt_limit ):
-                return "You cannot afford that purchase."
+                return f"You cannot afford that purchase. The most amount of units you can afford are {token_debt_limit / cost_per_unit_this_period}."
 
             # if its the second period
             if ( not current_period_is_odd ):
