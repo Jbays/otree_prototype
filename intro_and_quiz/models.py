@@ -47,7 +47,7 @@ class Subsession(BaseSubsession):
             for player in all_players:
                 # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # first is "pay full round 1, no pay round 2"
-                player.participant.vars['experiment_sequence'] = '012345678'
+                # player.participant.vars['experiment_sequence'] = '012345678'
                 # player.participant.vars['experiment_sequence'] = '123456780'
 
                 # first is "no pay round 1, no pay round 2"
@@ -56,12 +56,13 @@ class Subsession(BaseSubsession):
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
 
-                # player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
+                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
 class Group(BaseGroup):
     print('creating the Group class intro_and_quiz')
+    pass
 
 class Player(BasePlayer):
     # print('creating the Player class intro_and_quiz')
