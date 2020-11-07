@@ -1,0 +1,24 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+  You finished Treatment #0{{treatment}}.
+
+  </br>
+
+  Hit NEXT to begin next treatment.
+{% endblock %}
+
+{% block content %}
+
+  <style>
+    .otree-btn-next {
+      padding:2em !important;
+    }
+  </style>
+
+  <div style="text-align:center; margin:1em">
+    {% next_button %}
+  </div>
+
+{% endblock %}

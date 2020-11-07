@@ -19,6 +19,7 @@ class Constants(BaseConstants):
     instructions_template = 'dynamic_optimization_experiment/instructions.html'
     decision_box_component = 'dynamic_optimization_experiment/DecisionBox.html'
     calculator_component = 'dynamic_optimization_experiment/CalculatorComponent.html'
+    in_between_component = 'dynamic_optimization_experiment/InBetween.html'
     # output_to_points_converter_component = 'dynamic_optimization_experiment/OutputToPointsConverter.html'
     output_to_points_conversion_component = 'dynamic_optimization_experiment/OutputToPointsConversion.html'
     players_per_group = None

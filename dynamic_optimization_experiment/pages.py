@@ -5,6 +5,21 @@ class DecisionBox(Page):
     form_model = 'player'
     form_fields = ['purchased_units', 'seconds_spent_on_page']
 
+class InBetween(Page):
+    def vars_for_template(self):
+        treatment = int(self.player.treatment_variable)+1
+
+        return dict(
+            treatment=treatment
+        )
+
+    def is_displayed(self):
+        # for any given experiment, display this in-between page if round_number is equal to that experiment's last period
+        if ( self.round_number % self.session.config['number_of_periods_per_DOE'] == 0 ):
+            return True
+        else:
+            pass
+
 class Calculator(Page):
     form_model = 'player'
     form_fields = ['purchased_units','all_inputs_made_in_calculator','seconds_spent_on_page']
@@ -171,7 +186,6 @@ class Calculator(Page):
 
     # this function passes round_number to the templates.  round_number is accessed in Decision_box
     def vars_for_template(self):
-        print('vars_for_template invoked!')
         if ( self.session.config['two_round_experiments'] ):
             period_is_odd = (self.round_number % 2) == 1
 
@@ -234,4 +248,4 @@ class Calculator(Page):
             self.player.points_scored_this_treatment = round(points_scored_this_period + points_scored_previous_period,2)
             self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
 
-page_sequence = [Calculator]
+page_sequence = [Calculator,InBetween]
