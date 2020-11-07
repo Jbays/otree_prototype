@@ -43,13 +43,14 @@
       function calculateNaturalLogVals(number) {
         let output = [];
 
-        for ( let i = 0.1; i < 1; i=i+.1 ){
+        for ( let i = 0.01; i < 1; i=i+.01 ){
           output.push([i,getBaseLog(Math.E, i)]);
         }
 
         output.push([1,0])
 
-        for (let i = 1; i <= number; i++) {
+
+        for (let i = 1; i <= number; i=Number((i+.01).toFixed(2))) {
           output.push([i,getBaseLog(Math.E, i)]);
         }
 
