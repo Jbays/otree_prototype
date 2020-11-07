@@ -248,4 +248,13 @@ class Calculator(Page):
             self.player.points_scored_this_treatment = round(points_scored_this_period + points_scored_previous_period,2)
             self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
 
+            self.participant.vars["point_totals_by_treatment"].append(self.player.points_scored_this_treatment)
+
+            # print('self.participant.vars[point_totals_by_treatment',self.participant.vars["point_totals_by_treatment"])
+
+            # this is the programmatic way to write the point totals to participant.vars 
+            # if ( current_period % self.session.config['number_of_periods_per_DOE'] == 0):
+
+
+
 page_sequence = [Calculator,InBetween]

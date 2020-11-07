@@ -103,8 +103,7 @@ class Player(BasePlayer):
         if ( self.session.config['two_round_experiments'] ):
             current_period_is_odd = (self.round_number % 2) == 1
             cost_per_unit_this_period = self.cost_per_unit_this_period
-            total_cost_of_desired_purchase = units_to_be_purchased * cost_per_unit_this_period
-
+            total_cost_of_desired_purchase = round(units_to_be_purchased * cost_per_unit_this_period,2)
             token_debt_limit = self.start_token_balance
 
             # if first period, no need to include the interest_rate to the token debt limit

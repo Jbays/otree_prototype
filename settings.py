@@ -43,9 +43,15 @@ SESSION_CONFIG_DEFAULTS = dict(
     number_of_diff_treatments = 9,
     convert_purchased_units_to_output = log,
 
+    score_on_all_periods = True,
+    score_on_all_periods_AVG = False,
+    score_on_best_period = False,
+    
+
+
 # built-in
     real_world_currency_per_point=1.00, 
-    participation_fee=0.00, 
+    participation_fee=21.25, 
     doc="",
 )
 
