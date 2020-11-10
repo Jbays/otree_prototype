@@ -37,15 +37,17 @@ SESSION_CONFIG_DEFAULTS = dict(
     past_horizon_viewable = 18,
     future_horizon_viewable = 18,
     # decision_optimization_experiment's desired number of periods
-    number_of_periods_per_DOE = 2,
-    total_number_of_periods_for_all_DOEs = 18,
+    number_of_periods_per_DOE = 3,
+    total_number_of_periods_for_all_DOEs = 27,
     
+    multiple_treatments=True,
     number_of_diff_treatments = 9,
     convert_purchased_units_to_output = log,
 
-    score_on_all_periods = True,
+    score_on_all_periods = False,
     score_on_all_periods_AVG = False,
     score_on_best_period = False,
+    score_on_random_period = True,
     
 
 
@@ -67,7 +69,8 @@ SESSION_CONFIGS = [
         name='dyn_opt_exp',
         display_name="Dynamic Optimization Experiment",
         num_demo_participants=5,
-        app_sequence=['intro_and_quiz','dynamic_optimization_experiment', 'payment_info'],
+        # app_sequence=['intro_and_quiz','dynamic_optimization_experiment', 'payment_info'],
+        app_sequence=['intro_and_quiz','doe_three_periods', 'payment_info'],
     ),
     # dict(
     #     name='survey',

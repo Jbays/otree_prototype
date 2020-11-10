@@ -21,6 +21,9 @@ class PaymentInfo(Page):
         elif ( self.session.config["score_on_best_period"] ):
             pay_for_these_points = max(points_scored_each_treatment_by_index)
         
+        elif ( self.session.config["score_on_random_period"] ):
+            pay_for_these_points = max(points_scored_each_treatment_by_index)
+        
         total_earnings = participation_fee + (points_to_dollars*pay_for_these_points) 
 
         return dict(

@@ -1,0 +1,167 @@
+{% load otree %}
+
+<div class="card bg-light m-3" style="margin: 0 !important;">
+  <div class="card-body decision-box" style="border-radius: 3px;">
+    <!-- <h3 style="text-align: center;">
+        Utility Plot
+    </h3>
+    <br/> -->
+
+    <div class="titleContainer">
+      <div class="flexContainer">
+        <div class="titleDash"></div>
+        <div class="title">
+          Output To Points Conversion
+        </div>
+      </div>
+    </div>
+
+    <figure class="highcharts-figure">
+      <div id="container"></div>
+      <br />
+      <p class="highcharts-description" style="padding: 0 1rem;">
+        Here is a description
+        <!-- Basic line chart showing trends in a dataset. This chart includes the
+        <code>series-label</code> module, which adds a label to each line for
+        enhanced readability. -->
+      </p>
+    </figure>
+
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <!-- <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <!-- here's the code which calculates the first 100 points for the natural log of x -->
+    <script>
+      function getBaseLog(x, y) {
+        return Math.log(y) / Math.log(x);
+      }
+
+      function calculateNaturalLogVals(number) {
+        let output = [];
+
+        for ( let i = 0.01; i < 1; i=i+.01 ){
+          output.push([i,getBaseLog(Math.E, i)]);
+        }
+
+        output.push([1,0])
+
+
+        for (let i = 1; i <= number; i=Number((i+.01).toFixed(2))) {
+          output.push([i,getBaseLog(Math.E, i)]);
+        }
+
+        return output
+      }
+
+    </script>
+
+    <!-- here's the code which appends the chart -->
+    <script>
+      Highcharts.setOptions({
+        chart: {
+          style: {
+            fontFamily: 'Roboto Condensed',
+            marginTop: '10px'
+          },
+          backgroundColor: '#272d38'
+        }
+      })
+
+      Highcharts.chart('container', {
+        title: {
+          // text: 'Output to Points Conversion',
+          text: '',
+          style: {
+            color: '#fff'
+          }
+        },
+        yAxis: {
+          // min: -2,
+          title: {
+            text: 'Points',
+            style: {
+              color: '#fff'
+            }
+          },
+          labels: {
+            style: {
+              color: '#fff'
+            }
+          }
+        },
+        xAxis: {
+          min: -1,
+          title: {
+            text: 'Purchased Units',
+            style: {
+              color: '#fff'
+            }
+          },
+          labels: {
+            style: {
+              color: '#fff'
+            }
+          },
+          max: 30
+        },
+        legend: {
+          layout: 'horizontal',
+          align: 'right',
+          itemStyle: {
+            color: '#fff',
+            fontWeight: 'bold'
+          }
+          // verticalAlign: 'middle',
+          // enabled: false
+        },
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false
+            },
+            // pointStart: 0,
+            color: '#60FF5F'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(39, 45, 56, 0.9)',
+          style: {
+            color: '#fff'
+          }
+        },
+        series: [
+          {
+            name: 'Output to Points',
+            data: calculateNaturalLogVals(100)
+          },
+        ],
+        responsive: {
+          rules: [{
+            condition: {
+              maxWidth: 500
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+              }
+            }
+          }]
+        }
+      });
+
+    </script>
+
+    <!-- here's the code which removes the highcharts.com credit -->
+    <script>
+      let highChartsLabelThingie = document.getElementsByClassName('highcharts-credits');
+      highChartsLabelThingie[0].innerHTML = "";
+    </script>
+
+  </div>
+</div>
