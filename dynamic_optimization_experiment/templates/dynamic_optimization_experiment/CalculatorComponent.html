@@ -295,6 +295,8 @@
     </script>
 
     <script>
+      
+
       // function keyNameExtractor(arrayOfObjs) {
       //   let output = []
 
@@ -706,12 +708,39 @@
     <!-- here're all code which runs AFTER the rows are appended. -->
     <script>
       function miscCleanup(table){
+        convertDecimalToPercentInterestRates(table);
         convertSnakeCaseToUpperCase(table.rows[0]);
         roundDownTokenBalanceAndPoints();
+
         
         // if ( js_vars.obscure_a_column ) {
         //   obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
         // }
+      }
+
+      function convertDecimalToPercentInterestRates(table){
+        let allRows = table.children;
+        let allColumnTitles = allRows[1].children;
+        let indexOfInterestRate = null;
+
+        for ( let i = 0; i < allColumnTitles.length; i++ ) {
+          if ( allColumnTitles[i].innerHTML === 'interest_rate' ){
+            indexOfInterestRate = i;
+          };
+        }
+
+        if ( indexOfInterestRate !== null ){
+          for ( let i = 2; i < allRows.length; i++ ) {
+            let allColumnDataByPeriod = allRows[i].children;
+            let interestRate = Number(allColumnDataByPeriod[indexOfInterestRate].innerHTML)
+
+            if ( interestRate < 0 ) {
+              allColumnDataByPeriod[indexOfInterestRate].innerHTML = "-20%"
+            } else {
+              allColumnDataByPeriod[indexOfInterestRate].innerHTML = "0%"
+            }
+          }
+        }
       }
 
       function convertSnakeCaseToUpperCase(rowOfColumnTitles){

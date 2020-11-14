@@ -45,7 +45,6 @@ class Subsession(BaseSubsession):
             # in future, will need to make this programmatic.  However, for now, let's go simple and quick.  Rather than grand.
             for player in all_players:
                 player.treatment_variable = player.participant.vars['experiment_sequence'][every_other_round]
-
                 # handle setting income first, since that's simple and straightforward
                 
                 # FIRST, assign income values
@@ -89,7 +88,13 @@ class Subsession(BaseSubsession):
                     player.inflation = float(other_inflations_arr[1])
                     player.interest_rate = float(other_interest_rates_arr[1])
 
-                player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
+                # if its the second, fifth, or eight treatment, then have inflation which affects cost_per_unit_this_period
+                if (player.treatment_variable == '1' or player.treatment_variable == '4' or player.treatment_variable == '7'):
+                    if ( current_round_is_odd ):
+                        player.cost_per_unit_this_period = self.session.config['cost_per_unit']
+                    else:
+                        player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
+
 
 class Group(BaseGroup):
     print('creating the Group class')
