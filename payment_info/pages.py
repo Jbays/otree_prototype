@@ -12,6 +12,13 @@ class PaymentInfo(Page):
         sum_of_points = sum(points_scored_each_treatment_by_index)
         number_of_periods = len(points_scored_each_treatment_by_index)
         
+        # print('points_to_dollars',points_to_dollars)
+        # print('type(points_to_dollars)',type(points_to_dollars))
+
+        # here is where you put logic to determine the payment method / strategy / process
+        # you create a variable called pay for these points
+        # and you display to the player
+        # should also write to the player model, I think.
         if ( self.session.config["score_on_all_periods"] ):
             pay_for_these_points = sum_of_points
 
@@ -21,17 +28,23 @@ class PaymentInfo(Page):
         elif ( self.session.config["score_on_best_period"] ):
             pay_for_these_points = max(points_scored_each_treatment_by_index)
         
+<<<<<<< HEAD
         elif ( self.session.config["score_on_random_period"] ):
             pay_for_these_points = max(points_scored_each_treatment_by_index)
         
         total_earnings = participation_fee + (points_to_dollars*pay_for_these_points) 
+=======
+        # print('participation_fee',participation_fee)
+        # print('type(participation_fee)',type(participation_fee))
+        # total_earnings = participation_fee + (points_to_dollars*pay_for_these_points) 
+>>>>>>> e6c2d98d1ace8d8d4f0ac3eb2cbe07d2572a8733
 
         return dict(
             redemption_code=participant.label or participant.code,
             points_to_dollars=points_to_dollars,
             point_total=pay_for_these_points,
             participation_fee=participation_fee,
-            total_earnings = total_earnings
+            pay_for_these_points = pay_for_these_points
         )
 
 
