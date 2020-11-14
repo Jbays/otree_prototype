@@ -218,6 +218,11 @@ class Calculator(Page):
         units_just_purchased = self.player.in_round(current_period).purchased_units
         points_scored_this_period = round(convert_purchased_units_to_points_function(units_just_purchased),2)
 
+        if ( points_scored_this_period > 5 ):
+            points_scored_this_period = 5
+        elif ( points_scored_this_period < -5 ):
+            points_scored_this_period = -5
+
         self.player.points_this_period = points_scored_this_period
 
         # the basics of writing this logic for more periods than just two
