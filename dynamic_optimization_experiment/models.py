@@ -125,18 +125,22 @@ class Player(BasePlayer):
             # else in second period
             else:
                 final_token_balance_from_prev_period = self.in_round(self.round_number-1).final_token_balance
+                interest_rate_this_period = self.interest_rate
+
+                if ( interest_rate_this_period < 0 ):
+                    interest_rate_this_period = 1 + self.interest_rate
 
                 # if "pay full period 1, pay zero period 2"
                 if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
-                    token_debt_limit = final_token_balance_from_prev_period * self.interest_rate
+                    token_debt_limit = final_token_balance_from_prev_period * interest_rate_this_period
 
                 # # if "pay zero period 1, pay full period 2"
                 if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
-                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * self.interest_rate
+                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * interest_rate_this_period
                 
                 # # if "pay half period 1, pay half period 2"
                 if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
-                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * self.interest_rate
+                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * interest_rate_this_period
 
             if ( units_to_be_purchased < 0 ):
                 return 'Purchased units must be positive'

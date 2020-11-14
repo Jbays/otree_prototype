@@ -101,7 +101,8 @@ class Calculator(Page):
                 final_token_balance_arr.append(current_player.start_token_balance)
 
             # this value is labeled total_points.  BUT its value is actually "points_scored_this_period"
-            two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,inflation_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
+            two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
+            # two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,inflation_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
 
             # what do I need to pass to the calculator?
             # income, interest_rate, inflation,
@@ -214,6 +215,9 @@ class Calculator(Page):
         cost_per_unit_this_period = self.player.cost_per_unit_this_period
         income_this_period = self.player.income
         interest_rate_this_period = self.player.interest_rate
+
+        if ( interest_rate_this_period < 0 ):
+            interest_rate_this_period = 1 + self.player.interest_rate
         
         units_just_purchased = self.player.in_round(current_period).purchased_units
         points_scored_this_period = round(convert_purchased_units_to_points_function(units_just_purchased),2)
