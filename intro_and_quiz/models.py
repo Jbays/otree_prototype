@@ -21,7 +21,7 @@ class Subsession(BaseSubsession):
     # sets the experiment_sequence for the participant
     print('intro and quiz subsession')
     def creating_session(self):
-        number_of_diff_treatments = self.session.config["number_of_diff_treatments"]
+        number_of_treatments = self.session.config["number_of_treatments"]
 
         # returns a string of the numbers 0 thru n, shuffled
         # where n equals the length of string_length
@@ -56,7 +56,7 @@ class Subsession(BaseSubsession):
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
                 player.participant.vars["point_totals_by_treatment"] = []
-                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
+                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 

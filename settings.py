@@ -8,40 +8,26 @@ from numpy import log
 
 SESSION_CONFIG_DEFAULTS = dict(
 # custom
-    inflation_1=1.0,
-    multiple_inflations=True,
-    other_inflations="1.25,1.0",
-    interest_rate_1=1.0,
-    multiple_interest_rates=True,
-    other_interest_rates="1.0,0.8",
-    income=900,
-    two_round_experiments = True,
+    number_of_treatments = 9,
+    number_of_periods_per_treatment = 3,
 
+    all_inflations="1.0,1.25,1.0",
+    all_interest_rates="1.0,1.0,-0.2",
+    income=900,
     cost_per_unit=100.00,
-    start_token_balance = 900,
-    final_token_balance = 900,
-    buying_limit = 900,
+
+    # 
 
     # comma-separated --> name of column, then first number is the start period, second number is the stop period
-    obscure_a_column=False,
-    obscure_this_column_name_at_certain_period = "interest_rate,5,9",
     
-    # hello_number=0,
-    # hello_boolean=True,
-    # hello_string="string",
-    # hello_obj={"a":"b"},
-    # hello_arr=[],
     calculator_config_json = [{"name_of_field":"period","past_type":"increment","current_type":"increment","future_type":"increment","start_val":1,"db_type":"integer"},{"name_of_field":"income","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"cost_per_unit","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"inflation","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"interest_rate","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"start_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"},{"name_of_field":"purchased_units","past_type":"look-up","current_type":"input","future_type":"input","start_val":"input","db_type":"float"},{"name_of_field":"points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"total_points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"final_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"}],
     # calculator_config_json = [{"name_of_field":"period","past_type":"increment","current_type":"increment","future_type":"increment","start_val":1,"db_type":"integer"},{"name_of_field":"income","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"cost_per_unit","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"integer"},{"name_of_field":"inflation","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"interest_rate","past_type":"constant","current_type":"constant","future_type":"constant","start_val":"look-up","db_type":"float"},{"name_of_field":"start_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"},{"name_of_field":"purchased_units","past_type":"look-up","current_type":"input","future_type":"input","start_val":"input","db_type":"float"},{"name_of_field":"points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"},{"name_of_field":"total_points","past_type":"look-up","current_type":"look-up","future_type":"look-up","start_val":0,"db_type":"float"}{"name_of_field":"final_token_balance","past_type":"look-up","current_type":"look-up","future_type":"calculate","start_val":"look-up","db_type":"float"}],
-    # number_of_rounds=5,
-    past_horizon_viewable = 18,
-    future_horizon_viewable = 18,
-    # decision_optimization_experiment's desired number of periods
-    number_of_periods_per_DOE = 3,
-    total_number_of_periods_for_all_DOEs = 27,
+
+    # obscure_a_column=False,
+    # obscure_this_column_name_at_certain_period = "interest_rate,5,9",
+    # past_horizon_viewable = 18,
+    # future_horizon_viewable = 18,
     
-    multiple_treatments=True,
-    number_of_diff_treatments = 9,
     convert_purchased_units_to_output = log,
 
     score_on_all_periods = False,

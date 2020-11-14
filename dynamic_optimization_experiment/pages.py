@@ -186,6 +186,7 @@ class Calculator(Page):
 
     # this function passes round_number to the templates.  round_number is accessed in Decision_box
     def vars_for_template(self):
+        
         if ( self.session.config['two_round_experiments'] ):
             period_is_odd = (self.round_number % 2) == 1
 
