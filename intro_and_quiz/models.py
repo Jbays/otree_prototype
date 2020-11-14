@@ -55,7 +55,7 @@ class Subsession(BaseSubsession):
                 # player.participant.vars['experiment_sequence'] = '567801234'
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
-
+                player.participant.vars["point_totals_by_treatment"] = []
                 player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass

@@ -220,6 +220,10 @@ class Calculator(Page):
 
         self.player.points_this_period = points_scored_this_period
 
+        # the basics of writing this logic for more periods than just two
+        # if the first round in the treatment, do this logic
+        # else do different logic.
+
         if ( current_period_is_odd ):
             self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
             self.player.points_scored_this_treatment = points_scored_this_period
@@ -250,6 +254,7 @@ class Calculator(Page):
 
             self.participant.vars["point_totals_by_treatment"].append(self.player.points_scored_this_treatment)
 
+            # print('self.participant.vars',self.participant.vars)
             # print('self.participant.vars[point_totals_by_treatment',self.participant.vars["point_totals_by_treatment"])
 
             # this is the programmatic way to write the point totals to participant.vars 
