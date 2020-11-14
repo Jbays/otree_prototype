@@ -88,12 +88,22 @@ class Subsession(BaseSubsession):
                     player.inflation = float(other_inflations_arr[1])
                     player.interest_rate = float(other_interest_rates_arr[1])
 
-                # if its the second, fifth, or eight treatment, then have inflation which affects cost_per_unit_this_period
-                if (player.treatment_variable == '1' or player.treatment_variable == '4' or player.treatment_variable == '7'):
+                # if inflation is equal to one, then it has no effect on cost per unit
+                if ( player.inflation == 1 ):
+                    player.cost_per_unit_this_period = self.session.config['cost_per_unit']
+                else:
+                    # if inflation is not equal to one BUT the current round is the first round
+                    # then inflation has no effect on cost per unit
                     if ( current_round_is_odd ):
                         player.cost_per_unit_this_period = self.session.config['cost_per_unit']
                     else:
                         player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
+                
+                # if its the second, fifth, or eight treatment, then have inflation which affects cost_per_unit_this_period
+                # if (player.treatment_variable == '1' or player.treatment_variable == '4' or player.treatment_variable == '7' or current_round_is_odd):
+                #     player.cost_per_unit_this_period = self.session.config['cost_per_unit']
+                # else:
+                #     player.cost_per_unit_this_period = self.session.config['cost_per_unit'] * player.inflation
 
 
 class Group(BaseGroup):
