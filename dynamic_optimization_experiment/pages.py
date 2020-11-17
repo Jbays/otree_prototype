@@ -124,6 +124,8 @@ class Calculator(Page):
                 interest_rate=current_player.interest_rate,
                 treatment_variable=current_player.treatment_variable,
                 calculator_config_json=two_period_calculator_config,
+                obscure_a_column=self.session.config['obscure_a_column'],
+                obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
                 # calculator_config_json_2=self.session.config['calculator_config_json'],
             )
 
