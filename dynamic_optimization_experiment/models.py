@@ -155,7 +155,7 @@ class Player(BasePlayer):
                 
                 # # if "pay half period 1, pay half period 2"
                 if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
-                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * interest_rate_this_period
+                    token_debt_limit = (final_token_balance_from_prev_period * interest_rate_this_period ) + self.income
 
             if ( units_to_be_purchased < 0 ):
                 return 'Purchased units must be positive'

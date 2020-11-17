@@ -40,6 +40,10 @@ class Calculator(Page):
 
         if ( self.session.config['two_round_experiments'] ):
             current_player = self.player.in_round(current_period)
+            current_interest_rate = current_player.interest_rate
+
+            if ( current_interest_rate < 0 ):
+                current_interest_rate = 1 + current_player.interest_rate
 
             # these are constant throughout the two periods
             cost_per_unit_arr = ["cost_per_unit",current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
@@ -59,6 +63,8 @@ class Calculator(Page):
             # if first period, then player has a future
             if ( current_period_is_odd ):
                 player_in_future_period = self.player.in_round(current_period+1)
+                maximum_future_start_token_balance = (current_player.start_token_balance * current_interest_rate) + player_in_future_period.income
+                # player_in_future_period.income * current_interest_rate
                 
                 income_arr.append(current_player.income)
                 income_arr.append(player_in_future_period.income)
@@ -67,7 +73,7 @@ class Calculator(Page):
                 purchased_units_arr.append("input")
                 
                 start_token_balance_arr.append(current_player.start_token_balance)
-                start_token_balance_arr.append((current_player.start_token_balance+player_in_future_period.income))
+                start_token_balance_arr.append(maximum_future_start_token_balance)
 
                 points_arr.append(0)
                 points_arr.append(0)
@@ -76,11 +82,12 @@ class Calculator(Page):
                 total_points_arr.append(0)
 
                 final_token_balance_arr.append(current_player.start_token_balance)
-                final_token_balance_arr.append((current_player.start_token_balance+player_in_future_period.income))
+                final_token_balance_arr.append(maximum_future_start_token_balance)
 
             # else player has a past
             else:
                 player_in_past_period = self.player.in_round(current_period-1)
+                last_period_final_token_balance = player_in_past_period.final_token_balance
                 
                 income_arr.append(player_in_past_period.income)
                 income_arr.append(current_player.income)
@@ -243,19 +250,24 @@ class Calculator(Page):
                 self.player.total_points = self.player.total_points + player_from_previous_period.total_points
 
             player_next_period = self.player.in_round(current_period+1)
-            player_next_period.start_token_balance = (self.player.final_token_balance + player_next_period.income ) * interest_rate_this_period
+            player_next_period.start_token_balance = (self.player.final_token_balance * interest_rate_this_period) + player_next_period.income
         else:
             player_from_previous_period = self.player.in_round(current_period-1)
             
             # fetch three values from the previous round
-            final_token_balance_most_recent = round(player_from_previous_period.final_token_balance,2)
+            # final_token_balance_most_recent = round(player_from_previous_period.final_token_balance,2)
             total_points_most_recent = round(player_from_previous_period.total_points,2)
             points_scored_previous_period = round(player_from_previous_period.points_this_period,2)
 
-            if ( current_period_is_odd ):
-                self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period )),2)
-            else:
-                self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period ) * interest_rate_this_period),2)
+            # why does this code live here??
+            # if ( current_period_is_odd ):
+            #     self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period )),2)
+            # commenting out the line of code below.  I don't see a reason to set the start_token_balance.  That is written to the player from the previous round
+            # else:
+                # print('final_token_balance_most_recent here --->',final_token_balance_most_recent)
+                # print('income_this_period here --->',income_this_period)
+                # print('interest_rate_this_period here --->',interest_rate_this_period)
+                # self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period ) * interest_rate_this_period),2)
             
             self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
             self.player.points_scored_this_treatment = round(points_scored_this_period + points_scored_previous_period,2)
