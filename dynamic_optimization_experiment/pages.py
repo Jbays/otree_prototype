@@ -7,10 +7,10 @@ class DecisionBox(Page):
 
 class InBetween(Page):
     def vars_for_template(self):
-        treatment = int(self.player.treatment_variable)+1
+        game_number = int(self.round_number/self.session.config['number_of_periods_per_DOE'])
 
         return dict(
-            treatment=treatment
+            game_number=game_number
         )
 
     def is_displayed(self):
@@ -252,7 +252,7 @@ class Calculator(Page):
                 self.player.total_points = self.player.total_points + player_from_previous_period.total_points
 
             player_next_period = self.player.in_round(current_period+1)
-            player_next_period.start_token_balance = (self.player.final_token_balance * interest_rate_this_period) + player_next_period.income
+            player_next_period.start_token_balance = (self.player.final_token_balance + player_next_period.income) * interest_rate_this_period 
         else:
             player_from_previous_period = self.player.in_round(current_period-1)
             

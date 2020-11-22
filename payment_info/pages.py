@@ -35,9 +35,16 @@ class PaymentInfo(Page):
         return dict(
             redemption_code=participant.label or participant.code,
             points_to_dollars=points_to_dollars,
-            point_total=pay_for_these_points,
+            # point_total=pay_for_these_points,
+            point_total=round(pay_for_these_points,2),
             participation_fee=participation_fee,
-            pay_for_these_points = pay_for_these_points
+            pay_for_these_points = pay_for_these_points,
+        )
+
+    def js_vars(self):
+        points_scored_each_treatment_by_index = self.participant.vars["point_totals_by_treatment"]
+        return dict(
+            points_scored_each_treatment_by_index=points_scored_each_treatment_by_index
         )
 
 

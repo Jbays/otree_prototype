@@ -6,6 +6,32 @@
 {% endblock %}
 
 {% block content %}
+    <style>
+        table,
+        td {
+            border: 1px solid #272d38;
+        }
+
+        tr:nth-child(even) {
+            background-color: #343c4a;
+        }
+
+        thead,
+        tfoot {
+            background-color: #272d38;
+            color: #fff;
+        }
+
+        .m-3 {
+            margin: 1.5rem 0 0 0 !important
+        }
+
+        #myTable {
+            text-align: center;
+            margin: 0 auto 1.25rem auto;
+            width: 100%;
+        }
+    </style>
 
     <p>
         <em>Your experiment is completed.</em>
@@ -18,10 +44,47 @@
             <p>Your participation fee: <strong>{{participation_fee}}</strong></p>
             <br/>
         </div>
+        <table id="myTable">
+            <tbody style="text-align: center;" id="table_body">
+      
+            </tbody>
+          </table>
     </div>
 
-{% endblock %}
+    <script>
+        let myResultsTable = document.getElementById('myTable');
 
-<script>
-    // console.log('')
-</script>
+        appendPointsEarnedEachGameByPeriod(myResultsTable,js_vars.points_scored_each_treatment_by_index);
+
+        function appendPointsEarnedEachGameByPeriod(table,array){
+            console.log('bingo from append...')
+            console.log('table',table);
+            console.log('array',array);
+
+            let gameNumberRow = document.createElement('tr');
+            let gameNumberLabelForTable = document.createElement('td');
+            gameNumberLabelForTable.innerText = 'Game:';
+            gameNumberRow.appendChild(gameNumberLabelForTable);
+            
+            let pointsRow = document.createElement('tr');
+            let pointsLabelForTable = document.createElement('td');
+            pointsLabelForTable.innerText = 'Points Scored:';
+            pointsRow.appendChild(pointsLabelForTable);
+
+            array.forEach((pointsEarned,index)=>{
+                let gameNumberForTable = document.createElement('td');
+                gameNumberForTable.innerText = index+1;
+
+                gameNumberRow.appendChild(gameNumberForTable);
+
+                let pointsForTable = document.createElement('td');
+                pointsForTable.innerText = pointsEarned;
+
+                pointsRow.appendChild(pointsForTable);
+            });
+
+            table.appendChild(gameNumberRow);
+            table.appendChild(pointsRow);
+        }
+    </script>
+{% endblock %}
