@@ -15,8 +15,10 @@ class InBetween(Page):
 
     def is_displayed(self):
         # for any given experiment, display this in-between page if round_number is equal to that experiment's last period
-        if ( self.round_number % self.session.config['number_of_periods_per_DOE'] == 0 ):
-            return True
+        
+        if ( self.round_number != self.session.config['total_number_of_periods_for_all_DOEs'] ):
+            if ( self.round_number % self.session.config['number_of_periods_per_DOE'] == 0 ):
+                return True
         else:
             pass
 
@@ -46,13 +48,14 @@ class Calculator(Page):
                 current_interest_rate = 1 + current_player.interest_rate
 
             # these are constant throughout the two periods
-            cost_per_unit_arr = ["cost_per_unit",current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
-            inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
+            # inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
+
             interest_rate_arr = ["interest_rate",current_player.interest_rate,current_player.interest_rate]
             period_arr = ["period",1,2]
             points_arr = ["points"]
             
             income_arr = ["income"]
+            cost_per_unit_arr = ["cost_per_unit"]
             purchased_units_arr = ["purchased_units"]
             start_token_balance_arr = ["start_token_balance"]
             
@@ -68,6 +71,9 @@ class Calculator(Page):
                 
                 income_arr.append(current_player.income)
                 income_arr.append(player_in_future_period.income)
+
+                cost_per_unit_arr.append(current_player.cost_per_unit_this_period)
+                cost_per_unit_arr.append(player_in_future_period.cost_per_unit_this_period)
                 
                 purchased_units_arr.append("input")
                 purchased_units_arr.append("input")
@@ -91,6 +97,9 @@ class Calculator(Page):
                 
                 income_arr.append(player_in_past_period.income)
                 income_arr.append(current_player.income)
+                
+                cost_per_unit_arr.append(player_in_past_period.cost_per_unit_this_period)
+                cost_per_unit_arr.append(current_player.cost_per_unit_this_period)
                 
                 purchased_units_arr.append(player_in_past_period.purchased_units)
                 purchased_units_arr.append("input")
@@ -252,7 +261,7 @@ class Calculator(Page):
                 self.player.total_points = self.player.total_points + player_from_previous_period.total_points
 
             player_next_period = self.player.in_round(current_period+1)
-            player_next_period.start_token_balance = (self.player.final_token_balance + player_next_period.income) * interest_rate_this_period 
+            player_next_period.start_token_balance = player_next_period.income + (self.player.final_token_balance * interest_rate_this_period)
         else:
             player_from_previous_period = self.player.in_round(current_period-1)
             

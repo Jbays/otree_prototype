@@ -119,43 +119,49 @@ class Player(BasePlayer):
             current_period_is_odd = (self.round_number % 2) == 1
             cost_per_unit_this_period = self.cost_per_unit_this_period
             total_cost_of_desired_purchase = round(units_to_be_purchased * cost_per_unit_this_period,2)
-            token_debt_limit = self.start_token_balance
+            interest_rate_this_period = self.interest_rate
+
+            if ( interest_rate_this_period < 0 ):
+                interest_rate_this_period = 1 + self.interest_rate
+
+            # in first round, token_debt_limit is equal to starting token balance of first round, + (income of second round * interest_rate)
+
 
             # if first period, no need to include the interest_rate to the token debt limit
             if ( current_period_is_odd ):
                 income_next_period = self.in_round(self.round_number+1).income
 
-                # if "pay full period 1, pay zero period 2"
-                if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
-                    token_debt_limit = token_debt_limit
+                token_debt_limit = self.start_token_balance + (interest_rate_this_period * income_next_period)
 
-                # if "pay zero period 1, pay full period 2"
-                if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
-                    token_debt_limit = income_next_period
+                # if "pay full period 1, pay zero period 2"
+                # if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
+                #     token_debt_limit = token_debt_limit
+
+                # # if "pay zero period 1, pay full period 2"
+                # if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
+                #     token_debt_limit = income_next_period
                 
-                # if "pay half period 1, pay half period 2"
-                if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
-                    token_debt_limit = token_debt_limit + (self.income)
+                # # if "pay half period 1, pay half period 2"
+                # if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
+                #     token_debt_limit = token_debt_limit + (self.income)
 
             # else in second period
             else:
                 final_token_balance_from_prev_period = self.in_round(self.round_number-1).final_token_balance
-                interest_rate_this_period = self.interest_rate
 
-                if ( interest_rate_this_period < 0 ):
-                    interest_rate_this_period = 1 + self.interest_rate
-
-                # if "pay full period 1, pay zero period 2"
-                if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
-                    token_debt_limit = final_token_balance_from_prev_period * interest_rate_this_period
-
-                # # if "pay zero period 1, pay full period 2"
-                if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
-                    token_debt_limit = (final_token_balance_from_prev_period + self.income) * interest_rate_this_period
+                token_debt_limit = self.income + (final_token_balance_from_prev_period * interest_rate_this_period)
                 
-                # # if "pay half period 1, pay half period 2"
-                if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
-                    token_debt_limit = (final_token_balance_from_prev_period * interest_rate_this_period ) + self.income
+                # if "pay full period 1, pay zero period 2"
+                # if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
+                #     token_debt_limit = final_token_balance_from_prev_period * interest_rate_this_period
+
+                # # # if "pay zero period 1, pay full period 2"
+                # if ( self.treatment_variable == '3' or self.treatment_variable == '4' or self.treatment_variable == '5'):
+                #     token_debt_limit = (final_token_balance_from_prev_period + self.income) * interest_rate_this_period
+                
+                # # # if "pay half period 1, pay half period 2"
+                # if ( self.treatment_variable == '6' or self.treatment_variable == '7' or self.treatment_variable == '8'):
+                #     token_debt_limit = (final_token_balance_from_prev_period * interest_rate_this_period ) + self.income
 
             if ( units_to_be_purchased < 0 ):
                 return 'Purchased units must be positive'
