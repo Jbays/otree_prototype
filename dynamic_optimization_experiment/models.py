@@ -131,7 +131,7 @@ class Player(BasePlayer):
             if ( current_period_is_odd ):
                 income_next_period = self.in_round(self.round_number+1).income
 
-                token_debt_limit = self.start_token_balance + (interest_rate_this_period * income_next_period)
+                token_debt_limit = (self.start_token_balance * interest_rate_this_period) + income_next_period
 
                 # if "pay full period 1, pay zero period 2"
                 # if ( self.treatment_variable == '0' or self.treatment_variable == '1' or self.treatment_variable == '2'):
