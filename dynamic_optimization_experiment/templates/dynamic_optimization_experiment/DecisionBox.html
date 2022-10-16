@@ -21,66 +21,25 @@
             {% formfield player.purchased_units %}
             {% next_button %}
         </div>
-        <div style="display:none">{% formfield player.seconds_spent_on_page %}</div>
-        <!-- calculator lives right here -->
-        <!-- <div class="title">
-            <div class="titleDash"></div>
-            Simple Calculator
-        </div>
-        <div style="padding:1em; display:flex; flex-direction:row;">
-            <div class="calculator">
-                <input type="text" class="calculator-screen" value="" />
-                <div class="calculator-keys">
-                    <div>
-                        <button type="button" class="operator" value="+">+</button>
-                        <button type="button" class="operator" value="-">-</button>
-                        <button type="button" class="operator" value="*">&times;</button>
-                        <button type="button" class="operator" value="/">&divide;</button>
-                    </div>
-                    <div>
-                        <button type="button" value="7">7</button>
-                        <button type="button" value="8">8</button>
-                        <button type="button" value="9">9</button>
-                    </div>
-                    <div>
-                        <button type="button" value="4">4</button>
-                        <button type="button" value="5">5</button>
-                        <button type="button" value="6">6</button>
-                    </div>
-                    <div>
-                        <button type="button" value="1">1</button>
-                        <button type="button" value="2">2</button>
-                        <button type="button" value="3">3</button>
-                    </div>
-                    <div>
-                        <button type="button" value="0">0</button>
-                        <button type="button" class="decimal" value=".">.</button>
-                        <button type="button" class="all-clear" value="all-clear">AC</button>
-                        <button type="button" class="equal-sign operator" value="=">=</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <!-- here is where the calculator ends -->
     </div>
 
 </div>
 
 <script>
-    let startTime = Date.now();
+    // let startTime = Date.now();
 
-    function attachEventHandlerToNext(){
-        let nextButtonElem = document.getElementsByClassName('otree-btn-next')[0];
-        let timeSpentOnPageInput = document.getElementById("id_seconds_spent_on_page");
+    // function attachEventHandlerToNext(){
+    //     let nextButtonElem = document.getElementsByClassName('otree-btn-next')[0];
+    //     let timeSpentOnPageInput = document.getElementById("id_seconds_spent_on_page");
 
-        nextButtonElem.addEventListener('click',()=>{
-            let timeSpentOnPage = (Date.now() - startTime)/1000;
+    //     nextButtonElem.addEventListener('click',()=>{
+    //         let timeSpentOnPage = (Date.now() - startTime)/1000;
 
-            timeSpentOnPageInput.value = timeSpentOnPage
-        });
-    };
+    //         timeSpentOnPageInput.value = timeSpentOnPage
+    //     });
+    // };
 
-    attachEventHandlerToNext();
+    // attachEventHandlerToNext();
 </script>
 
 <!-- heres the logic for the calculator -->

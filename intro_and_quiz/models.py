@@ -20,6 +20,7 @@ class Constants(BaseConstants):
 class Subsession(BaseSubsession):
     # sets the experiment_sequence for the participant
     print('intro and quiz subsession')
+    # this is where experiment_sequence is calculated
     def creating_session(self):
         number_of_diff_treatments = self.session.config["number_of_diff_treatments"]
 
@@ -47,7 +48,7 @@ class Subsession(BaseSubsession):
             for player in all_players:
                 # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # first is "pay full round 1, no pay round 2"
-                # player.participant.vars['experiment_sequence'] = '012345678'
+                player.participant.vars['experiment_sequence'] = '012345678'
                 # player.participant.vars['experiment_sequence'] = '123456780'
                 # player.participant.vars['experiment_sequence'] = '234567801'
 
@@ -57,7 +58,7 @@ class Subsession(BaseSubsession):
                 # first is "half pay round 1, half pay round 2"
                 # player.participant.vars['experiment_sequence'] = '678012345'
                 player.participant.vars["point_totals_by_treatment"] = []
-                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
+                # player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
