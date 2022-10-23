@@ -15,7 +15,6 @@ class InBetween(Page):
 
     def is_displayed(self):
         # for any given experiment, display this in-between page if round_number is equal to that experiment's last period
-        
         if ( self.round_number != self.session.config['total_number_of_periods_for_all_DOEs'] ):
             if ( self.round_number % self.session.config['number_of_periods_per_DOE'] == 0 ):
                 return True
@@ -31,207 +30,90 @@ class Calculator(Page):
     def js_vars(self):
         print('hello from js vars')
         import math
-        current_round = self.round_number
         current_period = self.round_number
+        current_period_mod_three = current_period % 3
         current_period_is_first_in_treatment = (current_period % 3) == 1
-        every_third_round = math.floor((current_round-1)/3)
+        current_period_is_second_in_treatment = (current_period % 3) == 2
+        current_period_is_third_in_treatment = (current_period % 3) == 0
+        current_player = self.player.in_round(current_period)
 
-        purchased_units_across_all_rounds = []
+        income_across_all_rounds = []
         start_token_balance_across_all_rounds = []
-        final_token_balance_across_all_rounds = []
+        purchased_unit_across_all_rounds = []
         points_across_all_rounds = []
         total_points_across_all_rounds = []
-
-        current_player = self.player.in_round(current_period)
+        final_token_balance_across_all_rounds = []
+        
         current_interest_rate = current_player.interest_rate
-
         if ( current_interest_rate < 0 ):
             current_interest_rate = 1 + current_player.interest_rate
 
-        # inflation is constant in a given treatment
-        # where treatment is a set of rounds / periods
-        inflation_arr = ["inflation",current_player.inflation,current_player.inflation]
-        interest_rate_arr = ["interest_rate",current_player.interest_rate,current_player.interest_rate]
-        period_arr = ["period",1,2,3]
-        points_arr = ["points"]
-        income_arr = ["income"]
-        cost_per_unit_arr = ["cost_per_unit"]
-        purchased_units_arr = ["purchased_units"]
-        start_token_balance_arr = ["start_token_balance"]
-        # though this is labeled total_points, in actuality the player model used is "points_scored_this_treatment"
-        total_points_arr = ["total_points"]
-        final_token_balance_arr = ["final_token_balance"]
+        # interest rate, inflation, and cost per unit vary between treatment groups (012, 345, 678)
+        # but are fixed in that specific treatment group
+        interest_rate_across_all_rounds = [current_player.interest_rate,current_player.interest_rate,current_player.interest_rate]
+        inflation_across_all_rounds = [current_player.inflation,current_player.inflation,current_player.inflation]
+        cost_per_unit_across_all_rounds = [current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
 
-        # if current period is first, then player has NO PAST
         if (current_period_is_first_in_treatment):
-            player_in_next_period = self.player.in_round(current_period+1)
-            # player_in_last_period = self.player.in_round(current_period+2)
-            maximum_start_token_balance_next_period = (current_player.start_token_balance * current_interest_rate) + player_in_next_period.income
-            # maximum_start_token_balance_next_period = (current_player.start_token_balance * current_interest_rate) + player_in_last_period.income
-        #         # player_in_next_period.income * current_interest_rate
-                
-            income_arr.append(current_player.income)
-            income_arr.append(player_in_next_period.income)
-            # income_arr.append(player_in_last_period.income)
+            current_player_in_second_period = self.player.in_round(current_period+1)
+            current_player_in_third_period = self.player.in_round(current_period+2)
 
-            cost_per_unit_arr.append(current_player.cost_per_unit_this_period)
-            cost_per_unit_arr.append(player_in_next_period.cost_per_unit_this_period)
-            # cost_per_unit_arr.append(player_in_last_period.cost_per_unit_this_period)
-                
-            purchased_units_arr.append("input")
-            purchased_units_arr.append("input")
-                
-            start_token_balance_arr.append(current_player.start_token_balance)
-            start_token_balance_arr.append(maximum_start_token_balance_next_period)
+            income_across_all_rounds = [current_player.income, current_player_in_second_period.income, current_player_in_third_period.income]
+            # print('current_player.income', current_player.income)
+            second_period_start_token_balance = current_player.income + current_player_in_second_period.income
+            third_period_start_token_balance = second_period_start_token_balance + current_player_in_third_period.income
+            start_token_balance_across_all_rounds = [current_player.income, second_period_start_token_balance, third_period_start_token_balance]
+            purchased_unit_across_all_rounds = [0, 0, 0]
+            points_across_all_rounds = [0, 0, 0]
+            total_points_across_all_rounds = [0, 0, 0]
+            final_token_balance_across_all_rounds = [current_player.income, second_period_start_token_balance, third_period_start_token_balance]
 
-            points_arr.append(0)
-            points_arr.append(0)
+        elif (current_period_is_second_in_treatment):
+            # note that here current_player is a copy of the player model from period 2
+            current_player_in_first_period = self.player.in_round(current_period-1)
+            current_player_in_third_period = self.player.in_round(current_period+1)
 
-            total_points_arr.append(0)
-            total_points_arr.append(0)
+            income_across_all_rounds = [current_player_in_first_period.income, current_player.income, current_player_in_third_period.income]
+            start_token_balance_across_all_rounds = [current_player_in_first_period.income, current_player.start_token_balance, current_player_in_third_period.income]
+            purchased_unit_across_all_rounds = [current_player_in_first_period.purchased_units, 0, 0]
+            points_across_all_rounds = [current_player_in_first_period.points_this_period, 0, 0]
+            # total points cannot be reduced, only increased
+            total_points_across_all_rounds = [current_player_in_first_period.points_this_period, current_player_in_first_period.points_this_period, current_player_in_first_period.points_this_period]
 
-            final_token_balance_arr.append(current_player.start_token_balance)
-            final_token_balance_arr.append(maximum_start_token_balance_next_period)
+            second_period_final_token_balance = current_player_in_first_period.final_token_balance + current_player.income
+            third_period_final_token_balance = current_player.start_token_balance + current_player_in_third_period.income
+            final_token_balance_across_all_rounds = [current_player_in_first_period.final_token_balance, second_period_final_token_balance, third_period_final_token_balance]
 
-        #     # if first period, then player has a future
-        #     if ( current_period_is_odd ):
-        #         player_in_future_period = self.player.in_round(current_period+1)
-        #         maximum_future_start_token_balance = (current_player.start_token_balance * current_interest_rate) + player_in_future_period.income
-        #         # player_in_future_period.income * current_interest_rate
-                
-        #         income_arr.append(current_player.income)
-        #         income_arr.append(player_in_future_period.income)
+        elif (current_period_is_third_in_treatment):
+            # note that here current_player is a copy of the player model from period 3
+            current_player_in_first_period = self.player.in_round(current_period-1)
+            current_player_in_second_period = self.player.in_round(current_period-2)
 
-        #         cost_per_unit_arr.append(current_player.cost_per_unit_this_period)
-        #         cost_per_unit_arr.append(player_in_future_period.cost_per_unit_this_period)
-                
-        #         purchased_units_arr.append("input")
-        #         purchased_units_arr.append("input")
-                
-        #         start_token_balance_arr.append(current_player.start_token_balance)
-        #         start_token_balance_arr.append(maximum_future_start_token_balance)
+            income_across_all_rounds = [current_player_in_first_period.income, current_player_in_second_period.income, current_player.income]
+            start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance]
+            purchased_unit_across_all_rounds = [current_player_in_first_period.purchased_units, current_player_in_second_period.purchased_units, 0]
+            points_across_all_rounds = [current_player_in_first_period.points_this_period, current_player_in_second_period.points_this_period, 0]
+            # total points cannot be reduced, only increased
+            total_points_in_second_round = current_player_in_first_period.points_this_period + current_player_in_second_period.points_this_period
+            total_points_across_all_rounds = [current_player_in_first_period.points_this_period, total_points_in_second_round, total_points_in_second_round]
 
-        #         points_arr.append(0)
-        #         points_arr.append(0)
-
-        #         total_points_arr.append(0)
-        #         total_points_arr.append(0)
-
-        #         final_token_balance_arr.append(current_player.start_token_balance)
-        #         final_token_balance_arr.append(maximum_future_start_token_balance)
-
-        #     # else player has a past
-        #     else:
-        #         player_in_past_period = self.player.in_round(current_period-1)
-        #         last_period_final_token_balance = player_in_past_period.final_token_balance
-                
-        #         income_arr.append(player_in_past_period.income)
-        #         income_arr.append(current_player.income)
-                
-        #         cost_per_unit_arr.append(player_in_past_period.cost_per_unit_this_period)
-        #         cost_per_unit_arr.append(current_player.cost_per_unit_this_period)
-                
-        #         purchased_units_arr.append(player_in_past_period.purchased_units)
-        #         purchased_units_arr.append("input")
-                
-        #         start_token_balance_arr.append(player_in_past_period.start_token_balance)
-        #         start_token_balance_arr.append(current_player.start_token_balance)
-
-        #         points_arr.append(player_in_past_period.points_scored_this_treatment)
-        #         points_arr.append(0)
-
-        #         total_points_arr.append(player_in_past_period.points_scored_this_treatment)
-        #         total_points_arr.append(player_in_past_period.points_scored_this_treatment)
-
-        #         final_token_balance_arr.append(player_in_past_period.final_token_balance)
-        #         final_token_balance_arr.append(current_player.start_token_balance)
-
-        #     # this value is labeled total_points.  BUT its value is actually "points_scored_this_period"
-            # two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
-        #     # two_period_calculator_config = [period_arr,income_arr,cost_per_unit_arr,inflation_arr,interest_rate_arr,start_token_balance_arr,purchased_units_arr,points_arr,total_points_arr,final_token_balance_arr]
-
-        #     # what do I need to pass to the calculator?
-        #     # income, interest_rate, inflation,
-        #     return dict(
-        #         two_period_experiments=self.session.config['two_round_experiments'],
-        #         current_period_is_odd=current_period_is_odd,
-        #         # current_period=current_period,
-        #         income=current_player.income,
-        #         start_token_balance=current_player.start_token_balance,
-        #         cost_per_unit_this_period=current_player.cost_per_unit_this_period,
-        #         inflation=current_player.inflation,
-        #         interest_rate=current_player.interest_rate,
-        #         treatment_variable=current_player.treatment_variable,
-        #         calculator_config_json=two_period_calculator_config,
-        #         obscure_a_column=self.session.config['obscure_a_column'],
-        #         obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
-        #         # calculator_config_json_2=self.session.config['calculator_config_json'],
-        #     )
-
-        # else:
-        #     same_player_throughout_their_history = self.player.in_previous_rounds()
-
-        #     # print('self.constants',self.constants)
-        #     # grab the most recent player.in_previous_rounds()
-        #     print('same_player_throughout_their_history',same_player_throughout_their_history)
-
-        #     # note there are a few ways to access the most recent final token balance
-        #     if ( current_round > 1 ):
-        #         final_token_balance_most_recent = self.player.in_round(current_round-1).final_token_balance
-        #         start_token_balance_upcoming = round(((final_token_balance_most_recent+self.session.config['income']) * ((100+self.session.config['interest_rate_1'])/100)),2)
-                
-        #         total_points_most_recent = self.player.in_round(current_round-1).total_points
-        #     else:
-        #         final_token_balance_most_recent = "n/a"
-        #         start_token_balance_upcoming = self.session.config['start_token_balance']
-        #         total_points_most_recent = 0
-
-        #     for player in same_player_throughout_their_history:
-        #         purchased_units_across_all_rounds.append(player.purchased_units)
-        #         start_token_balance_across_all_rounds.append(player.start_token_balance)
-        #         final_token_balance_across_all_rounds.append(player.final_token_balance)
-        #         points_across_all_rounds.append(player.points_this_period)
-        #         total_points_across_all_rounds.append(player.total_points)
-
-        #     # figure out the treatement_variable.  Then adding all other fields should be straight-forward.  Can figure out the 
-            
-        #     every_other_round = math.floor((current_round-1)/2)
-        #     # current_treatment_variable = 
-        #     # print('self',self)
-        #     # print('self.round_number',self.round_number)
-        #     # print('self.participant.vars',self.participant.vars)
-        #     # print('self.participant.vars[every_other_round]',self.participant.vars[every_other_round])
-        #     # print('self.participant.vars["experiment_sequence"][every_other_round]',self.participant.vars['experiment_sequence'][every_other_round])
-
-
-        #     # here is where I'll put the logic to handle passing multiple inflations, interest_rates, and incomes.
-        #     # if self.session.config['multiple_whatevers']:
-        #     #   then do some more work. 
+            third_period_final_token_balance = current_player_in_second_period.start_token_balance + current_player.income
+            final_token_balance_across_all_rounds = [current_player_in_first_period.final_token_balance, current_player_in_second_period.final_token_balance, third_period_final_token_balance]
 
         return dict(
-            cost_per_unit=self.session.config['cost_per_unit'],
-            current_period=self.round_number,
-            current_period_is_first_in_treatment=current_period_is_first_in_treatment,
-            current_treatment = self.participant.vars['experiment_sequence'][every_third_round],
-        #         final_token_balance_most_recent=final_token_balance_most_recent,
-        #         final_token_balance=self.session.config['final_token_balance'],
-        #         final_token_balance_across_all_rounds=final_token_balance_across_all_rounds,
-        #         future_horizon_viewable=self.session.config['future_horizon_viewable'],
-            income=self.session.config['income'],
-            inflation=self.session.config['inflation_1'],
-            interest_rate=self.session.config['interest_rate_1'],
-        #         # number_of_rounds=self.session.config['number_of_rounds'],
-        #         obscure_a_column=self.session.config['obscure_a_column'],
-        #         obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
-        #         past_horizon_viewable=self.session.config['past_horizon_viewable'],
+            current_period_across_all_rounds=[current_period_mod_three, current_period_mod_three, current_period_mod_three],
+            period_across_all_rounds=[1,2,3],
+            income_across_all_rounds=income_across_all_rounds,
+            interest_rate_across_all_rounds=interest_rate_across_all_rounds,
+            inflation_across_all_rounds=inflation_across_all_rounds,
+            cost_per_unit_across_all_rounds=cost_per_unit_across_all_rounds,
+            start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,
+            purchased_unit_across_all_rounds=purchased_unit_across_all_rounds,
             points_across_all_rounds=points_across_all_rounds,
-        #         purchased_units_across_all_rounds=purchased_units_across_all_rounds,
-            start_token_balance=self.session.config['start_token_balance'],
-        #         start_token_balance_across_all_rounds=start_token_balance_across_all_rounds,
-        #         start_token_balance_upcoming=start_token_balance_upcoming,
-            the_calculator_config=[self.session.config['calculator_config_json']],
-        #         total_points_most_recent=total_points_most_recent,
-        #         total_points_across_all_rounds=total_points_across_all_rounds,
+            total_points_across_all_rounds=total_points_across_all_rounds,
+            final_token_balance_across_all_rounds=final_token_balance_across_all_rounds,
+    #         # obscure_a_column=self.session.config['obscure_a_column'],
+    #         # obscure_this_column_name_at_certain_period=self.session.config['obscure_this_column_name_at_certain_period'],
         )
 
     # this function passes round_number to the templates.  round_number is accessed in Decision_box
