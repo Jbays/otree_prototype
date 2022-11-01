@@ -28,13 +28,19 @@ class Calculator(Page):
     
     # js_vars passes these variables to Calculator.html.  
     def js_vars(self):
-        print('hello from js vars')
         import math
         current_period = self.round_number
-        current_period_mod_three = current_period % 3
         current_period_is_first_in_treatment = (current_period % 3) == 1
         current_period_is_second_in_treatment = (current_period % 3) == 2
         current_period_is_third_in_treatment = (current_period % 3) == 0
+
+        if (current_period_is_first_in_treatment):
+            current_period_for_front_end = 1
+        elif (current_period_is_second_in_treatment):
+            current_period_for_front_end = 2
+        elif (current_period_is_third_in_treatment):
+            current_period_for_front_end = 3
+
         current_player = self.player.in_round(current_period)
 
         income_across_all_rounds = []
@@ -59,7 +65,6 @@ class Calculator(Page):
             current_player_in_third_period = self.player.in_round(current_period+2)
 
             income_across_all_rounds = [current_player.income, current_player_in_second_period.income, current_player_in_third_period.income]
-            # print('current_player.income', current_player.income)
             second_period_start_token_balance = current_player.income + current_player_in_second_period.income
             third_period_start_token_balance = second_period_start_token_balance + current_player_in_third_period.income
             start_token_balance_across_all_rounds = [current_player.income, second_period_start_token_balance, third_period_start_token_balance]
@@ -73,8 +78,10 @@ class Calculator(Page):
             current_player_in_first_period = self.player.in_round(current_period-1)
             current_player_in_third_period = self.player.in_round(current_period+1)
 
+            third_period_start_token_balance = current_player.start_token_balance + current_player_in_third_period.income
+
             income_across_all_rounds = [current_player_in_first_period.income, current_player.income, current_player_in_third_period.income]
-            start_token_balance_across_all_rounds = [current_player_in_first_period.income, current_player.start_token_balance, current_player_in_third_period.income]
+            start_token_balance_across_all_rounds = [current_player_in_first_period.income, current_player.start_token_balance, third_period_start_token_balance]
             purchased_unit_across_all_rounds = [current_player_in_first_period.purchased_units, 0, 0]
             points_across_all_rounds = [current_player_in_first_period.points_this_period, 0, 0]
             # total points cannot be reduced, only increased
@@ -86,22 +93,25 @@ class Calculator(Page):
 
         elif (current_period_is_third_in_treatment):
             # note that here current_player is a copy of the player model from period 3
-            current_player_in_first_period = self.player.in_round(current_period-1)
-            current_player_in_second_period = self.player.in_round(current_period-2)
+            current_player_in_first_period = self.player.in_round(current_period-2)
+            current_player_in_second_period = self.player.in_round(current_period-1)
+
+            third_period_start_token_balance = current_player_in_second_period.final_token_balance + current_player.income
 
             income_across_all_rounds = [current_player_in_first_period.income, current_player_in_second_period.income, current_player.income]
-            start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance]
+            start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance, third_period_start_token_balance]
+            # start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance, current_player.start_token_balance]
             purchased_unit_across_all_rounds = [current_player_in_first_period.purchased_units, current_player_in_second_period.purchased_units, 0]
             points_across_all_rounds = [current_player_in_first_period.points_this_period, current_player_in_second_period.points_this_period, 0]
             # total points cannot be reduced, only increased
             total_points_in_second_round = current_player_in_first_period.points_this_period + current_player_in_second_period.points_this_period
             total_points_across_all_rounds = [current_player_in_first_period.points_this_period, total_points_in_second_round, total_points_in_second_round]
 
-            third_period_final_token_balance = current_player_in_second_period.start_token_balance + current_player.income
+            third_period_final_token_balance = current_player_in_second_period.final_token_balance + current_player.income
             final_token_balance_across_all_rounds = [current_player_in_first_period.final_token_balance, current_player_in_second_period.final_token_balance, third_period_final_token_balance]
 
         return dict(
-            current_period_across_all_rounds=[current_period_mod_three, current_period_mod_three, current_period_mod_three],
+            current_period_across_all_rounds=[current_period_for_front_end, current_period_for_front_end, current_period_for_front_end],
             period_across_all_rounds=[1,2,3],
             income_across_all_rounds=income_across_all_rounds,
             interest_rate_across_all_rounds=interest_rate_across_all_rounds,
@@ -118,21 +128,21 @@ class Calculator(Page):
 
     # this function passes round_number to the templates.  round_number is accessed in Decision_box
     def vars_for_template(self):
-        if ( self.session.config['three_round_experiments'] ):
-            
-            period_is_odd = (self.round_number % 2) == 1
-
-            if ( period_is_odd ):
-                return dict(
-                    round_number=1
-                )
-            else:
-                return dict(
-                    round_number=2
-                )
-        else:
+        current_period = self.round_number
+        current_period_is_first_in_treatment = (current_period % 3) == 1
+        current_period_is_second_in_treatment = (current_period % 3) == 2
+        current_period_is_third_in_treatment = (current_period % 3) == 0
+        if (current_period_is_first_in_treatment):
             return dict(
-                round_number=self.round_number,
+                round_number=1
+            )
+        elif (current_period_is_second_in_treatment):
+            return dict(
+                round_number=2
+            )
+        elif (current_period_is_third_in_treatment):
+            return dict(
+                round_number=3
             )
 
     # writes to the player model 
