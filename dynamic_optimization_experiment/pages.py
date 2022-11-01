@@ -133,121 +133,71 @@ class Calculator(Page):
         current_period_is_second_in_treatment = (current_period % 3) == 2
         current_period_is_third_in_treatment = (current_period % 3) == 0
         if (current_period_is_first_in_treatment):
-            return dict(
-                round_number=1
-            )
+            return dict(round_number=1)
         elif (current_period_is_second_in_treatment):
-            return dict(
-                round_number=2
-            )
+            return dict(round_number=2)
         elif (current_period_is_third_in_treatment):
-            return dict(
-                round_number=3
-            )
+            return dict(round_number=3)
 
-    # writes to the player model 
+    # after each completed period, write to the player's model
+    # writes:
+    #   start_token_balance for rounds 2 and 3 -- includes interest gained too!
+    #   points_this_period, points_scored_this_treatment, total_points
     def before_next_page(self):
-        print('before next page executed!')
-
+        print('before next page is called!')
+        print('self.player', self.player)
         current_period = self.round_number
-        current_round_mod_three = self.round_number % 3
-        # first in treatment, second in treatment, third in treatment
-        current_round_is_first = current_round_mod_three == 1
-        # current_round_is_second = current_round_mod_three == 2
-        # current_round_is_third = current_round_mod_three == 0
-        
-        # current_period_is_odd = (current_period % 2) == 1 
-        convert_purchased_units_to_points_function = self.session.config['convert_purchased_units_to_output']
+        current_period_is_first_in_treatment = (current_period % 3) == 1
+        current_period_is_second_in_treatment = (current_period % 3) == 2
+        current_period_is_third_in_treatment = (current_period % 3) == 0
 
-        # # gather all the fields required from the player model
+        player_next_period = self.player.in_round(current_period+1)
+
+        convert_purchased_units_to_points_function = self.session.config['convert_purchased_units_to_output']
         cost_per_unit_this_period = self.player.cost_per_unit_this_period
-        income_this_period = self.player.income
         interest_rate_this_period = self.player.interest_rate
 
-        # if interest rate is negative
         if (interest_rate_this_period < 0):
             interest_rate_this_period = 1 + self.player.interest_rate
         
-        units_just_purchased = self.player.in_round(current_period).purchased_units
-        points_scored_this_period = round(convert_purchased_units_to_points_function(units_just_purchased),2)
-
-        # if ( points_scored_this_period > 5 ):
-        #     points_scored_this_period = 5
-        # elif ( points_scored_this_period < -5 ):
-        #     points_scored_this_period = -5
-
+        units_purchased_this_period = self.player.in_round(current_period).purchased_units
+        total_cost_this_period = units_purchased_this_period * cost_per_unit_this_period
+        points_scored_this_period = round(convert_purchased_units_to_points_function(units_purchased_this_period),2)
+        
+        # puts a cap on the maximum number of points that can be scored in a given period
+        if ( points_scored_this_period > 5 ):
+            points_scored_this_period = 5
+        elif ( points_scored_this_period < -5 ):
+            points_scored_this_period = -5
+        
+        # handle the points scored here
         self.player.points_this_period = points_scored_this_period
-
-        # calculate the player's final token balance, points scored this treatment, and total points
-        # then set their start token balance for next period
-        if (current_round_is_first):
-            self.player.start_token_balance = income_this_period
-            self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
+        
+        if (current_period_is_first_in_treatment):
             self.player.points_scored_this_treatment = points_scored_this_period
-            self.player.total_points = self.player.points_scored_this_treatment
+            # if its the very first period, then total points equals the points_scored_this_period
+            if (current_period == 1):
+                self.player.total_points = points_scored_this_period
+            # else total_points should include the total_points scored from the previous treatment
+            else:
+                player_from_previous_treatment = self.player.in_round(current_period-1)    
+                self.player.total_points = round(player_from_previous_treatment.total_points + points_scored_this_period, 2)
+        elif (current_period_is_second_in_treatment):
+            player_from_first_period = self.player.in_round(current_period-1)
 
-            player_next_period = self.player.in_round(current_period+1)
+            self.player.points_scored_this_treatment = round(player_from_first_period.points_this_period + points_scored_this_period, 2)
+            self.player.total_points = round(player_from_first_period.total_points + points_scored_this_period, 2)
+        elif (current_period_is_third_in_treatment):
+            player_from_first_period = self.player.in_round(current_period-1)
+            player_from_second_period = self.player.in_round(current_period-2)
+
+            self.player.points_scored_this_treatment = round(player_from_first_period.points_this_period + player_from_second_period.points_this_period + points_scored_this_period, 2)
+            self.player.total_points = round(player_from_first_period.total_points + points_scored_this_period, 2)
+
+        self.player.final_token_balance = self.player.start_token_balance - total_cost_this_period
+
+        # if its the first or second period, then write start_token_balance for the NEXT period
+        if (current_period_is_first_in_treatment or current_period_is_second_in_treatment):
             player_next_period.start_token_balance = player_next_period.income + (self.player.final_token_balance * interest_rate_this_period)
-        
-        # if ( current_period_is_odd ):
-        #     self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
-        #     self.player.points_scored_this_treatment = points_scored_this_period
-        #     self.player.total_points = self.player.points_scored_this_treatment
-
-        #     if ( current_period > 1 ):
-        #         player_from_previous_period = self.player.in_round(current_period-1)
-        #         self.player.total_points = self.player.total_points + player_from_previous_period.total_points
-
-        #     player_next_period = self.player.in_round(current_period+1)
-        #     player_next_period.start_token_balance = player_next_period.income + (self.player.final_token_balance * interest_rate_this_period)
-
-
-        # if its not the first round, then calculate their start token balance
-        # use start token balance to calculate final token balance
-        # elif(current_round_is_second):
-        else:
-            player_from_previous_period = self.player.in_round(current_period-1)
-
-            final_token_balance_most_recent = round(player_from_previous_period.final_token_balance,2)
-            total_points_most_recent = round(player_from_previous_period.total_points,2)
-            points_scored_previous_period = round(player_from_previous_period.points_this_period,2)
-            print(final_token_balance_most_recent, total_points_most_recent, points_scored_previous_period)
-
-            self.player.start_token_balance = income_this_period + (interest_rate_this_period * final_token_balance_most_recent)
-            self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
-            self.player.points_scored_this_treatment = round(points_scored_this_period + points_scored_previous_period,2)
-            self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
-
-        self.participant.vars["point_totals_by_treatment"].append(self.player.points_scored_this_treatment)
-        
-        # else:
-        #     player_from_previous_period = self.player.in_round(current_period-1)
-            
-        #     # fetch three values from the previous round
-        #     # final_token_balance_most_recent = round(player_from_previous_period.final_token_balance,2)
-        #     total_points_most_recent = round(player_from_previous_period.total_points,2)
-        #     points_scored_previous_period = round(player_from_previous_period.points_this_period,2)
-
-        #     # why does this code live here??
-        #     # if ( current_period_is_odd ):
-        #     #     self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period )),2)
-        #     # commenting out the line of code below.  I don't see a reason to set the start_token_balance.  That is written to the player from the previous round
-        #     # else:
-        #         # print('final_token_balance_most_recent here --->',final_token_balance_most_recent)
-        #         # print('income_this_period here --->',income_this_period)
-        #         # print('interest_rate_this_period here --->',interest_rate_this_period)
-        #         # self.player.start_token_balance = round(((final_token_balance_most_recent + income_this_period ) * interest_rate_this_period),2)
-            
-        #     self.player.final_token_balance = round((self.player.start_token_balance - (units_just_purchased * cost_per_unit_this_period)),2)
-        #     self.player.points_scored_this_treatment = round(points_scored_this_period + points_scored_previous_period,2)
-        #     self.player.total_points = round(self.player.points_this_period + total_points_most_recent,2)
-
-        #     self.participant.vars["point_totals_by_treatment"].append(self.player.points_scored_this_treatment)
-
-        #     # print('self.participant.vars',self.participant.vars)
-        #     # print('self.participant.vars[point_totals_by_treatment',self.participant.vars["point_totals_by_treatment"])
-
-        #     # this is the programmatic way to write the point totals to participant.vars 
-        #     # if ( current_period % self.session.config['number_of_periods_per_DOE'] == 0):
 
 page_sequence = [Calculator,InBetween]
