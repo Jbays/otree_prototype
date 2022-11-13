@@ -54,23 +54,33 @@ class Calculator(Page):
         if ( current_interest_rate < 0 ):
             current_interest_rate = 1 + current_player.interest_rate
 
-        # interest rate, inflation, and cost per unit vary between treatment groups (012, 345, 678)
-        # but are fixed in that specific treatment group
-        interest_rate_across_all_rounds = [current_player.interest_rate,current_player.interest_rate,current_player.interest_rate]
-        inflation_across_all_rounds = [current_player.inflation,current_player.inflation,current_player.inflation]
-        cost_per_unit_across_all_rounds = [current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
+        interest_rate_across_all_rounds = []
+        inflation_across_all_rounds = []
+        cost_per_unit_across_all_rounds = []
+        # interest_rate_across_all_rounds = [current_player.interest_rate,current_player.interest_rate,current_player.interest_rate]
+        # inflation_across_all_rounds = [current_player.inflation,current_player.inflation,current_player.inflation]
+        # cost_per_unit_across_all_rounds = [current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period,current_player.cost_per_unit_this_period]
 
         if (current_period_is_first_in_treatment):
             current_player_in_second_period = self.player.in_round(current_period+1)
             current_player_in_third_period = self.player.in_round(current_period+2)
 
+            # if the first period, then final token balance = start token balance
+            first_period_final_token_balance = current_player.start_token_balance
+            second_period_final_token_balance = (first_period_final_token_balance * current_interest_rate) + current_player_in_second_period.income
+
             income_across_all_rounds = [current_player.income, current_player_in_second_period.income, current_player_in_third_period.income]
-            second_period_start_token_balance = current_player.income + current_player_in_second_period.income
-            third_period_start_token_balance = second_period_start_token_balance + current_player_in_third_period.income
+            second_period_start_token_balance = (first_period_final_token_balance * current_interest_rate) + current_player_in_second_period.income
+            third_period_start_token_balance = (second_period_start_token_balance * current_interest_rate) + current_player_in_third_period.income
             start_token_balance_across_all_rounds = [current_player.income, second_period_start_token_balance, third_period_start_token_balance]
             purchased_unit_across_all_rounds = [0, 0, 0]
             points_across_all_rounds = [0, 0, 0]
             total_points_across_all_rounds = [0, 0, 0]
+
+            interest_rate_across_all_rounds = [current_player.interest_rate, current_player_in_second_period.interest_rate, current_player_in_third_period.interest_rate]
+            inflation_across_all_rounds = [current_player.inflation, current_player_in_second_period.inflation, current_player_in_third_period.inflation]
+            cost_per_unit_across_all_rounds = [current_player.cost_per_unit_this_period, current_player_in_second_period.cost_per_unit_this_period, current_player_in_third_period.cost_per_unit_this_period]
+
             final_token_balance_across_all_rounds = [current_player.income, second_period_start_token_balance, third_period_start_token_balance]
 
         elif (current_period_is_second_in_treatment):
@@ -78,7 +88,7 @@ class Calculator(Page):
             current_player_in_first_period = self.player.in_round(current_period-1)
             current_player_in_third_period = self.player.in_round(current_period+1)
 
-            third_period_start_token_balance = current_player.start_token_balance + current_player_in_third_period.income
+            third_period_start_token_balance = (current_player.start_token_balance * current_interest_rate) + current_player_in_third_period.income
 
             income_across_all_rounds = [current_player_in_first_period.income, current_player.income, current_player_in_third_period.income]
             start_token_balance_across_all_rounds = [current_player_in_first_period.income, current_player.start_token_balance, third_period_start_token_balance]
@@ -87,8 +97,13 @@ class Calculator(Page):
             # total points cannot be reduced, only increased
             total_points_across_all_rounds = [current_player_in_first_period.points_this_period, current_player_in_first_period.points_this_period, current_player_in_first_period.points_this_period]
 
-            second_period_final_token_balance = current_player_in_first_period.final_token_balance + current_player.income
-            third_period_final_token_balance = current_player.start_token_balance + current_player_in_third_period.income
+            interest_rate_across_all_rounds = [current_player_in_first_period.interest_rate, current_player.interest_rate, current_player_in_third_period.interest_rate]
+            inflation_across_all_rounds = [current_player_in_first_period.inflation, current_player.inflation, current_player_in_third_period.inflation]
+            cost_per_unit_across_all_rounds = [current_player_in_first_period.cost_per_unit_this_period, current_player.cost_per_unit_this_period, current_player_in_third_period.cost_per_unit_this_period]
+
+            # second_period_final_token_balance = (current_player_in_first_period.final_token_balance + current_player.income) * current_interest_rate
+            second_period_final_token_balance = current_player.start_token_balance
+            third_period_final_token_balance = (current_interest_rate * current_player.start_token_balance) + current_player_in_third_period.income
             final_token_balance_across_all_rounds = [current_player_in_first_period.final_token_balance, second_period_final_token_balance, third_period_final_token_balance]
 
         elif (current_period_is_third_in_treatment):
@@ -96,18 +111,24 @@ class Calculator(Page):
             current_player_in_first_period = self.player.in_round(current_period-2)
             current_player_in_second_period = self.player.in_round(current_period-1)
 
-            third_period_start_token_balance = current_player_in_second_period.final_token_balance + current_player.income
+            third_period_start_token_balance = (current_player_in_second_period.final_token_balance * current_interest_rate) + current_player.income
 
             income_across_all_rounds = [current_player_in_first_period.income, current_player_in_second_period.income, current_player.income]
             start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance, third_period_start_token_balance]
             # start_token_balance_across_all_rounds = [current_player_in_first_period.start_token_balance, current_player_in_second_period.start_token_balance, current_player.start_token_balance]
             purchased_unit_across_all_rounds = [current_player_in_first_period.purchased_units, current_player_in_second_period.purchased_units, 0]
             points_across_all_rounds = [current_player_in_first_period.points_this_period, current_player_in_second_period.points_this_period, 0]
+            
+            interest_rate_across_all_rounds = [current_player_in_first_period.interest_rate, current_player_in_second_period.interest_rate, current_player.interest_rate]
+            inflation_across_all_rounds = [current_player_in_first_period.inflation, current_player_in_second_period.inflation, current_player.inflation]
+            cost_per_unit_across_all_rounds = [current_player_in_first_period.cost_per_unit_this_period, current_player_in_second_period.cost_per_unit_this_period, current_player.cost_per_unit_this_period]
+
             # total points cannot be reduced, only increased
             total_points_in_second_round = current_player_in_first_period.points_this_period + current_player_in_second_period.points_this_period
             total_points_across_all_rounds = [current_player_in_first_period.points_this_period, total_points_in_second_round, total_points_in_second_round]
 
-            third_period_final_token_balance = current_player_in_second_period.final_token_balance + current_player.income
+            # since total units purchased is not yet currently known
+            third_period_final_token_balance = third_period_start_token_balance
             final_token_balance_across_all_rounds = [current_player_in_first_period.final_token_balance, current_player_in_second_period.final_token_balance, third_period_final_token_balance]
 
         return dict(
@@ -144,8 +165,8 @@ class Calculator(Page):
     #   start_token_balance for rounds 2 and 3 -- includes interest gained too!
     #   points_this_period, points_scored_this_treatment, total_points
     def before_next_page(self):
-        print('before next page is called!')
-        print('self.player', self.player)
+        # print('before next page is called!')
+        # print('self.player', self.player)
         current_period = self.round_number
         current_period_is_first_in_treatment = (current_period % 3) == 1
         current_period_is_second_in_treatment = (current_period % 3) == 2
@@ -194,7 +215,13 @@ class Calculator(Page):
             self.player.points_scored_this_treatment = round(player_from_first_period.points_this_period + player_from_second_period.points_this_period + points_scored_this_period, 2)
             self.player.total_points = round(player_from_first_period.total_points + points_scored_this_period, 2)
 
+        # current_start_token_balance = self.player.start_token_balance or 0
+        # print('current_start_token_balance',current_start_token_balance)
+        # self.player.final_token_balance = current_start_token_balance - total_cost_this_period
+        # print('self.player',self.player)
+        # should interest_rate_this_period be applied to final token balance? no, I guess not!
         self.player.final_token_balance = self.player.start_token_balance - total_cost_this_period
+        # self.player.final_token_balance = (self.player.start_token_balance * interest_rate_this_period) - total_cost_this_period
 
         # if its the first or second period, then write start_token_balance for the NEXT period
         if (current_period_is_first_in_treatment or current_period_is_second_in_treatment):

@@ -9,14 +9,12 @@ from numpy import log
 SESSION_CONFIG_DEFAULTS = dict(
 # custom
     inflation_1=1.0,
-    multiple_inflations=True,
-    other_inflations="1.25,1.0",
+    inflation_2=1.25,
+    inflation_3=1.0,
     interest_rate_1=1.0,
-    multiple_interest_rates=True,
-    other_interest_rates="1.0,-0.2",
+    interest_rate_2=1.0,
+    interest_rate_3=-0.2,
     income=900,
-    two_round_experiments = False,
-    three_round_experiments = True,
 
     cost_per_unit=100.00,
     start_token_balance = 900,
@@ -55,7 +53,6 @@ SESSION_CONFIGS = [
         display_name="Dynamic Optimization Experiment",
         num_demo_participants=5,
         app_sequence=['intro_and_quiz','dynamic_optimization_experiment', 'payment_info'],
-        # app_sequence=['dynamic_optimization_experiment', 'payment_info'],
     ),
 ]
 

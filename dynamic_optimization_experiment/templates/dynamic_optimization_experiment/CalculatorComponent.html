@@ -80,12 +80,20 @@
       let isSecondPeriodInTreatment = currentPeriod % 3 === 2;
       let isThirdPeriodInTreatment = currentPeriod % 3 === 0;
       
-      // also standard are cost per unit and interest rate
-      const costPerUnit = js_vars.cost_per_unit_across_all_rounds[0];
-      const interestRate = js_vars.interest_rate_across_all_rounds[0];
+      const costPerUnitFirstPeriod = js_vars.cost_per_unit_across_all_rounds[0];
+      const costPerUnitSecondPeriod = js_vars.cost_per_unit_across_all_rounds[1];
+      const costPerUnitThirdPeriod = js_vars.cost_per_unit_across_all_rounds[2];
+      let interestRate = js_vars.interest_rate_across_all_rounds[0];
 
-      console.log('js_vars',js_vars);
-      console.log('currentPeriod',currentPeriod);
+      // const incomeFirstPeriod = js_vars.income_across_all_rounds[0];
+      // const incomeSecondPeriod = js_vars.income_across_all_rounds[1];
+      const incomeThirdPeriod = js_vars.income_across_all_rounds[2];
+
+      if (interestRate < 0) {
+        interestRate = interestRate + 1;
+      }
+
+      // console.log('js_vars',js_vars);
 
       let resetTableNeeded = false;
 
@@ -129,26 +137,27 @@
           pointsScoredFirstPeriod = Number((calculateNaturalLogVals(purchasedUnitFirstPeriod)).toFixed(2));
           pointsFirstPeriodElem.innerText = pointsScoredFirstPeriod;
           totalPointsFirstPeriodElem.innerText = pointsScoredFirstPeriod;
-          const totalCostFirstPeriod = costPerUnit * purchasedUnitFirstPeriod;
+          const totalCostFirstPeriod = costPerUnitFirstPeriod * purchasedUnitFirstPeriod;
           finalTokenBalanceFirstPeriodElem.innerText = startTokenBalanceFirstPeriod - totalCostFirstPeriod;
           
           const startTokenBalanceSecondPeriod = Number(startTokenBalanceSecondPeriodElem.innerText);
-          startTokenBalanceSecondPeriodElem.innerText = startTokenBalanceSecondPeriod - totalCostFirstPeriod;
+          startTokenBalanceSecondPeriodElem.innerText = (startTokenBalanceSecondPeriod - totalCostFirstPeriod) * interestRate;
           const purchasedUnitSecondPeriod = Number(purchasedUnitsInputSecondPeriod.value);
           pointsScoredSecondPeriod = Number((calculateNaturalLogVals(purchasedUnitSecondPeriod)).toFixed(2));
           pointsSecondPeriodElem.innerText = pointsScoredSecondPeriod;
           totalPointsSecondPeriodElem.innerText = pointsScoredFirstPeriod + pointsScoredSecondPeriod;
-          const totalCostSecondPeriod = costPerUnit * purchasedUnitSecondPeriod;
-          finalTokenBalanceSecondPeriodElem.innerText = startTokenBalanceSecondPeriod - totalCostFirstPeriod - totalCostSecondPeriod;
+          const totalCostSecondPeriod = costPerUnitSecondPeriod * purchasedUnitSecondPeriod;
+          finalTokenBalanceSecondPeriodElem.innerText = startTokenBalanceSecondPeriodElem.innerText - totalCostSecondPeriod;
 
-          const startTokenBalanceThirdPeriod = Number(finalTokenBalanceSecondPeriodElem.innerText);
-          startTokenBalanceThirdPeriodElem.innerText = startTokenBalanceThirdPeriod;
+          const startTokenBalanceThirdPeriod = Number(startTokenBalanceThirdPeriodElem.innerText);
+          startTokenBalanceThirdPeriodElem.innerText = (finalTokenBalanceSecondPeriodElem.innerText * interestRate) + incomeThirdPeriod;
+          // startTokenBalanceThirdPeriodElem.innerText = (startTokenBalanceThirdPeriod - totalCostFirstPeriod - totalCostSecondPeriod) * interestRate;
           const purchasedUnitThirdPeriod = Number(purchasedUnitsInputThirdPeriod.value);
           pointsScoredThirdPeriod = Number((calculateNaturalLogVals(purchasedUnitThirdPeriod)).toFixed(2));
           pointsThirdPeriodElem.innerText = pointsScoredThirdPeriod;
-          const totalCostThirdPeriod = costPerUnit * purchasedUnitThirdPeriod;
+          const totalCostThirdPeriod = costPerUnitThirdPeriod * purchasedUnitThirdPeriod;
           totalPointsThirdPeriodElem.innerText = (pointsScoredFirstPeriod + pointsScoredSecondPeriod + pointsScoredThirdPeriod).toFixed(2);
-          const finalTokenBalanceThirdPeriod = startTokenBalanceThirdPeriod - totalCostThirdPeriod;
+          const finalTokenBalanceThirdPeriod = startTokenBalanceThirdPeriod - totalCostFirstPeriod - totalCostSecondPeriod - totalCostThirdPeriod;
           finalTokenBalanceThirdPeriodElem.innerText = finalTokenBalanceThirdPeriod;
         } else if (isSecondPeriodInTreatment) {
           pointsScoredFirstPeriod = Number(pointsFirstPeriodElem.innerText);
@@ -158,15 +167,15 @@
           pointsScoredSecondPeriod = Number((calculateNaturalLogVals(purchasedUnitSecondPeriod)).toFixed(2));
           pointsSecondPeriodElem.innerText = pointsScoredSecondPeriod;
           totalPointsSecondPeriodElem.innerText = Number(pointsScoredFirstPeriod) + Number(pointsScoredSecondPeriod);
-          const totalCostSecondPeriod = costPerUnit * purchasedUnitSecondPeriod;
+          const totalCostSecondPeriod = costPerUnitSecondPeriod * purchasedUnitSecondPeriod;
           finalTokenBalanceSecondPeriodElem.innerText = startTokenBalanceSecondPeriod - totalCostSecondPeriod;
 
-          const startTokenBalanceThirdPeriod = Number(finalTokenBalanceSecondPeriodElem.innerText);
+          const startTokenBalanceThirdPeriod = Number(startTokenBalanceThirdPeriodElem.innerText);
           startTokenBalanceThirdPeriodElem.innerText = startTokenBalanceThirdPeriod;
           const purchasedUnitThirdPeriod = Number(purchasedUnitsInputThirdPeriod.value);
           pointsScoredThirdPeriod = Number((calculateNaturalLogVals(purchasedUnitThirdPeriod)).toFixed(2));
           pointsThirdPeriodElem.innerText = pointsScoredThirdPeriod;
-          const totalCostThirdPeriod = costPerUnit * purchasedUnitThirdPeriod;
+          const totalCostThirdPeriod = costPerUnitThirdPeriod * purchasedUnitThirdPeriod;
           totalPointsThirdPeriodElem.innerText = (pointsScoredFirstPeriod + pointsScoredSecondPeriod + pointsScoredThirdPeriod).toFixed(2);
           const finalTokenBalanceThirdPeriod = startTokenBalanceThirdPeriod - totalCostThirdPeriod;
           finalTokenBalanceThirdPeriodElem.innerText = finalTokenBalanceThirdPeriod;
@@ -174,11 +183,11 @@
           pointsScoredFirstPeriod = Number(pointsFirstPeriodElem.innerText);
           pointsScoredSecondPeriod = Number(pointsSecondPeriodElem.innerText);
 
-          const startTokenBalanceThirdPeriod = Number(finalTokenBalanceSecondPeriodElem.innerText);
+          const startTokenBalanceThirdPeriod = Number(startTokenBalanceThirdPeriodElem.innerText);
           const purchasedUnitThirdPeriod = Number(purchasedUnitsInputThirdPeriod.value);
           pointsScoredThirdPeriod = Number((calculateNaturalLogVals(purchasedUnitThirdPeriod)).toFixed(2));
           pointsThirdPeriodElem.innerText = pointsScoredThirdPeriod;
-          const totalCostThirdPeriod = costPerUnit * purchasedUnitThirdPeriod;
+          const totalCostThirdPeriod = costPerUnitThirdPeriod * purchasedUnitThirdPeriod;
           totalPointsThirdPeriodElem.innerText = (pointsScoredFirstPeriod + pointsScoredSecondPeriod + pointsScoredThirdPeriod).toFixed(2);
           const finalTokenBalanceThirdPeriod = startTokenBalanceThirdPeriod - totalCostThirdPeriod;
           finalTokenBalanceThirdPeriodElem.innerText = finalTokenBalanceThirdPeriod;
@@ -294,55 +303,59 @@
 
     <!-- here're all code which runs AFTER the rows are appended. -->
     <script>
-      // function miscCleanup(table){
-      //   convertDecimalToPercentInterestRates(table);
-      //   convertSnakeCaseToUpperCase(table.rows[0]);
-      //   roundDownTokenBalanceAndPoints();
-
+      function miscCleanup(table){
+        convertDecimalToPercent(table);
+        convertSnakeCaseToUpperCase(table.rows[0]);
+        // roundDownTokenBalanceAndPoints();
         
-      //   if ( js_vars.obscure_a_column ) {
-      //     obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
-      //   }
-      // }
+        if ( js_vars.obscure_a_column ) {
+          obscureColumnStartingAtPeriod(js_vars.obscure_this_column_name_at_certain_period)
+        }
+      }
 
-      // function convertDecimalToPercentInterestRates(table){
-      //   let allRows = table.children;
-      //   let allColumnTitles = allRows[1].children;
-      //   let indexOfInterestRate = null;
+      // for inflation and interest rate
+      function convertDecimalToPercent(table){
+        let allRows = table.children;
+        let allColumnTitles = allRows[1].children;
+        let indexOfInterestRate = null;
 
-      //   for ( let i = 0; i < allColumnTitles.length; i++ ) {
-      //     if ( allColumnTitles[i].innerHTML === 'interest_rate' ){
-      //       indexOfInterestRate = i;
-      //     };
-      //   }
+        // for each row which is not the first row
+        for ( let i = 1; i < allRows.length; i++ ){
+          const row = allRows[i];
+          const allChildren = row.children;
+          for ( let j = 0; j < allChildren.length; j++ ){
+            const child = allChildren[j];
+            const id = child.id
+            if (id.includes('inflation')){
+              const readableInflation = (Number(child.innerHTML) - 1) * 100;
+              child.innerHTML = `${readableInflation}%`
+            } else if (id.includes('interest_rate')){
+              const interestRate = child.innerHTML;
+              if (interestRate < 0) {
+                const readableInterestRate = Number(child.innerHTML) * 100;
+                child.innerHTML = `${readableInterestRate}%`
+              } else {
+                const readableInterestRate = (Number(child.innerHTML) - 1) * 100;
+                child.innerHTML = `${readableInterestRate}%`
+              }
+            }
+          }
+        }
+      }
 
-      //   if ( indexOfInterestRate !== null ){
-      //     for ( let i = 2; i < allRows.length; i++ ) {
-      //       let allColumnDataByPeriod = allRows[i].children;
-      //       let interestRate = Number(allColumnDataByPeriod[indexOfInterestRate].innerHTML)
+      function convertSnakeCaseToUpperCase(rowOfColumnTitles){
+        let allColumnsInRow = rowOfColumnTitles.children;
 
-      //       if ( interestRate < 0 ) {
-      //         allColumnDataByPeriod[indexOfInterestRate].innerHTML = "-20%"
-      //       } else {
-      //         allColumnDataByPeriod[indexOfInterestRate].innerHTML = "0%"
-      //       }
-      //     }
-      //   }
-      // }
-
-      // function convertSnakeCaseToUpperCase(rowOfColumnTitles){
-      //   let allColumnsInRow = rowOfColumnTitles.children;
-
-      //   for ( let i = 0; i < allColumnsInRow.length; i++ ) {
-      //     let columnName = allColumnsInRow[i].innerHTML;
+        for ( let i = 0; i < allColumnsInRow.length; i++ ) {
+          let columnName = allColumnsInRow[i].innerHTML;
           
-      //     let upperCasedColumnName = columnName.split('_').map((singleWord)=>{
-      //       return singleWord[0].toUpperCase()+singleWord.slice(1,singleWord.length);
-      //     }).join(' ');
+          let upperCasedColumnName = columnName.split('_').map((singleWord)=>{
+            return singleWord[0].toUpperCase()+singleWord.slice(1,singleWord.length);
+          }).join(' ');
 
-      //     allColumnsInRow[i].innerHTML = upperCasedColumnName
-      //   };
-      // };
+          allColumnsInRow[i].innerHTML = upperCasedColumnName
+        };
+      };
 
       // function roundDownTokenBalanceAndPoints(column){
       //   console.log('take a moment to round down all the annoying super long decimal values.')
@@ -361,8 +374,7 @@
 
       // // }
 
-      // miscCleanup(budgetingCalculator);
-    
+      miscCleanup(budgetingCalculatorBody);
     </script>
   </div>
 </div>

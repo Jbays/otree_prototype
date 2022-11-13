@@ -48,17 +48,20 @@ class Subsession(BaseSubsession):
             for player in all_players:
                 # NOTE: can I access player.participant.vars['experiment_sequence'] 
                 # 012 treatment sequence is "pay full round 1, no pay round 2, no pay round 3"
-                player.participant.vars['experiment_sequence'] = '012345678'
+                # player.participant.vars['experiment_sequence'] = '012345678'
                 # player.participant.vars['experiment_sequence'] = '123456780'
                 # player.participant.vars['experiment_sequence'] = '234567801'
 
                 # 345 treatment sequence is "no pay round 1, no pay round 2, pay full round 3"
                 # player.participant.vars['experiment_sequence'] = '345678012'
+                # player.participant.vars['experiment_sequence'] = '456780123'
                 # player.participant.vars['experiment_sequence'] = '567801234'
                 # 678 treatment sequence is "pay 1/3 round 1, pay 1/3 round 2, pay 1/3 round 3"
                 # player.participant.vars['experiment_sequence'] = '678012345'
+                # player.participant.vars['experiment_sequence'] = '780123456'
+                # player.participant.vars['experiment_sequence'] = '801234567'
                 player.participant.vars["point_totals_by_treatment"] = []
-                # player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
+                player.participant.vars['experiment_sequence'] = randomNumbersStringified(number_of_diff_treatments)
                 player.experiment_sequence = player.participant.vars['experiment_sequence']
     pass
 
