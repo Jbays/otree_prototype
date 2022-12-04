@@ -224,7 +224,7 @@ class Player(BasePlayer):
     interest_rate = models.FloatField()
     points_this_period = models.FloatField()
     points_scored_this_treatment = models.FloatField()
-    # seconds_spent_on_page = models.FloatField()
+    seconds_spent_on_page = models.FloatField()
     start_token_balance = models.FloatField()
     total_points = models.FloatField()
     treatment_variable = models.StringField()

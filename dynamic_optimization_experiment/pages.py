@@ -24,7 +24,8 @@ class InBetween(Page):
 class Calculator(Page):
     form_model = 'player'
     # form_fields = ['purchased_units','all_inputs_made_in_calculator','seconds_spent_on_page']
-    form_fields = ['purchased_units']
+    form_fields = ['purchased_units','seconds_spent_on_page']
+    # form_fields = ['purchased_units']
     
     # js_vars passes these variables to Calculator.html.  
     def js_vars(self):
